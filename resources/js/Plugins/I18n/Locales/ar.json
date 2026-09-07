@@ -827,7 +827,7 @@
         "selectLanguage": "اختر اللغة:"
       },
       "hero": {
-        "eyebrow": "مرحباً بكم",
+        "eyebrow": "",
         "subheadlineWithCompany": "اكتشف كيف تقدم {company} خدمات احترافية بجودة وثقة والتزام.",
         "subheadlineFallback": "ملف تعريفي احترافي يعرض خدماتنا ومعلومات التواصل.",
         "ctaServices": "استعرض خدماتنا",

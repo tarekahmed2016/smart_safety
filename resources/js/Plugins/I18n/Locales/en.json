@@ -827,7 +827,7 @@
         "selectLanguage": "Select language:"
       },
       "hero": {
-        "eyebrow": "Welcome",
+        "eyebrow": "",
         "subheadlineWithCompany": "Discover how {company} delivers professional services with quality, trust, and dedication.",
         "subheadlineFallback": "A professional company profile showcasing our services and contact information.",
         "ctaServices": "View Our Services",
