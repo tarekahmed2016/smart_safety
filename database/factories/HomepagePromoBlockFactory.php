@@ -49,6 +49,26 @@ class HomepagePromoBlockFactory extends Factory
         return $this->state(fn () => ['type' => HomepagePromoType::BusinessCta]);
     }
 
+    public function featureHighlight(): static
+    {
+        return $this->state(fn () => ['type' => HomepagePromoType::FeatureHighlight]);
+    }
+
+    public function industry(): static
+    {
+        return $this->state(fn () => ['type' => HomepagePromoType::Industry]);
+    }
+
+    public function customManufacturing(): static
+    {
+        return $this->state(fn () => ['type' => HomepagePromoType::CustomManufacturing]);
+    }
+
+    public function stat(): static
+    {
+        return $this->state(fn () => ['type' => HomepagePromoType::Stat]);
+    }
+
     public function inactive(): static
     {
         return $this->state(fn () => ['is_active' => false]);

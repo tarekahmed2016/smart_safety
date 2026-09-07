@@ -94,14 +94,37 @@ class HomepagePromoBlockService
      */
     public function getActivePromoStripsForPublic(): Collection
     {
+        return $this->getActiveBlocksForPublic(HomepagePromoType::PromoStrip);
+    }
+
+    /**
+     * @return Collection<int, array<string, mixed>>
+     */
+    public function getActiveBlocksForPublic(HomepagePromoType $type): Collection
+    {
         return HomepagePromoBlock::query()
             ->with(['attachment', 'badgeAttachment'])
-            ->where('type', HomepagePromoType::PromoStrip)
+            ->where('type', $type)
             ->where('is_active', true)
             ->orderBy('ordering')
             ->get()
             ->map(fn (HomepagePromoBlock $block) => $this->mapBlockForPublic($block))
             ->values();
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function getFirstActiveBlockForPublic(HomepagePromoType $type): ?array
+    {
+        $block = HomepagePromoBlock::query()
+            ->with(['attachment', 'badgeAttachment'])
+            ->where('type', $type)
+            ->where('is_active', true)
+            ->orderBy('ordering')
+            ->first();
+
+        return $block ? $this->mapBlockForPublic($block) : null;
     }
 
     /**

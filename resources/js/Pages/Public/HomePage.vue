@@ -1,880 +1,504 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
+import { Link, useForm, usePage } from '@inertiajs/vue3'
 import { useI18n } from 'vue-i18n'
-import { useForm, usePage } from '@inertiajs/vue3'
-import { faEnvelope, faPhone, faBriefcase, faFolderOpen, faExternalLinkAlt, faGlobe, faMapMarkerAlt, faBullseye, faFlag, faUserGroup, faHandshake, faBuilding, faCertificate, faAward } from '@fortawesome/free-solid-svg-icons'
 import { resolveBilingualField } from '../../Composables/useBilingualContent.js'
-import HeroSlider from '../../Components/Public/HeroSlider.vue'
+import { plainTextFromHtml } from '../../Composables/useRichText.js'
 import RichTextContent from '../../Components/Common/RichTextContent.vue'
-import SocialLinks from '../../Components/Public/SocialLinks.vue'
-import { useSocialLinks } from '../../Composables/useSocialLinks.js'
+import PlastexLineIcon from '../../Components/Public/PlastexLineIcon.vue'
 
 const { t, locale } = useI18n()
 const page = usePage()
 
 const companyInfo = computed(() => page.props.companyInfo || {})
 const heroSlides = computed(() => page.props.heroSlides || [])
-const featureBand = computed(() => page.props.featureBand || null)
-const promoStrips = computed(() => page.props.promoStrips || [])
-const services = computed(() => page.props.services || [])
+const products = computed(() => page.props.products || [])
 const projects = computed(() => page.props.projects || [])
-const teamMembers = computed(() => page.props.teamMembers || [])
-const clients = computed(() => page.props.clients || [])
-const partners = computed(() => page.props.partners || [])
-const certificates = computed(() => page.props.certificates || [])
-const awards = computed(() => page.props.awards || [])
-
-const previewProjects = computed(() => projects.value.slice(0, 3))
-const previewTeamMembers = computed(() => teamMembers.value.slice(0, 4))
-const previewCertificates = computed(() => certificates.value.slice(0, 3))
-const previewAwards = computed(() => awards.value.slice(0, 3))
+const featureHighlights = computed(() => page.props.featureHighlights || [])
+const industries = computed(() => page.props.industries || [])
+const customManufacturing = computed(() => page.props.customManufacturing || null)
+const stats = computed(() => page.props.stats || [])
+const businessCta = computed(() => page.props.businessCta || null)
+const menuPages = computed(() => page.props.menuPages || [])
 
 const companyName = computed(() =>
-    resolveBilingualField(companyInfo.value, 'name', locale.value) || t('public.home.defaultCompanyName')
+  resolveBilingualField(companyInfo.value, 'name', locale.value) || t('public.home.defaultCompanyName')
 )
+
 const heroTitle = computed(() =>
-    resolveBilingualField(companyInfo.value, 'hero_title', locale.value) || companyName.value
+  resolveBilingualField(companyInfo.value, 'hero_title', locale.value)
+    || `${t('public.home.hero.titleLine1')}\n${t('public.home.hero.titleLine2')}`
 )
-const heroDescription = computed(() => {
-    const managed = resolveBilingualField(companyInfo.value, 'hero_description', locale.value)
-    if (managed) return managed
 
-    return companyInfo.value.name_ar || companyInfo.value.name_en
-        ? t('public.home.hero.subheadlineWithCompany', { company: companyName.value })
-        : t('public.home.hero.subheadlineFallback')
+const heroHighlight = computed(() => t('public.home.hero.highlight'))
+
+const heroTitleLines = computed(() => {
+  return heroTitle.value
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const highlight = heroHighlight.value
+      if (highlight && line.includes(highlight)) {
+        const index = line.indexOf(highlight)
+        return [
+          { text: line.slice(0, index), highlight: false },
+          { text: highlight, highlight: true },
+          { text: line.slice(index + highlight.length), highlight: false },
+        ].filter((part) => part.text)
+      }
+
+      return [{ text: line, highlight: false }]
+    })
 })
+
+const heroDescriptionHtml = computed(() =>
+  resolveBilingualField(companyInfo.value, 'hero_description', locale.value)
+)
+
+const heroDescriptionFallback = computed(() => t('public.home.hero.supporting'))
+
+const heroBackground = computed(() => {
+  const slideWithImage = heroSlides.value.find((slide) => slide.image)
+  return slideWithImage?.image || '/images/plastex/hero.jpg'
+})
+
 const aboutText = computed(() => resolveBilingualField(companyInfo.value, 'about', locale.value))
-const visionText = computed(() => resolveBilingualField(companyInfo.value, 'vision', locale.value))
-const missionText = computed(() => resolveBilingualField(companyInfo.value, 'mission', locale.value))
-const addressText = computed(() => resolveBilingualField(companyInfo.value, 'address', locale.value))
-
-const hasAboutContent = computed(() =>
-    Boolean(aboutText.value || companyInfo.value.name_ar || companyInfo.value.name_en || companyInfo.value.phone || companyInfo.value.email || companyInfo.value.logo)
-)
-const hasVisionMission = computed(() => Boolean(visionText.value || missionText.value))
-const hasContactInfo = computed(() =>
-    Boolean(companyInfo.value.phone || companyInfo.value.email || addressText.value || companyInfo.value.website)
-)
-const { socialLinksWithoutWebsite } = useSocialLinks(companyInfo)
-
-const formatProjectDate = (date) => {
-    if (!date) return null
-
-    return new Date(date).toLocaleDateString()
-}
-
-const serviceName = (service) => resolveBilingualField(service, 'name', locale.value)
-const serviceDescription = (service) =>
-    resolveBilingualField(service, 'description', locale.value) || t('public.home.services.noDescription')
-
-const projectName = (project) => resolveBilingualField(project, 'name', locale.value)
-const projectClientName = (project) => resolveBilingualField(project, 'client_name', locale.value)
-const projectDescription = (project) =>
-    resolveBilingualField(project, 'description', locale.value) || t('public.home.projects.noDescription')
-
-const memberName = (member) => resolveBilingualField(member, 'name', locale.value)
-const memberPosition = (member) => resolveBilingualField(member, 'position', locale.value)
-const memberBio = (member) =>
-    resolveBilingualField(member, 'bio', locale.value) || t('public.home.team.noBio')
-
-const clientName = (client) => resolveBilingualField(client, 'name', locale.value)
-const partnerName = (partner) => resolveBilingualField(partner, 'name', locale.value)
-
-const certificateTitle = (item) => resolveBilingualField(item, 'title', locale.value)
-const certificateIssuer = (item) => resolveBilingualField(item, 'issuer', locale.value)
-const certificateDescription = (item) => resolveBilingualField(item, 'description', locale.value)
-
-const awardTitle = (item) => resolveBilingualField(item, 'title', locale.value)
-const awardIssuer = (item) => resolveBilingualField(item, 'issuer', locale.value)
-const awardDescription = (item) => resolveBilingualField(item, 'description', locale.value)
-
-const formatIssuedDate = (date) => {
-    if (!date) return null
-
-    return new Date(date).toLocaleDateString(locale.value === 'ar' ? 'ar' : 'en')
-}
-
-const promoField = (block, field) => block ? resolveBilingualField(block, field, locale.value) : ''
-
-const featureBandLayoutClass = computed(() =>
-    featureBand.value?.layout_variant === 'content_right' ? 'is-content-right' : 'is-content-left'
+const aboutFallback = computed(() => t('public.home.about.descriptionWithCompany', { company: companyName.value }))
+const aboutImage = computed(() =>
+  customManufacturing.value?.image
+    || heroBackground.value
+    || products.value.find((item) => item.image)?.image
+    || null
 )
 
-const promoStripLayoutClass = (strip) =>
-    strip?.layout_variant === 'content_right' ? 'is-content-right' : 'is-content-left'
+const manufacturingTitle = computed(() =>
+  customManufacturing.value
+    ? resolveBilingualField(customManufacturing.value, 'title', locale.value)
+    : t('public.home.manufacturing.title')
+)
+const manufacturingDescription = computed(() =>
+  customManufacturing.value
+    ? resolveBilingualField(customManufacturing.value, 'description', locale.value)
+    : t('public.home.manufacturing.description')
+)
+const manufacturingCta = computed(() =>
+  customManufacturing.value
+    ? resolveBilingualField(customManufacturing.value, 'cta_text', locale.value) || t('public.home.manufacturing.cta')
+    : t('public.home.manufacturing.cta')
+)
+const manufacturingUrl = computed(() => customManufacturing.value?.cta_url || '#contact')
+const manufacturingImage = computed(() => customManufacturing.value?.image || aboutImage.value)
+
+const defaultFeatures = computed(() => ([
+  { icon: 'handshake', title: t('public.home.features.partnership.title'), text: t('public.home.features.partnership.text') },
+  { icon: 'experience', title: t('public.home.features.experience.title'), text: t('public.home.features.experience.text') },
+  { icon: 'flexible', title: t('public.home.features.flexible.title'), text: t('public.home.features.flexible.text') },
+  { icon: 'quality', title: t('public.home.features.quality.title'), text: t('public.home.features.quality.text') },
+]))
+
+const featureIcons = ['handshake', 'experience', 'flexible', 'quality']
+
+const displayFeatures = computed(() => {
+  if (!featureHighlights.value.length) {
+    return defaultFeatures.value
+  }
+
+  return featureHighlights.value.map((item, index) => ({
+    icon: featureIcons[index % featureIcons.length],
+    title: resolveBilingualField(item, 'title', locale.value),
+    text: plainTextFromHtml(resolveBilingualField(item, 'description', locale.value)),
+    image: item.image || null,
+  }))
+})
+
+const defaultIndustries = computed(() => ([
+  { icon: 'food', title: t('public.home.industries.items.food') },
+  { icon: 'agri', title: t('public.home.industries.items.agriculture') },
+  { icon: 'industry', title: t('public.home.industries.items.industry') },
+  { icon: 'packing', title: t('public.home.industries.items.packaging') },
+  { icon: 'home', title: t('public.home.industries.items.household') },
+  { icon: 'medical', title: t('public.home.industries.items.medical') },
+]))
+
+const industryIcons = ['food', 'agri', 'industry', 'packing', 'home', 'medical']
+
+const displayIndustries = computed(() => {
+  if (!industries.value.length) {
+    return defaultIndustries.value
+  }
+
+  return industries.value.map((item, index) => ({
+    icon: industryIcons[index % industryIcons.length],
+    title: resolveBilingualField(item, 'title', locale.value),
+    image: item.image || null,
+  }))
+})
+
+const defaultStats = computed(() => ([
+  { value: t('public.home.about.stats.export.value'), label: t('public.home.about.stats.export.label') },
+  { value: t('public.home.about.stats.products.value'), label: t('public.home.about.stats.products.label') },
+  { value: t('public.home.about.stats.clients.value'), label: t('public.home.about.stats.clients.label') },
+  { value: t('public.home.about.stats.experience.value'), label: t('public.home.about.stats.experience.label') },
+]))
+
+const displayStats = computed(() => {
+  if (!stats.value.length) {
+    return defaultStats.value
+  }
+
+  return stats.value.map((item) => ({
+    value: resolveBilingualField(item, 'title', locale.value),
+    label: plainTextFromHtml(resolveBilingualField(item, 'description', locale.value)),
+  }))
+})
+
+const productName = (product) => resolveBilingualField(product, 'name', locale.value)
+const productExcerpt = (product) =>
+  resolveBilingualField(product, 'excerpt', locale.value)
+    || t('public.home.products.noDescription')
+
+const galleryItems = computed(() => {
+  const items = []
+
+  products.value.forEach((product) => {
+    if (product.image) {
+      items.push({ src: product.image, alt: productName(product) })
+    }
+  })
+
+  projects.value.forEach((project) => {
+    if (project.image) {
+      items.push({
+        src: project.image,
+        alt: resolveBilingualField(project, 'name', locale.value) || t('public.home.gallery.imageAlt'),
+      })
+    }
+  })
+
+  heroSlides.value.forEach((slide, index) => {
+    if (slide.image) {
+      items.push({
+        src: slide.image,
+        alt: resolveBilingualField(slide, 'title', locale.value) || t('public.home.gallery.slideAlt', { number: index + 1 }),
+      })
+    }
+  })
+
+  const unique = []
+  const seen = new Set()
+  items.forEach((item) => {
+    if (!seen.has(item.src)) {
+      seen.add(item.src)
+      unique.push(item)
+    }
+  })
+
+  return unique.slice(0, 8)
+})
+
+const aboutMoreHref = computed(() => {
+  const aboutPage = menuPages.value.find((item) => item.slug === 'about')
+  return aboutPage ? route('public.page.show', { slug: aboutPage.slug }) : '#contact'
+})
+
+const contactCtaTitle = computed(() =>
+  businessCta.value
+    ? resolveBilingualField(businessCta.value, 'title', locale.value) || t('public.home.contactCta.title')
+    : t('public.home.contactCta.title')
+)
+const contactCtaText = computed(() =>
+  businessCta.value
+    ? plainTextFromHtml(resolveBilingualField(businessCta.value, 'description', locale.value)) || t('public.home.contactCta.subtitle')
+    : t('public.home.contactCta.subtitle')
+)
+const contactCtaLabel = computed(() =>
+  businessCta.value
+    ? resolveBilingualField(businessCta.value, 'cta_text', locale.value) || t('public.home.contactCta.button')
+    : t('public.home.contactCta.button')
+)
+const whatsappUrl = computed(() => companyInfo.value.whatsapp || null)
+const contactCtaUrl = computed(() => {
+  if (businessCta.value?.cta_url) return businessCta.value.cta_url
+  if (whatsappUrl.value) return whatsappUrl.value
+  return '#contact-form'
+})
 
 const contactForm = useForm({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: '',
+  name: '',
+  email: '',
+  phone: '',
+  subject: '',
+  message: '',
 })
-
 const contactFormSuccess = ref(false)
 
-const newsletterForm = useForm({
-    email: '',
-})
-
-const newsletterSuccess = ref(false)
-const newsletterAlreadySubscribed = ref(false)
-
 watch(() => page.props.flash, (flash) => {
-    if (flash?.success === 'newsletter_subscribed') {
-        newsletterSuccess.value = true
-        newsletterAlreadySubscribed.value = false
-    }
-
-    if (flash?.info === 'newsletter_already_subscribed') {
-        newsletterAlreadySubscribed.value = true
-        newsletterSuccess.value = false
-    }
+  if (flash?.success === 'contact_message_sent') {
+    contactFormSuccess.value = true
+  }
 }, { immediate: true, deep: true })
 
-const submitNewsletter = () => {
-    newsletterSuccess.value = false
-    newsletterAlreadySubscribed.value = false
-
-    newsletterForm.post(route('newsletter.store'), {
-        preserveScroll: true,
-        onSuccess: () => {
-            newsletterForm.reset()
-        },
-    })
-}
-
 const submitContactForm = () => {
-    contactFormSuccess.value = false
+  contactFormSuccess.value = false
 
-    contactForm.post(route('contact.store'), {
-        preserveScroll: true,
-        onSuccess: () => {
-            contactForm.reset()
-            contactFormSuccess.value = true
-        },
-    })
+  contactForm.post(route('contact.store'), {
+    preserveScroll: true,
+    onSuccess: () => {
+      contactForm.reset()
+      contactFormSuccess.value = true
+    },
+  })
 }
 </script>
 
 <template>
-    <HeroSlider
-        :slides="heroSlides"
-        :fallback-title="heroTitle"
-        :fallback-description="heroDescription"
-        :fallback-logo="companyInfo.logo"
-    />
+  <section id="home" class="px-hero">
+    <div
+      class="px-hero-bg has-image"
+      :style="{ backgroundImage: `url('${heroBackground}')` }"
+      role="img"
+      :aria-label="companyName"
+    ></div>
+    <div class="px-hero-overlay"></div>
+    <div class="px-container px-hero-content">
+      <h1 class="px-hero-title">
+        <span v-for="(line, lineIndex) in heroTitleLines" :key="lineIndex" class="px-hero-line">
+          <template v-for="(part, partIndex) in line" :key="`${lineIndex}-${partIndex}`">
+            <span :class="{ 'px-hero-highlight': part.highlight }">{{ part.text }}</span>
+          </template>
+        </span>
+      </h1>
+      <RichTextContent
+        v-if="heroDescriptionHtml"
+        :content="heroDescriptionHtml"
+        tag="div"
+        class="px-hero-copy"
+      />
+      <p v-else class="px-hero-copy">{{ heroDescriptionFallback }}</p>
+      <div class="px-hero-actions">
+        <a href="#contact" class="px-btn px-btn-green">
+          <svg class="px-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M22 2L11 13" />
+            <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+          </svg>
+          {{ t('public.home.hero.ctaQuote') }}
+        </a>
+        <a href="#products" class="px-btn px-btn-outline">
+          <svg class="px-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="7" height="7" rx="1" />
+          </svg>
+          {{ t('public.home.hero.ctaProducts') }}
+        </a>
+      </div>
+    </div>
+  </section>
 
-    <section v-if="featureBand" id="feature" class="public-feature-band">
-        <div class="public-container">
-            <div class="public-feature-band-inner" :class="featureBandLayoutClass">
-                <div class="public-feature-band-content">
-                    <h2 v-if="promoField(featureBand, 'title')" class="public-feature-band-title">
-                        {{ promoField(featureBand, 'title') }}
-                    </h2>
-                    <RichTextContent
-                        v-if="promoField(featureBand, 'description')"
-                        :content="promoField(featureBand, 'description')"
-                        tag="div"
-                        class="public-feature-band-text"
-                    />
-                    <a
-                        v-if="promoField(featureBand, 'cta_text') && featureBand.cta_url"
-                        :href="featureBand.cta_url"
-                        class="public-btn-dark"
-                    >
-                        {{ promoField(featureBand, 'cta_text') }}
-                    </a>
-                </div>
-                <div class="public-feature-band-visual">
-                    <img
-                        v-if="featureBand.image"
-                        :src="featureBand.image"
-                        :alt="promoField(featureBand, 'title') || companyName"
-                    />
-                    <img
-                        v-if="featureBand.badge_image"
-                        :src="featureBand.badge_image"
-                        :alt="t('public.home.featureBand.badgeAlt')"
-                        class="public-feature-band-badge"
-                    />
-                </div>
-            </div>
+  <section class="px-features" :aria-label="t('public.home.features.regionLabel')">
+    <div class="px-container px-features-grid">
+      <article v-for="feature in displayFeatures" :key="feature.title" class="px-feature">
+        <div class="px-feature-icon" aria-hidden="true">
+          <img v-if="feature.image" :src="feature.image" :alt="''" />
+          <PlastexLineIcon v-else :name="feature.icon" />
         </div>
-    </section>
+        <h2>{{ feature.title }}</h2>
+        <p>{{ feature.text }}</p>
+      </article>
+    </div>
+  </section>
 
-    <section id="newsletter" class="public-newsletter-band">
-        <div class="public-container">
-            <div class="public-newsletter-inner">
-                <div>
-                    <h2 class="public-section-title" style="margin-bottom: 0.5rem;">
-                        {{ t('public.home.newsletter.title') }}
-                    </h2>
-                    <p style="line-height: 1.7;">
-                        {{ t('public.home.newsletter.subtitle') }}
-                    </p>
-                </div>
-                <form class="public-newsletter-form" @submit.prevent="submitNewsletter">
-                    <input
-                        v-model="newsletterForm.email"
-                        type="email"
-                        required
-                        maxlength="255"
-                        class="public-newsletter-input"
-                        :placeholder="t('public.home.newsletter.emailPlaceholder')"
-                    />
-                    <button type="submit" class="public-btn-primary" :disabled="newsletterForm.processing">
-                        {{ newsletterForm.processing ? t('public.home.newsletter.submitting') : t('public.home.newsletter.submit') }}
-                    </button>
-                </form>
-            </div>
-            <p v-if="newsletterForm.errors.email" class="public-form-error" style="margin-top: 0.75rem;">
-                {{ newsletterForm.errors.email }}
-            </p>
-            <p v-if="newsletterSuccess" class="public-success" style="margin-top: 0.75rem;">
-                {{ t('public.home.newsletter.success') }}
-            </p>
-            <p v-if="newsletterAlreadySubscribed" class="public-info-banner">
-                {{ t('public.home.newsletter.alreadySubscribed') }}
-            </p>
-        </div>
-    </section>
+  <section id="products" class="px-products">
+    <div class="px-container">
+      <div class="px-section-header">
+        <h2>{{ t('public.home.products.title') }}</h2>
+      </div>
 
-    <!-- Services -->
-    <section id="services" class="public-section public-section-services">
-        <div class="public-container">
-            <div class="public-section-header">
-                <h2 class="public-section-title">
-                    {{ t('public.home.services.title') }}
-                </h2>
-                <p class="public-section-subtitle">
-                    {{ t('public.home.services.subtitle') }}
-                </p>
-            </div>
+      <div v-if="products.length" class="px-product-grid">
+        <article v-for="product in products" :key="product.slug" class="px-product-card">
+          <div class="px-product-media">
+            <img
+              v-if="product.image"
+              :src="product.image"
+              :alt="productName(product)"
+            />
+            <div v-else class="px-media-fallback" :aria-hidden="true"></div>
+          </div>
+          <div class="px-product-body">
+            <h3>{{ productName(product) }}</h3>
+            <p>{{ productExcerpt(product) }}</p>
+            <Link :href="route('public.products.show', { slug: product.slug })" class="px-text-link">
+              {{ t('public.home.products.details') }}
+            </Link>
+          </div>
+        </article>
+      </div>
+      <p v-else class="px-empty">{{ t('public.home.products.empty') }}</p>
 
-            <div v-if="services.length" class="public-promo-grid public-promo-grid--three">
-                <article
-                    v-for="(service, index) in services"
-                    :key="`${serviceName(service)}-${index}`"
-                    class="public-promo-card"
-                >
-                    <div class="public-promo-card-image">
-                        <img
-                            v-if="service.image"
-                            :src="service.image"
-                            :alt="serviceName(service)"
-                        />
-                        <font-awesome-icon v-else :icon="faBriefcase" style="font-size: 2.5rem; color: var(--sf-muted);" />
-                    </div>
-                    <div class="public-promo-card-body">
-                        <h3 class="public-promo-card-title">{{ serviceName(service) }}</h3>
-                        <div class="public-promo-card-divider"></div>
-                        <RichTextContent
-                            :content="serviceDescription(service)"
-                            tag="p"
-                            class="public-promo-card-text"
-                        />
-                        <a href="#contact" class="public-link">
-                          {{ t('public.home.services.learnMore') }}
-                        </a>
-                    </div>
-                </article>
-            </div>
+      <div class="px-section-footer">
+        <Link :href="route('public.products.index')" class="px-text-link px-text-link-lg">
+          {{ t('public.home.products.viewAll') }}
+        </Link>
+      </div>
+    </div>
+  </section>
 
-            <div v-else class="public-empty">
-                <p>{{ t('public.home.services.empty') }}</p>
-            </div>
-        </div>
-    </section>
-
-    <section v-if="partners.length" id="partners" class="public-delivery-section">
-        <div class="public-container">
-            <div class="public-section-header" style="margin-bottom: 2rem;">
-                <h2 class="public-section-title">
-                    {{ t('public.home.delivery.title') }}
-                </h2>
-                <p class="public-section-subtitle">
-                    {{ t('public.home.delivery.subtitle') }}
-                </p>
-            </div>
-            <div class="public-delivery-logos">
-                <component
-                    :is="partner.website ? 'a' : 'div'"
-                    v-for="(partner, index) in partners"
-                    :key="`${partnerName(partner)}-${index}`"
-                    :href="partner.website || undefined"
-                    :target="partner.website ? '_blank' : undefined"
-                    :rel="partner.website ? 'noopener noreferrer' : undefined"
-                    class="public-delivery-logo"
-                    :aria-label="partnerName(partner)"
-                >
-                    <img
-                        v-if="partner.logo"
-                        :src="partner.logo"
-                        :alt="partnerName(partner)"
-                    />
-                    <span v-else style="font-weight: 700; text-align: center;">{{ partnerName(partner) }}</span>
-                </component>
-            </div>
-        </div>
-    </section>
-
-    <section
-        v-for="(strip, index) in promoStrips"
-        :key="`promo-strip-${index}`"
-        class="public-promo-strip"
+  <section id="custom-manufacturing" class="px-split">
+    <div class="px-split-custom">
+      <div class="px-split-copy">
+        <div
+          class="px-split-visual"
+          :class="{ 'has-image': Boolean(manufacturingImage) }"
+          :style="manufacturingImage ? { backgroundImage: `url('${manufacturingImage}')` } : undefined"
+          role="img"
+          :aria-label="manufacturingTitle"
+        ></div>
+        <h2>{{ manufacturingTitle }}</h2>
+        <RichTextContent
+          v-if="customManufacturing && resolveBilingualField(customManufacturing, 'description', locale)"
+          :content="resolveBilingualField(customManufacturing, 'description', locale)"
+          tag="div"
+        />
+        <p v-else>{{ manufacturingDescription }}</p>
+        <a :href="manufacturingUrl" class="px-btn px-btn-green">{{ manufacturingCta }}</a>
+      </div>
+    </div>
+    <div
+      class="px-split-industries"
+      :class="{ 'has-image': Boolean(heroBackground) }"
+      :style="heroBackground ? { backgroundImage: `url('${heroBackground}')` } : undefined"
     >
-        <div class="public-promo-strip-inner" :class="promoStripLayoutClass(strip)">
-            <div class="public-promo-strip-visual">
-                <img
-                    v-if="strip.image"
-                    :src="strip.image"
-                    :alt="promoField(strip, 'title') || companyName"
-                />
-            </div>
-            <div class="public-promo-strip-content">
-                <h2 v-if="promoField(strip, 'title')" class="public-promo-strip-title">
-                    {{ promoField(strip, 'title') }}
-                </h2>
-                <RichTextContent
-                    v-if="promoField(strip, 'description')"
-                    :content="promoField(strip, 'description')"
-                    tag="div"
-                    class="public-promo-strip-text"
-                />
-                <a
-                    v-if="promoField(strip, 'cta_text') && strip.cta_url"
-                    :href="strip.cta_url"
-                    class="public-btn-primary"
-                    style="align-self: flex-start;"
-                >
-                    {{ promoField(strip, 'cta_text') }}
-                </a>
-            </div>
+      <div class="px-split-industries-inner">
+        <h2>{{ t('public.home.industries.title') }}</h2>
+        <ul class="px-industry-grid">
+          <li v-for="industry in displayIndustries" :key="industry.title">
+            <span class="px-industry-icon" aria-hidden="true">
+              <img v-if="industry.image" :src="industry.image" :alt="''" />
+              <PlastexLineIcon v-else :name="industry.icon" />
+            </span>
+            <span>{{ industry.title }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="px-about">
+    <div class="px-container px-about-grid">
+      <div class="px-about-copy">
+        <h2>{{ t('public.home.about.factoryTitle') }}</h2>
+        <RichTextContent
+          v-if="aboutText"
+          :content="aboutText"
+          tag="div"
+          class="px-about-text"
+        />
+        <p v-else class="px-about-text">{{ aboutFallback }}</p>
+
+        <div class="px-stats-grid">
+          <article v-for="stat in displayStats" :key="stat.label" class="px-stat">
+            <strong>{{ stat.value }}</strong>
+            <span>{{ stat.label }}</span>
+          </article>
         </div>
-    </section>
 
-    <!-- About -->
-    <section v-if="hasAboutContent" id="about" class="public-section public-section-white">
-        <div class="public-container">
-            <div class="public-section-header">
-                <h2 class="public-section-title">
-                    {{ t('public.home.about.title') }}
-                </h2>
-                <p class="public-section-subtitle">
-                    {{ t('public.home.about.subtitle') }}
-                </p>
-            </div>
+        <a :href="aboutMoreHref" class="px-btn px-btn-blue">{{ t('public.home.about.more') }}</a>
+      </div>
+      <div class="px-about-media">
+        <img
+          v-if="aboutImage"
+          :src="aboutImage"
+          :alt="t('public.home.about.imageAlt', { company: companyName })"
+        />
+        <div v-else class="px-media-fallback px-media-fallback-tall" :aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
 
-            <div class="public-split">
-                <div class="public-about-panel">
-                    <h3>{{ companyName }}</h3>
-                    <RichTextContent
-                        v-if="aboutText"
-                        :content="aboutText"
-                        tag="div"
-                        style="margin-top: 0.75rem;"
-                    />
-                    <p v-else style="margin-top: 0.75rem;">
-                        {{ t('public.home.about.descriptionWithCompany', { company: companyName }) }}
-                    </p>
+  <section id="gallery" class="px-gallery">
+    <div class="px-container">
+      <div class="px-section-header">
+        <h2>{{ t('public.home.gallery.title') }}</h2>
+      </div>
+      <div v-if="galleryItems.length" class="px-gallery-grid">
+        <figure v-for="item in galleryItems" :key="item.src">
+          <img :src="item.src" :alt="item.alt" />
+        </figure>
+      </div>
+      <p v-else class="px-empty">{{ t('public.home.gallery.empty') }}</p>
+    </div>
+  </section>
 
-                    <div v-if="hasVisionMission" class="public-vision-grid">
-                        <div v-if="visionText" class="public-vision-card">
-                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-                                <font-awesome-icon :icon="faBullseye" />
-                                <h4>{{ t('public.home.about.visionTitle') }}</h4>
-                            </div>
-                            <RichTextContent :content="visionText" tag="div" />
-                        </div>
-                        <div v-if="missionText" class="public-vision-card">
-                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-                                <font-awesome-icon :icon="faFlag" />
-                                <h4>{{ t('public.home.about.missionTitle') }}</h4>
-                            </div>
-                            <RichTextContent :content="missionText" tag="div" />
-                        </div>
-                    </div>
-                </div>
+  <section class="px-contact-cta">
+    <div
+      class="px-contact-cta-bg"
+      :class="{ 'has-image': Boolean(heroBackground) }"
+      :style="heroBackground ? { backgroundImage: `url('${heroBackground}')` } : undefined"
+    ></div>
+    <div class="px-container px-contact-cta-inner">
+      <h2>{{ contactCtaTitle }}</h2>
+      <p>{{ contactCtaText }}</p>
+      <a :href="contactCtaUrl" class="px-btn px-btn-green">{{ contactCtaLabel }}</a>
+    </div>
+  </section>
 
-                <div class="public-about-logo-wrap">
-                    <img
-                        v-if="companyInfo.logo"
-                        :src="companyInfo.logo"
-                        :alt="companyName"
-                    />
-                    <div v-else style="text-align: center; color: var(--sf-muted);">
-                        <div class="public-nav-logo-fallback" style="width: 6rem; height: 6rem; font-size: 2.5rem; margin: 0 auto 1rem;">
-                            {{ companyName.charAt(0).toUpperCase() }}
-                        </div>
-                        <p style="font-size: 0.875rem;">{{ t('public.home.about.logoFallback') }}</p>
-                    </div>
-                </div>
-            </div>
+  <section id="contact" class="px-contact">
+    <div class="px-container px-contact-grid">
+      <div>
+        <h2>{{ t('public.home.contact.title') }}</h2>
+        <p>{{ t('public.home.contact.subtitle') }}</p>
+        <ul class="px-contact-details">
+          <li v-if="companyInfo.phone">
+            <span>{{ t('public.home.contact.phone') }}</span>
+            <a :href="`tel:${companyInfo.phone}`" dir="ltr">{{ companyInfo.phone }}</a>
+          </li>
+          <li v-if="companyInfo.email">
+            <span>{{ t('public.home.contact.email') }}</span>
+            <a :href="`mailto:${companyInfo.email}`">{{ companyInfo.email }}</a>
+          </li>
+          <li v-if="resolveBilingualField(companyInfo, 'address', locale)">
+            <span>{{ t('public.home.contact.address') }}</span>
+            <p>{{ resolveBilingualField(companyInfo, 'address', locale) }}</p>
+          </li>
+        </ul>
+      </div>
+
+      <form id="contact-form" class="px-contact-form" @submit.prevent="submitContactForm">
+        <div>
+          <label for="contact-name">{{ t('public.home.contact.formName') }} <span aria-hidden="true">*</span></label>
+          <input id="contact-name" v-model="contactForm.name" type="text" required :placeholder="t('public.home.contact.formNamePlaceholder')" />
+          <p v-if="contactForm.errors.name" class="px-form-error">{{ contactForm.errors.name }}</p>
         </div>
-    </section>
-
-    <!-- Projects -->
-    <section v-if="projects.length" id="projects" class="public-section public-section-white">
-        <div class="public-container">
-            <div class="public-section-header">
-                <h2 class="public-section-title">
-                    {{ t('public.home.projects.title') }}
-                </h2>
-                <p class="public-section-subtitle">
-                    {{ t('public.home.projects.subtitle') }}
-                </p>
-            </div>
-
-            <div class="public-promo-grid">
-                <article
-                    v-for="(project, index) in previewProjects"
-                    :key="`${projectName(project)}-${index}`"
-                    class="public-promo-card"
-                >
-                    <div class="public-promo-card-image">
-                        <img
-                            v-if="project.image"
-                            :src="project.image"
-                            :alt="projectName(project)"
-                        />
-                        <font-awesome-icon v-else :icon="faFolderOpen" style="font-size: 2.5rem; color: var(--sf-muted);" />
-                    </div>
-                    <div class="public-promo-card-body">
-                        <h3 class="public-promo-card-title">{{ projectName(project) }}</h3>
-                        <div class="public-promo-card-divider"></div>
-                        <p v-if="projectClientName(project)" class="public-promo-card-text">
-                            {{ t('public.home.projects.clientLabel') }}: {{ projectClientName(project) }}
-                        </p>
-                        <RichTextContent
-                            :content="projectDescription(project)"
-                            tag="p"
-                            class="public-promo-card-text"
-                        />
-                        <p v-if="project.project_date" style="font-size: 0.75rem; color: var(--sf-muted); margin-top: 0.25rem;">
-                            {{ formatProjectDate(project.project_date) }}
-                        </p>
-                        <a
-                            v-if="project.project_url"
-                            :href="project.project_url"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="public-link"
-                            style="display: inline-flex; align-items: center; gap: 0.375rem; margin-top: 0.5rem;"
-                        >
-                            {{ t('public.home.projects.viewProject') }}
-                            <font-awesome-icon :icon="faExternalLinkAlt" />
-                        </a>
-                    </div>
-                </article>
-            </div>
-
-            <p v-if="projects.length > previewProjects.length" style="text-align: center; margin-top: 1.5rem;">
-                <a href="#contact" class="public-link">{{ t('public.home.projects.viewAll') }}</a>
-            </p>
+        <div class="px-form-row">
+          <div>
+            <label for="contact-email">{{ t('public.home.contact.formEmail') }}</label>
+            <input id="contact-email" v-model="contactForm.email" type="email" :placeholder="t('public.home.contact.formEmailPlaceholder')" />
+            <p v-if="contactForm.errors.email" class="px-form-error">{{ contactForm.errors.email }}</p>
+          </div>
+          <div>
+            <label for="contact-phone">{{ t('public.home.contact.formPhone') }}</label>
+            <input id="contact-phone" v-model="contactForm.phone" type="tel" :placeholder="t('public.home.contact.formPhonePlaceholder')" />
+            <p v-if="contactForm.errors.phone" class="px-form-error">{{ contactForm.errors.phone }}</p>
+          </div>
         </div>
-    </section>
-
-    <!-- Team -->
-    <section v-if="teamMembers.length" id="team" class="public-section public-section-light">
-        <div class="public-container">
-            <div class="public-section-header">
-                <h2 class="public-section-title">
-                    {{ t('public.home.team.title') }}
-                </h2>
-                <p class="public-section-subtitle">
-                    {{ t('public.home.team.subtitle') }}
-                </p>
-            </div>
-
-            <div class="public-team-grid">
-                <article
-                    v-for="(member, index) in previewTeamMembers"
-                    :key="`${memberName(member)}-${index}`"
-                    class="public-team-card"
-                >
-                    <img
-                        v-if="member.image"
-                        :src="member.image"
-                        :alt="memberName(member)"
-                        class="public-team-photo"
-                    />
-                    <div
-                        v-else
-                        class="public-team-photo"
-                        style="display: flex; align-items: center; justify-content: center; background: var(--sf-light); color: var(--sf-muted);"
-                    >
-                        <font-awesome-icon :icon="faUserGroup" />
-                    </div>
-                    <h3 style="font-weight: 700; margin-bottom: 0.25rem;">{{ memberName(member) }}</h3>
-                    <p v-if="memberPosition(member)" style="font-size: 0.875rem; font-weight: 700; color: var(--sf-text-heading); margin-bottom: 0.75rem;">
-                        {{ memberPosition(member) }}
-                    </p>
-                    <p style="font-size: 0.875rem; color: var(--sf-gray); line-height: 1.6; margin-bottom: 1rem;">
-                        <RichTextContent
-                            :content="memberBio(member)"
-                            tag="p"
-                            style="font-size: 0.875rem; color: var(--sf-gray); line-height: 1.6; margin-bottom: 1rem;"
-                        />
-                    </p>
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <a
-                            v-if="member.linkedin_url"
-                            :href="member.linkedin_url"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="public-link"
-                            style="display: inline-flex; align-items: center; justify-content: center; gap: 0.375rem;"
-                        >
-                            <font-awesome-icon :icon="faExternalLinkAlt" />
-                            {{ t('public.home.team.viewLinkedIn') }}
-                        </a>
-                        <a
-                            v-if="member.email"
-                            :href="`mailto:${member.email}`"
-                            class="public-link"
-                            style="display: inline-flex; align-items: center; justify-content: center; gap: 0.375rem; text-transform: none; letter-spacing: normal; font-size: 0.8125rem;"
-                        >
-                            <font-awesome-icon :icon="faEnvelope" />
-                            {{ member.email }}
-                        </a>
-                        <a
-                            v-if="member.phone"
-                            :href="`tel:${member.phone}`"
-                            class="public-link"
-                            style="display: inline-flex; align-items: center; justify-content: center; gap: 0.375rem; text-transform: none; letter-spacing: normal; font-size: 0.8125rem;"
-                        >
-                            <font-awesome-icon :icon="faPhone" />
-                            <span dir="ltr">{{ member.phone }}</span>
-                        </a>
-                    </div>
-                </article>
-            </div>
-
-            <p v-if="teamMembers.length > previewTeamMembers.length" style="text-align: center; margin-top: 1.5rem;">
-                <a href="#contact" class="public-link">{{ t('public.home.team.viewAll') }}</a>
-            </p>
+        <div>
+          <label for="contact-subject">{{ t('public.home.contact.formSubject') }}</label>
+          <input id="contact-subject" v-model="contactForm.subject" type="text" :placeholder="t('public.home.contact.formSubjectPlaceholder')" />
+          <p v-if="contactForm.errors.subject" class="px-form-error">{{ contactForm.errors.subject }}</p>
         </div>
-    </section>
-
-    <!-- Clients -->
-    <section v-if="clients.length" id="clients" class="public-section public-section-white">
-        <div class="public-container">
-            <div class="public-section-header">
-                <h2 class="public-section-title">
-                    {{ t('public.home.clients.title') }}
-                </h2>
-                <p class="public-section-subtitle">
-                    {{ t('public.home.clients.subtitle') }}
-                </p>
-            </div>
-
-            <div class="public-logo-grid">
-                <component
-                    :is="client.website ? 'a' : 'div'"
-                    v-for="(client, index) in clients"
-                    :key="`${clientName(client)}-${index}`"
-                    :href="client.website || undefined"
-                    :target="client.website ? '_blank' : undefined"
-                    :rel="client.website ? 'noopener noreferrer' : undefined"
-                    class="public-logo-card"
-                >
-                    <img
-                        v-if="client.logo"
-                        :src="client.logo"
-                        :alt="clientName(client)"
-                    />
-                    <font-awesome-icon v-else :icon="faBuilding" style="font-size: 2rem; color: var(--sf-muted);" />
-                    <p style="font-size: 0.875rem; font-weight: 700; text-align: center;">{{ clientName(client) }}</p>
-                </component>
-            </div>
+        <div>
+          <label for="contact-message">{{ t('public.home.contact.formMessage') }} <span aria-hidden="true">*</span></label>
+          <textarea id="contact-message" v-model="contactForm.message" rows="5" required :placeholder="t('public.home.contact.formMessagePlaceholder')"></textarea>
+          <p v-if="contactForm.errors.message" class="px-form-error">{{ contactForm.errors.message }}</p>
         </div>
-    </section>
-
-    <!-- Certificates -->
-    <section v-if="certificates.length" id="certificates" class="public-section public-section-white">
-        <div class="public-container">
-            <div class="public-section-header">
-                <h2 class="public-section-title">
-                    {{ t('public.home.certificates.title') }}
-                </h2>
-                <p class="public-section-subtitle">
-                    {{ t('public.home.certificates.subtitle') }}
-                </p>
-            </div>
-
-            <div class="public-cert-grid">
-                <article
-                    v-for="(certificate, index) in previewCertificates"
-                    :key="`${certificateTitle(certificate)}-${index}`"
-                    class="public-cert-card"
-                >
-                    <div class="public-cert-card-image">
-                        <img
-                            v-if="certificate.image"
-                            :src="certificate.image"
-                            :alt="certificateTitle(certificate)"
-                        />
-                        <font-awesome-icon v-else :icon="faCertificate" style="font-size: 2.5rem; color: var(--sf-muted);" />
-                    </div>
-                    <div class="public-cert-card-body">
-                        <h3 style="font-weight: 700; margin-bottom: 0.5rem;">{{ certificateTitle(certificate) }}</h3>
-                        <p v-if="certificateIssuer(certificate)" style="font-size: 0.875rem; font-weight: 700; margin-bottom: 0.25rem;">
-                            {{ certificateIssuer(certificate) }}
-                        </p>
-                        <p v-if="formatIssuedDate(certificate.issued_date)" style="font-size: 0.75rem; color: var(--sf-muted); margin-bottom: 0.75rem;">
-                            {{ formatIssuedDate(certificate.issued_date) }}
-                        </p>
-                        <RichTextContent
-                            v-if="certificateDescription(certificate)"
-                            :content="certificateDescription(certificate)"
-                            tag="p"
-                            style="font-size: 0.875rem; color: var(--sf-gray); line-height: 1.6; margin-bottom: 1rem;"
-                        />
-                        <a
-                            v-if="certificate.external_url"
-                            :href="certificate.external_url"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="public-link"
-                            style="display: inline-flex; align-items: center; gap: 0.375rem;"
-                        >
-                            <font-awesome-icon :icon="faExternalLinkAlt" />
-                            {{ t('public.home.certificates.viewLink') }}
-                        </a>
-                    </div>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <!-- Awards -->
-    <section v-if="awards.length" id="awards" class="public-section public-section-light">
-        <div class="public-container">
-            <div class="public-section-header">
-                <h2 class="public-section-title">
-                    {{ t('public.home.awards.title') }}
-                </h2>
-                <p class="public-section-subtitle">
-                    {{ t('public.home.awards.subtitle') }}
-                </p>
-            </div>
-
-            <div class="public-cert-grid">
-                <article
-                    v-for="(award, index) in previewAwards"
-                    :key="`${awardTitle(award)}-${index}`"
-                    class="public-cert-card"
-                >
-                    <div class="public-cert-card-image">
-                        <img
-                            v-if="award.image"
-                            :src="award.image"
-                            :alt="awardTitle(award)"
-                        />
-                        <font-awesome-icon v-else :icon="faAward" style="font-size: 2.5rem; color: var(--sf-muted);" />
-                    </div>
-                    <div class="public-cert-card-body">
-                        <h3 style="font-weight: 700; margin-bottom: 0.5rem;">{{ awardTitle(award) }}</h3>
-                        <p v-if="awardIssuer(award)" style="font-size: 0.875rem; font-weight: 700; margin-bottom: 0.25rem;">
-                            {{ awardIssuer(award) }}
-                        </p>
-                        <p v-if="formatIssuedDate(award.issued_date)" style="font-size: 0.75rem; color: var(--sf-muted); margin-bottom: 0.75rem;">
-                            {{ formatIssuedDate(award.issued_date) }}
-                        </p>
-                        <RichTextContent
-                            v-if="awardDescription(award)"
-                            :content="awardDescription(award)"
-                            tag="p"
-                            style="font-size: 0.875rem; color: var(--sf-gray); line-height: 1.6; margin-bottom: 1rem;"
-                        />
-                        <a
-                            v-if="award.external_url"
-                            :href="award.external_url"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="public-link"
-                            style="display: inline-flex; align-items: center; gap: 0.375rem;"
-                        >
-                            <font-awesome-icon :icon="faExternalLinkAlt" />
-                            {{ t('public.home.awards.viewLink') }}
-                        </a>
-                    </div>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact -->
-    <section id="contact" class="public-section public-section-services">
-        <div class="public-container">
-            <div class="public-section-header">
-                <h2 class="public-section-title">
-                    {{ t('public.home.contact.title') }}
-                </h2>
-                <p class="public-section-subtitle">
-                    {{ t('public.home.contact.subtitle') }}
-                </p>
-            </div>
-
-            <div class="public-split">
-                <div
-                    class="public-contact-shell"
-                    :style="!(hasContactInfo || socialLinksWithoutWebsite.length) ? { maxWidth: '42rem', marginInline: 'auto', width: '100%' } : undefined"
-                >
-                    <form @submit.prevent="submitContactForm">
-                        <p style="font-size: 0.875rem; margin-bottom: 1.25rem;">
-                            {{ t('public.home.contact.contactMethodHint') }}
-                        </p>
-
-                        <div v-if="contactFormSuccess" class="public-success" style="margin-bottom: 1.25rem;">
-                            {{ t('public.home.contact.messageSentSuccess') }}
-                        </div>
-
-                        <div style="margin-bottom: 1rem;">
-                            <label style="display: block; font-size: 0.875rem; margin-bottom: 0.25rem;">
-                                {{ t('public.home.contact.formName') }} *
-                            </label>
-                            <input
-                                v-model="contactForm.name"
-                                type="text"
-                                required
-                                class="public-form-input"
-                                :placeholder="t('public.home.contact.formNamePlaceholder')"
-                            />
-                            <p v-if="contactForm.errors.name" class="public-form-error">{{ contactForm.errors.name }}</p>
-                        </div>
-
-                        <div style="display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1rem;">
-                            <div>
-                                <label style="display: block; font-size: 0.875rem; margin-bottom: 0.25rem;">
-                                    {{ t('public.home.contact.formEmail') }}
-                                </label>
-                                <input
-                                    v-model="contactForm.email"
-                                    type="email"
-                                    class="public-form-input"
-                                    :placeholder="t('public.home.contact.formEmailPlaceholder')"
-                                />
-                                <p v-if="contactForm.errors.email" class="public-form-error">{{ contactForm.errors.email }}</p>
-                            </div>
-                            <div>
-                                <label style="display: block; font-size: 0.875rem; margin-bottom: 0.25rem;">
-                                    {{ t('public.home.contact.formPhone') }}
-                                </label>
-                                <input
-                                    v-model="contactForm.phone"
-                                    type="text"
-                                    dir="ltr"
-                                    class="public-form-input"
-                                    :placeholder="t('public.home.contact.formPhonePlaceholder')"
-                                />
-                                <p v-if="contactForm.errors.phone" class="public-form-error">{{ contactForm.errors.phone }}</p>
-                            </div>
-                        </div>
-
-                        <div style="margin-bottom: 1rem;">
-                            <label style="display: block; font-size: 0.875rem; margin-bottom: 0.25rem;">
-                                {{ t('public.home.contact.formSubject') }}
-                            </label>
-                            <input
-                                v-model="contactForm.subject"
-                                type="text"
-                                class="public-form-input"
-                                :placeholder="t('public.home.contact.formSubjectPlaceholder')"
-                            />
-                            <p v-if="contactForm.errors.subject" class="public-form-error">{{ contactForm.errors.subject }}</p>
-                        </div>
-
-                        <div style="margin-bottom: 1.25rem;">
-                            <label style="display: block; font-size: 0.875rem; margin-bottom: 0.25rem;">
-                                {{ t('public.home.contact.formMessage') }} *
-                            </label>
-                            <textarea
-                                v-model="contactForm.message"
-                                rows="5"
-                                required
-                                class="public-form-textarea"
-                                :placeholder="t('public.home.contact.formMessagePlaceholder')"
-                            ></textarea>
-                            <p v-if="contactForm.errors.message" class="public-form-error">{{ contactForm.errors.message }}</p>
-                        </div>
-
-                        <button
-                            type="submit"
-                            :disabled="contactForm.processing"
-                            class="public-btn-primary"
-                            style="width: 100%;"
-                        >
-                            {{ contactForm.processing ? t('public.home.contact.formSending') : t('public.home.contact.formSend') }}
-                        </button>
-                    </form>
-                </div>
-
-                <div v-if="hasContactInfo || socialLinksWithoutWebsite.length">
-                    <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
-                        <a
-                            v-if="companyInfo.phone"
-                            :href="`tel:${companyInfo.phone}`"
-                            class="public-info-card"
-                        >
-                            <div class="public-info-icon">
-                                <font-awesome-icon :icon="faPhone" />
-                            </div>
-                            <div>
-                                <p style="font-size: 0.875rem; color: var(--sf-muted); margin-bottom: 0.25rem;">{{ t('public.home.contact.phone') }}</p>
-                                <p style="font-weight: 700;"><span dir="ltr">{{ companyInfo.phone }}</span></p>
-                            </div>
-                        </a>
-
-                        <a
-                            v-if="companyInfo.email"
-                            :href="`mailto:${companyInfo.email}`"
-                            class="public-info-card"
-                        >
-                            <div class="public-info-icon">
-                                <font-awesome-icon :icon="faEnvelope" />
-                            </div>
-                            <div style="min-width: 0;">
-                                <p style="font-size: 0.875rem; color: var(--sf-muted); margin-bottom: 0.25rem;">{{ t('public.home.contact.email') }}</p>
-                                <p style="font-weight: 700; word-break: break-all;">{{ companyInfo.email }}</p>
-                            </div>
-                        </a>
-
-                        <div v-if="addressText" class="public-info-card">
-                            <div class="public-info-icon">
-                                <font-awesome-icon :icon="faMapMarkerAlt" />
-                            </div>
-                            <div>
-                                <p style="font-size: 0.875rem; color: var(--sf-muted); margin-bottom: 0.25rem;">{{ t('public.home.contact.address') }}</p>
-                                <p style="font-weight: 700; white-space: pre-line;">{{ addressText }}</p>
-                            </div>
-                        </div>
-
-                        <a
-                            v-if="companyInfo.website"
-                            :href="companyInfo.website"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="public-info-card"
-                        >
-                            <div class="public-info-icon">
-                                <font-awesome-icon :icon="faGlobe" />
-                            </div>
-                            <div style="min-width: 0;">
-                                <p style="font-size: 0.875rem; color: var(--sf-muted); margin-bottom: 0.25rem;">{{ t('public.home.contact.website') }}</p>
-                                <p style="font-weight: 700; word-break: break-all;">{{ companyInfo.website }}</p>
-                            </div>
-                        </a>
-                    </div>
-
-                    <SocialLinks
-                        :company-info="companyInfo"
-                        variant="contact"
-                        :include-website="false"
-                    />
-                </div>
-            </div>
-        </div>
-    </section>
+        <p v-if="contactForm.errors.contact_method" class="px-form-error">{{ contactForm.errors.contact_method }}</p>
+        <button type="submit" class="px-btn px-btn-green" :disabled="contactForm.processing">
+          {{ contactForm.processing ? t('public.home.contact.formSending') : t('public.home.contact.formSend') }}
+        </button>
+        <p v-if="contactFormSuccess" class="px-form-success">{{ t('public.home.contact.messageSentSuccess') }}</p>
+      </form>
+    </div>
+  </section>
 </template>

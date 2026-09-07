@@ -4,8 +4,10 @@ namespace App\Services;
 
 use App\Enums\CertificateAwardType;
 use App\Enums\ClientPartnerType;
+use App\Enums\HomepagePromoType;
 use App\Models\CertificateAward;
 use App\Models\ClientPartner;
+use App\Models\Product;
 use App\Models\Project;
 use App\Models\Service;
 use App\Models\TeamMember;
@@ -18,6 +20,7 @@ class PublicHomeService
         public CompanyInfoService $companyInfoService,
         public HeroSlideService $heroSlideService,
         public HomepagePromoBlockService $homepagePromoBlockService,
+        public ProductService $productService,
     ) {}
 
     /**
@@ -91,6 +94,72 @@ class PublicHomeService
     public function getActivePromoStrips(): Collection
     {
         return $this->homepagePromoBlockService->getActivePromoStripsForPublic();
+    }
+
+    /**
+     * @return Collection<int, array<string, mixed>>
+     */
+    public function getActiveFeatureHighlights(): Collection
+    {
+        return $this->homepagePromoBlockService->getActiveBlocksForPublic(HomepagePromoType::FeatureHighlight);
+    }
+
+    /**
+     * @return Collection<int, array<string, mixed>>
+     */
+    public function getActiveIndustries(): Collection
+    {
+        return $this->homepagePromoBlockService->getActiveBlocksForPublic(HomepagePromoType::Industry);
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function getActiveCustomManufacturing(): ?array
+    {
+        return $this->homepagePromoBlockService->getFirstActiveBlockForPublic(HomepagePromoType::CustomManufacturing);
+    }
+
+    /**
+     * @return Collection<int, array<string, mixed>>
+     */
+    public function getActiveStats(): Collection
+    {
+        return $this->homepagePromoBlockService->getActiveBlocksForPublic(HomepagePromoType::Stat);
+    }
+
+    /**
+     * @return Collection<int, array<string, mixed>>
+     */
+    public function getActiveProducts(?int $limit = null): Collection
+    {
+        $query = Product::query()
+            ->with('attachment')
+            ->where('is_active', true)
+            ->orderBy('ordering');
+
+        if ($limit !== null) {
+            $query->limit($limit);
+        }
+
+        return $query
+            ->get()
+            ->map(fn (Product $product) => $this->productService->mapForPublic($product))
+            ->values();
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function getPublicProductBySlug(string $slug): ?array
+    {
+        $product = Product::query()
+            ->with('attachment')
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->first();
+
+        return $product ? $this->productService->mapForPublic($product) : null;
     }
 
     /**

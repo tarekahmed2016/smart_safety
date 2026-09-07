@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\CompanyInfo;
+use App\Models\Product;
 use App\Models\Project;
 use App\Models\Service;
 use App\Models\User;
@@ -16,6 +17,7 @@ test('homepage is accessible to guests', function () {
             ->component('Public/HomePage', false)
             ->has('companyInfo')
             ->has('services')
+            ->has('products')
             ->has('projects')
             ->has('teamMembers')
             ->has('clients')
@@ -42,8 +44,8 @@ test('homepage works when company info does not exist', function () {
     $this->get(route('home'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->where('companyInfo.name_ar', '')
-            ->where('companyInfo.name_en', '')
+            ->where('companyInfo.name_ar', 'بلاستكس')
+            ->where('companyInfo.name_en', 'PLASTEX')
             ->where('companyInfo.phone', '')
             ->where('companyInfo.email', '')
             ->where('companyInfo.logo', null));
@@ -54,6 +56,7 @@ test('homepage works when no services exist', function () {
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->where('services', [])
+            ->where('products', [])
             ->where('projects', [])
             ->where('teamMembers', [])
             ->where('clients', [])
@@ -228,4 +231,50 @@ test('authenticated users can still view the public homepage', function () {
         ->get(route('home'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page->component('Public/HomePage', false));
+});
+
+test('homepage shows only active products up to five in ordering', function () {
+    Storage::fake('public');
+
+    $first = Product::factory()->create([
+        'name_ar' => 'المنتج الأول',
+        'name_en' => 'First Product',
+        'slug' => 'first-product',
+        'ordering' => 1,
+        'is_active' => true,
+    ]);
+    Product::factory()->create([
+        'name_en' => 'Second Product',
+        'slug' => 'second-product',
+        'ordering' => 2,
+        'is_active' => true,
+    ]);
+    Product::factory()->inactive()->create([
+        'name_en' => 'Hidden Product',
+        'slug' => 'hidden-product',
+        'ordering' => 0,
+    ]);
+
+    foreach (range(3, 7) as $number) {
+        Product::factory()->create([
+            'name_en' => "Product {$number}",
+            'slug' => "product-{$number}",
+            'ordering' => $number,
+            'is_active' => true,
+        ]);
+    }
+
+    $path = UploadedFile::fake()->image('first.jpg')->store('products', 'public');
+    $first->attachment()->create(['name' => 'first.jpg', 'path' => $path]);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('products', 5)
+            ->where('products.0.name_en', 'First Product')
+            ->where('products.0.slug', 'first-product')
+            ->where('products.0.image', asset('storage/'.$path))
+            ->missing('products.0.id')
+            ->missing('products.0.ordering')
+            ->missing('products.0.is_active'));
 });

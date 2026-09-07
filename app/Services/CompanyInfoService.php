@@ -153,7 +153,18 @@ class CompanyInfoService
     public function emptyDefaults(): array
     {
         return [
-            ...array_fill_keys(array_diff(self::STRING_FIELDS, ThemeColor::fieldNames()), ''),
+            'name_ar' => 'بلاستكس',
+            'name_en' => 'PLASTEX',
+            'hero_title_ar' => "حلول بلاستيكية\nتصنع مستقبل أفضل",
+            'hero_title_en' => "Plastic solutions\nthat build a better future",
+            'hero_description_ar' => 'نختص في تصنيع المنتجات البلاستيكية وفق متطلبات العملاء، بمعايير جودة عالية وإنتاج مرن يلبي احتياجات القطاعات المختلفة.',
+            'hero_description_en' => 'We specialize in manufacturing plastic products according to customer requirements, with high quality standards and flexible production for diverse sectors.',
+            'about_ar' => 'بلاستكس مصنع متخصص في تصنيع المنتجات البلاستيكية وفق متطلبات العملاء، مع خبرة صناعية واسعة وقدرة إنتاجية مرنة.',
+            'about_en' => 'PLASTEX is a specialized plastic manufacturing factory that delivers customer-driven products with broad industrial experience and flexible production capacity.',
+            ...array_fill_keys(array_diff(self::STRING_FIELDS, ThemeColor::fieldNames(), [
+                'name_ar', 'name_en', 'hero_title_ar', 'hero_title_en',
+                'hero_description_ar', 'hero_description_en', 'about_ar', 'about_en',
+            ]), ''),
             ...ThemeColor::DEFAULTS,
         ];
     }

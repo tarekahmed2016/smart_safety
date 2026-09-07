@@ -1,16 +1,9 @@
 <script setup>
-import { computed, ref } from 'vue'
-import { Link } from '@inertiajs/vue3'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { usePage } from '@inertiajs/vue3'
 import { resolveBilingualField } from '../../Composables/useBilingualContent.js'
 import { usePublicNavLinks } from '../../Composables/usePublicNavLinks.js'
-import { faEnvelope, faPhone } from '@fortawesome/free-solid-svg-icons'
-import SocialLinks from './SocialLinks.vue'
-
-/** Temporary visibility toggles — set true to restore public top-bar items. */
-const SHOW_PUBLIC_STAFF_LOGIN = false
-const SHOW_PUBLIC_BUSINESS_CTA = false
 
 const { t, locale } = useI18n()
 const page = usePage()
@@ -22,18 +15,23 @@ const businessCta = computed(() => page.props.businessCta || null)
 const companyName = computed(() =>
   resolveBilingualField(companyInfo.value, 'name', locale.value) || t('public.home.defaultCompanyName')
 )
-const logo = computed(() => companyInfo.value.logo || companyInfo.value.attachment?.asset_path || null)
+const logo = computed(() => companyInfo.value.logo || companyInfo.value.attachment?.asset_path || '/images/plastex/logo.svg')
 
-const businessCtaLabel = computed(() => {
+const quoteLabel = computed(() => {
   const text = businessCta.value ? resolveBilingualField(businessCta.value, 'cta_text', locale.value) : ''
-  if (text) return text
-
-  return t('public.home.nav.businessCtaFallback')
+  return text || t('public.home.nav.quoteRequest')
 })
 
-const businessCtaUrl = computed(() => businessCta.value?.cta_url || '#contact')
+const quoteUrl = computed(() => {
+  if (businessCta.value?.cta_url) return businessCta.value.cta_url
+  return isHomePage.value ? '#contact' : `${route('home')}#contact`
+})
 
 const isMenuOpen = ref(false)
+
+watch(() => page.url, () => {
+  isMenuOpen.value = false
+})
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
@@ -51,161 +49,95 @@ const setLanguage = (code) => {
 }
 
 const homeHref = computed(() => (isHomePage.value ? '#home' : route('home')))
+const otherLocaleShortLabel = computed(() => (
+  locale.value === 'ar' ? t('public.home.nav.switchToEnglishShort') : t('public.home.nav.switchToArabicShort')
+))
+const otherLocaleCode = computed(() => (locale.value === 'ar' ? 'en' : 'ar'))
 </script>
 
 <template>
-  <header>
-    <div class="public-top-bar">
-      <div class="public-top-bar-inner">
-        <div class="public-top-bar-group">
-          <SocialLinks :company-info="companyInfo" variant="top-bar" :include-website="false" />
+  <header class="px-header">
+    <nav class="px-nav" :aria-label="t('public.home.nav.main')">
+      <div class="px-nav-inner">
+        <a :href="homeHref" class="px-nav-brand" @click="closeMenu">
+          <img
+            :src="logo"
+            :alt="companyName"
+            class="px-nav-logo"
+          />
+        </a>
 
+        <div class="px-nav-links" role="list">
           <a
-            v-if="companyInfo.phone"
-            :href="`tel:${companyInfo.phone}`"
-            class="public-top-contact-link"
+            v-for="link in navLinks"
+            :key="link.key"
+            :href="link.href"
+            role="listitem"
           >
-            <font-awesome-icon :icon="faPhone" />
-            <span dir="ltr">{{ companyInfo.phone }}</span>
-          </a>
-
-          <a
-            v-if="companyInfo.email"
-            :href="`mailto:${companyInfo.email}`"
-            class="public-top-contact-link"
-          >
-            <font-awesome-icon :icon="faEnvelope" />
-            <span dir="ltr">{{ companyInfo.email }}</span>
+            {{ link.label }}
           </a>
         </div>
-      </div>
-    </div>
 
-    <nav class="public-nav-bar">
-      <div class="public-nav-inner">
+        <div class="px-nav-actions">
+          <button
+            type="button"
+            class="px-lang-switch"
+            :aria-label="t('public.home.nav.selectLanguage')"
+            @click="setLanguage(otherLocaleCode)"
+          >
+            <svg class="px-lang-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18" />
+            </svg>
+            <span>{{ otherLocaleShortLabel }}</span>
+          </button>
+          <a :href="quoteUrl" class="px-btn px-btn-blue px-nav-cta">
+            <svg class="px-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z" />
+              <path d="M14 3v6h6M9 13h6M9 17h4" />
+            </svg>
+            {{ quoteLabel }}
+          </a>
+        </div>
+
         <button
           type="button"
-          class="public-nav-toggle"
+          class="px-nav-toggle"
           :class="{ open: isMenuOpen }"
-          @click="toggleMenu"
           :aria-label="t('public.home.nav.toggleMenu')"
           :aria-expanded="isMenuOpen"
+          @click="toggleMenu"
         >
           <span></span>
           <span></span>
           <span></span>
         </button>
-
-        <div class="public-nav-brand">
-          <a :href="homeHref" class="flex items-center gap-3 min-w-0" @click="closeMenu">
-            <img
-              v-if="logo"
-              :src="logo"
-              :alt="companyName"
-              class="public-nav-logo"
-            />
-            <div v-else class="public-nav-logo-fallback">
-              {{ companyName.charAt(0).toUpperCase() }}
-            </div>
-            <span class="public-nav-brand-name hidden md:inline truncate max-w-[12rem] lg:max-w-sm xl:max-w-md">
-              {{ companyName }}
-            </span>
-          </a>
-        </div>
-
-        <div class="public-nav-links">
-          <a
-            v-for="link in navLinks"
-            :key="link.key"
-            :href="link.href"
-          >
-            {{ link.label }}
-          </a>
-
-          <div class="public-language-flags public-nav-language-flags" role="group" :aria-label="t('public.home.nav.selectLanguage')">
-            <button
-              type="button"
-              class="public-language-flag"
-              :class="{ 'is-active': locale === 'ar' }"
-              aria-label="العربية"
-              title="العربية"
-              @click="setLanguage('ar')"
-            >
-              🇴🇲
-            </button>
-            <button
-              type="button"
-              class="public-language-flag"
-              :class="{ 'is-active': locale === 'en' }"
-              aria-label="English"
-              title="English"
-              @click="setLanguage('en')"
-            >
-              🇬🇧
-            </button>
-          </div>
-        </div>
       </div>
 
-      <Transition
-        enter-active-class="transition duration-200 ease-out"
-        enter-from-class="opacity-0 -translate-y-2"
-        enter-to-class="opacity-100 translate-y-0"
-        leave-active-class="transition duration-150 ease-in"
-        leave-from-class="opacity-100 translate-y-0"
-        leave-to-class="opacity-0 -translate-y-2"
-      >
-        <div v-if="isMenuOpen" class="public-mobile-nav lg:hidden">
-          <div class="public-container py-3">
-            <a
-              v-for="link in navLinks"
-              :key="link.key"
-              :href="link.href"
-              @click="closeMenu"
-            >
-              {{ link.label }}
-            </a>
-            <a
-              v-if="SHOW_PUBLIC_BUSINESS_CTA"
-              :href="businessCtaUrl"
-              class="public-cta-btn mt-3"
-              @click="closeMenu"
-            >
-              {{ businessCtaLabel }}
-            </a>
-            <Link
-              v-if="SHOW_PUBLIC_STAFF_LOGIN"
-              :href="route('login')"
-              class="public-staff-login-link mt-3"
-              @click="closeMenu"
-            >
-              {{ t('public.home.nav.staffLogin') }}
-            </Link>
-            <div class="public-language-flags mt-3">
-              <button
-                type="button"
-                class="public-language-flag"
-                :class="{ 'is-active': locale === 'ar' }"
-                aria-label="العربية"
-                title="العربية"
-                @click="setLanguage('ar')"
-              >
-                🇴🇲
-              </button>
-              <button
-                type="button"
-                class="public-language-flag"
-                :class="{ 'is-active': locale === 'en' }"
-                aria-label="English"
-                title="English"
-                @click="setLanguage('en')"
-              >
-                🇬🇧
-              </button>
-            </div>
-          </div>
-        </div>
-      </Transition>
+      <div v-if="isMenuOpen" class="px-mobile-nav">
+        <a
+          v-for="link in navLinks"
+          :key="`mobile-${link.key}`"
+          :href="link.href"
+          @click="closeMenu"
+        >
+          {{ link.label }}
+        </a>
+        <button
+          type="button"
+          class="px-lang-switch px-lang-switch--mobile"
+          @click="setLanguage(otherLocaleCode)"
+        >
+          <svg class="px-lang-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18" />
+          </svg>
+          <span>{{ otherLocaleShortLabel }}</span>
+        </button>
+        <a :href="quoteUrl" class="px-btn px-btn-blue" @click="closeMenu">
+          {{ quoteLabel }}
+        </a>
+      </div>
     </nav>
   </header>
 </template>

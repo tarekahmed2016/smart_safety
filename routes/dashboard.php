@@ -9,6 +9,7 @@ use App\Http\Controllers\HeroSlideController;
 use App\Http\Controllers\HomepagePromoBlockController;
 use App\Http\Controllers\NewsletterSubscriberController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RichTextImageController;
 use App\Http\Controllers\RoleController;
@@ -33,6 +34,8 @@ Route::middleware(['admin'])->group(function () {
     Route::resource('/roles', RoleController::class)->except(['show', 'create', 'edit']);
     Route::resource('/services', ServiceController::class)->except(['show', 'create', 'edit']);
     Route::get('/services-next-ordering', [ServiceController::class, 'getNextOrdering'])->name('services.next-ordering');
+    Route::resource('/products', ProductController::class)->except(['show', 'create', 'edit']);
+    Route::get('/products-next-ordering', [ProductController::class, 'getNextOrdering'])->name('products.next-ordering');
     Route::resource('/pages', PageController::class)->except(['show', 'create', 'edit']);
     Route::post('/rich-text/images', [RichTextImageController::class, 'store'])->name('rich-text-images.store');
     Route::resource('/projects', ProjectController::class)->except(['show', 'create', 'edit']);

@@ -33,7 +33,7 @@ watch(customJs, injectCustomJs)
 </script>
 
 <template>
-    <div class="min-h-screen flex flex-col public-layout" :style="themeStyle">
+    <div class="min-h-screen flex flex-col public-layout plastex-site" :style="themeStyle">
         <component :is="'style'" v-if="customCss">{{ customCss }}</component>
         <FlashMessage />
         <PublicNavbar />

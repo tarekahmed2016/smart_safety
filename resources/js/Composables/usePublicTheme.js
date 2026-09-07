@@ -1,11 +1,11 @@
 const DEFAULTS = {
-  theme_primary_color: '#FFD400',
-  theme_dark_color: '#111111',
-  theme_heading_text_color: '#111111',
-  theme_body_text_color: '#111111',
-  theme_muted_text_color: '#666666',
-  theme_nav_text_color: '#FFFFFF',
-  theme_nav_hover_text_color: '#FFD400',
+  theme_primary_color: '#7AC142',
+  theme_dark_color: '#0B1F3A',
+  theme_heading_text_color: '#0B1F3A',
+  theme_body_text_color: '#334155',
+  theme_muted_text_color: '#64748B',
+  theme_nav_text_color: '#0B1F3A',
+  theme_nav_hover_text_color: '#1B4F9C',
   theme_hero_text_color: '#FFFFFF',
   theme_on_dark_text_color: '#FFFFFF',
 }
@@ -25,17 +25,16 @@ function resolveColor(color, fallback) {
 }
 
 export function resolvePublicTheme(companyInfo) {
-  const primary = resolveColor(companyInfo?.theme_primary_color, DEFAULTS.theme_primary_color)
   const dark = resolveColor(companyInfo?.theme_dark_color, DEFAULTS.theme_dark_color)
 
   return {
-    theme_primary_color: primary,
+    theme_primary_color: resolveColor(companyInfo?.theme_primary_color, DEFAULTS.theme_primary_color),
     theme_dark_color: dark,
     theme_heading_text_color: resolveColor(companyInfo?.theme_heading_text_color, DEFAULTS.theme_heading_text_color),
     theme_body_text_color: resolveColor(companyInfo?.theme_body_text_color, DEFAULTS.theme_body_text_color),
     theme_muted_text_color: resolveColor(companyInfo?.theme_muted_text_color, DEFAULTS.theme_muted_text_color),
     theme_nav_text_color: resolveColor(companyInfo?.theme_nav_text_color, DEFAULTS.theme_nav_text_color),
-    theme_nav_hover_text_color: resolveColor(companyInfo?.theme_nav_hover_text_color, primary),
+    theme_nav_hover_text_color: resolveColor(companyInfo?.theme_nav_hover_text_color, DEFAULTS.theme_nav_hover_text_color),
     theme_hero_text_color: resolveColor(companyInfo?.theme_hero_text_color, DEFAULTS.theme_hero_text_color),
     theme_on_dark_text_color: resolveColor(companyInfo?.theme_on_dark_text_color, DEFAULTS.theme_on_dark_text_color),
   }

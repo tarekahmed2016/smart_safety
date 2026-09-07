@@ -12,6 +12,10 @@ test('services table uses bilingual content columns', function () {
         ->and(Schema::hasColumn('services', 'description'))->toBeFalse();
 });
 
+test('products table uses bilingual content columns', function () {
+    expect(Schema::hasColumns('products', ['name_ar', 'name_en', 'slug', 'description_ar', 'description_en']))->toBeTrue();
+});
+
 test('company info table uses bilingual name columns', function () {
     expect(Schema::hasColumns('company_info', ['name_ar', 'name_en']))->toBeTrue()
         ->and(Schema::hasColumn('company_info', 'name'))->toBeFalse()

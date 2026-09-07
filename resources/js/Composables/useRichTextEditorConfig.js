@@ -37,13 +37,12 @@ import {
 import { csrfToken } from './useRichText.js'
 
 const FONT_COLOR_PALETTE = [
-  { color: '#111111', label: 'Black' },
+  { color: '#0B1F3A', label: 'Navy' },
+  { color: '#1B4F9C', label: 'Royal Blue' },
+  { color: '#7AC142', label: 'Green' },
   { color: '#4B5563', label: 'Dark Gray' },
   { color: '#FFFFFF', label: 'White', hasBorder: true },
-  { color: '#FFD400', label: 'Seven Fries Yellow' },
-  { color: '#2563EB', label: 'Blue' },
   { color: '#DC2626', label: 'Red' },
-  { color: '#059669', label: 'Green' },
 ]
 
 export function createRichTextEditorConfig({ placeholder = '' } = {}) {

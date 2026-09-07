@@ -70,7 +70,7 @@ const imageRequired = computed(() => {
   return ['feature_band', 'promo_strip'].includes(form.type)
 })
 
-const showMainImage = computed(() => ['feature_band', 'promo_strip'].includes(form.type))
+const showMainImage = computed(() => ['feature_band', 'promo_strip', 'custom_manufacturing', 'industry'].includes(form.type))
 const showBadgeImage = computed(() => form.type === 'feature_band')
 
 const typeLabel = (promoType) => locale.value === 'ar' ? promoType.label : promoType.name

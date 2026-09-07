@@ -4,7 +4,7 @@ import Navbar from '../Components/Layout/Dashboard/Navbar.vue'
 import { useSidebar } from '../Composables/Dashboard/useSidebar.js'
 import CustomCursor from '../Components/Common/CustomCursor.vue'
 import FlashMessage from '../Components/Common/FlashMessage.vue'
-import { faCog, faUsers, faHome, faUserShield, faBuilding, faBriefcase, faFolderOpen, faUserGroup, faHandshake, faAward, faEnvelope, faImages, faBullhorn, faNewspaper, faFileLines, faPalette, faCode } from '@fortawesome/free-solid-svg-icons'
+import { faCog, faUsers, faHome, faUserShield, faBuilding, faBriefcase, faBoxOpen, faFolderOpen, faUserGroup, faHandshake, faAward, faEnvelope, faImages, faBullhorn, faNewspaper, faFileLines, faPalette, faCode } from '@fortawesome/free-solid-svg-icons'
 import { useI18n } from 'vue-i18n'
 import { computed } from 'vue'
 import { usePage } from '@inertiajs/vue3'
@@ -40,6 +40,11 @@ const menuItems = computed(() => {
                 label: t('sidebar.services'),
                 icon: faBriefcase,
                 route: route('services.index'),
+            },
+            {
+                label: t('sidebar.products'),
+                icon: faBoxOpen,
+                route: route('products.index'),
             },
             {
                 label: t('sidebar.projects'),

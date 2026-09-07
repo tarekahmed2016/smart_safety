@@ -6,6 +6,7 @@ use App\Enums\CertificateAwardType;
 use App\Enums\ClientPartnerType;
 use App\Models\CertificateAward;
 use App\Models\ClientPartner;
+use App\Models\Product;
 use App\Models\Project;
 use App\Models\TeamMember;
 
@@ -20,6 +21,8 @@ class PublicNavService
     {
         return [
             'hasFeatureBand' => $this->publicHomeService->getActiveFeatureBand() !== null,
+            'hasProducts' => Product::query()->where('is_active', true)->exists(),
+            'hasCustomManufacturing' => $this->publicHomeService->getActiveCustomManufacturing() !== null,
             'hasProjects' => Project::query()->where('is_active', true)->exists(),
             'hasTeamMembers' => TeamMember::query()->where('is_active', true)->exists(),
             'hasClients' => ClientPartner::query()

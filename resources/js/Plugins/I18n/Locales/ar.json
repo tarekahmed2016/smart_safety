@@ -41,6 +41,7 @@
     "settings": "الإعدادات",
     "roles": "الأدوار",
     "services": "الخدمات",
+    "products": "المنتجات",
     "projects": "المشاريع",
     "teamMembers": "أعضاء الفريق",
     "clientsPartners": "العملاء والشركاء",
@@ -178,20 +179,20 @@
       "whatsappLabel": "واتساب",
       "whatsappPlaceholder": "https://wa.me/...",
       "themeHelp": "تحكم في ألوان التمييز/الخلفية وجميع ألوان النصوص العامة: العناوين، النص الأساسي، روابط القائمة، نص البطل، والتذييل/الأقسام الداكنة.",
-      "themePrimaryLabel": "لون التمييز (الأصفر)",
-      "themePrimaryPlaceholder": "#FFD400",
-      "themeDarkLabel": "لون الخلفية الداكنة (الأسود)",
-      "themeDarkPlaceholder": "#111111",
+      "themePrimaryLabel": "لون التمييز (الأخضر)",
+      "themePrimaryPlaceholder": "#7AC142",
+      "themeDarkLabel": "لون الخلفية الداكنة (الكحلي)",
+      "themeDarkPlaceholder": "#0B1F3A",
       "themeHeadingTextLabel": "العناوين الرئيسية",
-      "themeHeadingTextPlaceholder": "#111111",
+      "themeHeadingTextPlaceholder": "#0B1F3A",
       "themeBodyTextLabel": "النص الأساسي",
-      "themeBodyTextPlaceholder": "#111111",
+      "themeBodyTextPlaceholder": "#334155",
       "themeMutedTextLabel": "النص الثانوي / الباهت",
       "themeMutedTextPlaceholder": "#666666",
       "themeNavTextLabel": "نص روابط القائمة",
-      "themeNavTextPlaceholder": "#FFFFFF",
+      "themeNavTextPlaceholder": "#0B1F3A",
       "themeNavHoverTextLabel": "لون التمرير على القائمة",
-      "themeNavHoverTextPlaceholder": "#FFD400",
+      "themeNavHoverTextPlaceholder": "#1B4F9C",
       "themeHeroTextLabel": "نص شرائح البطل",
       "themeHeroTextPlaceholder": "#FFFFFF",
       "themeOnDarkTextLabel": "نص الأقسام الداكنة والتذييل",
@@ -221,20 +222,20 @@
     },
     "form": {
       "help": "تحكم في ألوان الخلفية وجميع ألوان النصوص العامة: العناوين، النص الأساسي، روابط القائمة، نص البطل، والتذييل والأقسام الداكنة.",
-      "primaryLabel": "اللون الأساسي (أصفر)",
-      "primaryPlaceholder": "#FFD400",
-      "darkLabel": "لون الخلفية الداكنة (أسود)",
-      "darkPlaceholder": "#111111",
+      "primaryLabel": "اللون الأساسي (أخضر)",
+      "primaryPlaceholder": "#7AC142",
+      "darkLabel": "لون الخلفية الداكنة (كحلي)",
+      "darkPlaceholder": "#0B1F3A",
       "headingTextLabel": "العناوين الرئيسية",
-      "headingTextPlaceholder": "#111111",
+      "headingTextPlaceholder": "#0B1F3A",
       "bodyTextLabel": "النص الأساسي",
-      "bodyTextPlaceholder": "#111111",
+      "bodyTextPlaceholder": "#334155",
       "mutedTextLabel": "النص الثانوي / الباهت",
       "mutedTextPlaceholder": "#666666",
       "navTextLabel": "نص روابط القائمة",
-      "navTextPlaceholder": "#FFFFFF",
+      "navTextPlaceholder": "#0B1F3A",
       "navHoverTextLabel": "لون التمرير على القائمة",
-      "navHoverTextPlaceholder": "#FFD400",
+      "navHoverTextPlaceholder": "#1B4F9C",
       "heroTextLabel": "نص شرائح البطل",
       "heroTextPlaceholder": "#FFFFFF",
       "onDarkTextLabel": "نص الأقسام الداكنة والتذييل",
@@ -339,6 +340,56 @@
     },
     "deleteModal": {
       "title": "حذف الخدمة",
+      "confirmMessage": "هل أنت متأكد من حذف {name}؟",
+      "cancel": "إلغاء",
+      "deleting": "جاري الحذف...",
+      "deleteButton": "حذف"
+    }
+  },
+  "products": {
+    "pageTitle": "إدارة المنتجات",
+    "pageSubtitle": "إدارة منتجات الكتالوج المعروضة في الموقع",
+    "searchPlaceholder": "البحث بالاسم أو الرابط...",
+    "addNew": "إضافة منتج جديد",
+    "noProductsFound": "لا توجد منتجات",
+    "table": {
+      "id": "الرقم",
+      "name": "الاسم",
+      "slug": "الرابط",
+      "description": "الوصف",
+      "ordering": "الترتيب",
+      "status": "الحالة",
+      "image": "الصورة",
+      "actions": "الإجراءات",
+      "edit": "تعديل",
+      "delete": "حذف"
+    },
+    "form": {
+      "addTitle": "إضافة منتج جديد",
+      "editTitle": "تعديل المنتج",
+      "nameArLabel": "الاسم (عربي)",
+      "nameArPlaceholder": "أدخل اسم المنتج بالعربية",
+      "nameEnLabel": "الاسم (إنجليزي)",
+      "nameEnPlaceholder": "أدخل اسم المنتج بالإنجليزية",
+      "descriptionArLabel": "الوصف (عربي)",
+      "descriptionArPlaceholder": "أدخل وصف المنتج بالعربية",
+      "descriptionEnLabel": "الوصف (إنجليزي)",
+      "descriptionEnPlaceholder": "أدخل وصف المنتج بالإنجليزية",
+      "slugLabel": "الرابط المختصر",
+      "slugPlaceholder": "product-slug",
+      "slugHint": "اتركه فارغاً ليُنشأ تلقائياً من الاسم الإنجليزي.",
+      "orderingLabel": "الترتيب",
+      "orderingPlaceholder": "أدخل ترتيب العرض",
+      "activeLabel": "نشط",
+      "imageLabel": "الصورة",
+      "chooseFile": "اختر ملف",
+      "noFileChosen": "لم يتم اختيار ملف",
+      "cancel": "إلغاء",
+      "saving": "جاري الحفظ...",
+      "save": "حفظ"
+    },
+    "deleteModal": {
+      "title": "حذف المنتج",
       "confirmMessage": "هل أنت متأكد من حذف {name}؟",
       "cancel": "إلغاء",
       "deleting": "جاري الحذف...",
@@ -808,10 +859,16 @@
   },
   "public": {
     "home": {
-      "defaultCompanyName": "الملف التعريفي للشركة",
+      "defaultCompanyName": "PLASTEX",
+      "brand": {
+        "tagline": "لصناعة المنتجات البلاستيكية"
+      },
       "nav": {
         "home": "الرئيسية",
         "about": "من نحن",
+        "products": "المنتجات",
+        "customManufacturing": "التصنيع حسب الطلب",
+        "gallery": "معرض الصور",
         "services": "الخدمات",
         "projects": "المشاريع",
         "team": "الفريق",
@@ -820,18 +877,30 @@
         "certificates": "الشهادات",
         "awards": "الجوائز",
         "contact": "تواصل معنا",
+        "quoteRequest": "طلب عرض سعر",
         "staffLogin": "دخول الموظفين",
-        "businessCtaFallback": "امتياز تجاري",
+        "businessCtaFallback": "طلب عرض سعر",
         "feature": "الميزة",
         "toggleMenu": "فتح القائمة",
-        "selectLanguage": "اختر اللغة:"
+        "selectLanguage": "اختر اللغة",
+        "switchToEnglish": "English",
+        "switchToArabic": "العربية",
+        "switchToEnglishShort": "EN",
+        "switchToArabicShort": "AR",
+        "main": "التنقل الرئيسي"
       },
       "hero": {
         "eyebrow": "",
-        "subheadlineWithCompany": "اكتشف كيف تقدم {company} خدمات احترافية بجودة وثقة والتزام.",
-        "subheadlineFallback": "ملف تعريفي احترافي يعرض خدماتنا ومعلومات التواصل.",
-        "ctaServices": "استعرض خدماتنا",
-        "ctaContact": "تواصل معنا",
+        "titleLine1": "حلول بلاستيكية",
+        "titleLine2": "تصنع مستقبل أفضل",
+        "highlight": "مستقبل أفضل",
+        "supporting": "نختص في تصنيع المنتجات البلاستيكية وفق متطلبات العملاء، بمعايير جودة عالية وإنتاج مرن يلبي احتياجات القطاعات المختلفة.",
+        "ctaProducts": "استعرض منتجاتنا",
+        "ctaQuote": "اطلب عرض سعر",
+        "subheadlineWithCompany": "اكتشف كيف تصنع {company} المنتجات البلاستيكية وفق متطلبات العملاء.",
+        "subheadlineFallback": "نصنع المنتجات البلاستيكية وفق متطلبات العملاء، بإنتاج مرن وجودة ثابتة.",
+        "ctaServices": "استعرض منتجاتنا",
+        "ctaContact": "اطلب عرض سعر",
         "sliderLabel": "عرض شرائح الصفحة الرئيسية",
         "prevSlide": "الشريحة السابقة",
         "nextSlide": "الشريحة التالية",
@@ -840,6 +909,60 @@
       },
       "featureBand": {
         "badgeAlt": "شارة الميزة"
+      },
+      "features": {
+        "regionLabel": "مزايا الشركة",
+        "partnership": {
+          "title": "شراكة طويلة الأمد",
+          "text": "مع عملائنا"
+        },
+        "experience": {
+          "title": "خبرة واسعة",
+          "text": "في مجال البلاستيك"
+        },
+        "flexible": {
+          "title": "إنتاج مرن",
+          "text": "حسب احتياجاتك"
+        },
+        "quality": {
+          "title": "جودة عالية",
+          "text": "في كل منتج"
+        }
+      },
+      "products": {
+        "title": "منتجاتنا",
+        "subtitle": "استكشف المنتجات البلاستيكية التي نصنعها لعملائنا.",
+        "empty": "ستظهر المنتجات هنا بعد نشرها.",
+        "noDescription": "تواصل معنا لمعرفة المزيد عن هذا المنتج.",
+        "details": "تفاصيل المنتج",
+        "viewAll": "عرض كل المنتجات"
+      },
+      "manufacturing": {
+        "title": "التصنيع حسب الطلب",
+        "description": "نصنع المنتجات البلاستيكية وفق متطلباتك، من الفكرة حتى الإنتاج.",
+        "cta": "اطلب منتجك الآن"
+      },
+      "industries": {
+        "title": "قطاعات نلبي احتياجاتها",
+        "items": {
+          "food": "الأغذية والمشروبات",
+          "agriculture": "الزراعة",
+          "industry": "الصناعة",
+          "packaging": "التعبئة والتغليف",
+          "household": "المنزلية والاستهلاكية",
+          "medical": "القطاع الطبي"
+        }
+      },
+      "gallery": {
+        "title": "معرض الصور",
+        "empty": "ستظهر صور المعرض هنا بعد نشر الوسائط.",
+        "imageAlt": "صورة من المعرض",
+        "slideAlt": "صورة المعرض {number}"
+      },
+      "contactCta": {
+        "title": "لديك مشروع أو استفسار؟",
+        "subtitle": "تحدث مع فريقنا حول التصنيع حسب الطلب أو المنتجات أو طلب عرض سعر.",
+        "button": "تواصل معنا"
       },
       "newsletter": {
         "title": "ابق على اطلاع",
@@ -856,12 +979,33 @@
       },
       "about": {
         "title": "من نحن",
-        "subtitle": "تعرّف أكثر على شركتنا وكيف نخدم عملاءنا.",
-        "descriptionWithCompany": "تلتزم {company} بتقديم حلول موثوقة واحترافية، مع التركيز على جودة الخدمة وبناء شراكات طويلة الأمد.",
+        "factoryTitle": "نبذة عن المصنع",
+        "subtitle": "تعرّف أكثر على مصنعنا وكيف نخدم عملاءنا.",
+        "descriptionWithCompany": "تصنع {company} المنتجات البلاستيكية وفق متطلبات العملاء، مع التركيز على الجودة والمرونة والشراكة طويلة الأمد.",
+        "more": "المزيد عنا",
+        "imageAlt": "مصنع {company}",
         "visionTitle": "رؤيتنا",
         "missionTitle": "رسالتنا",
         "empty": "ستظهر معلومات الشركة هنا بعد إعدادها.",
-        "logoFallback": "شعار الشركة"
+        "logoFallback": "شعار الشركة",
+        "stats": {
+          "export": {
+            "value": "+20",
+            "label": "دولة نصدر إليها"
+          },
+          "products": {
+            "value": "+1000",
+            "label": "منتج منفذ"
+          },
+          "clients": {
+            "value": "+500",
+            "label": "عميل وشريك"
+          },
+          "experience": {
+            "value": "+15",
+            "label": "سنة خبرة"
+          }
+        }
       },
       "services": {
         "title": "خدماتنا",
@@ -942,8 +1086,9 @@
         "required": "مطلوب"
       },
       "footer": {
-        "tagline": "ملف تعريفي احترافي وخدمات الشركة.",
+        "tagline": "حلول تصنيع بلاستيكية وفق متطلبات العملاء.",
         "navigation": "التنقل",
+        "quickLinks": "روابط سريعة",
         "contact": "التواصل",
         "copyright": "© {year} {company}. جميع الحقوق محفوظة."
       }

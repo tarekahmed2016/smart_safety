@@ -22,9 +22,9 @@ test('admin can view theme colors with defaults', function () {
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('ThemeColors/ThemeColorsPage', false)
-            ->where('themeColors.theme_primary_color', '#FFD400')
-            ->where('themeColors.theme_dark_color', '#111111')
-            ->where('themeColors.theme_nav_text_color', '#FFFFFF'));
+            ->where('themeColors.theme_primary_color', '#7AC142')
+            ->where('themeColors.theme_dark_color', '#0B1F3A')
+            ->where('themeColors.theme_nav_text_color', '#0B1F3A'));
 });
 
 test('admin can store theme colors', function () {

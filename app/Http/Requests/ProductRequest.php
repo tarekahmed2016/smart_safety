@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\HomepagePromoLayout;
-use App\Enums\HomepagePromoType;
 use App\Http\Requests\Concerns\SanitizesRichTextInput;
 use App\Support\RichTextSanitizer;
 use App\Support\SafeRasterImage;
@@ -11,7 +9,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class HomepagePromoBlockRequest extends FormRequest
+class ProductRequest extends FormRequest
 {
     use SanitizesRichTextInput;
 
@@ -28,10 +26,8 @@ class HomepagePromoBlockRequest extends FormRequest
             ]);
         }
 
-        if ($this->has('remove_badge')) {
-            $this->merge([
-                'remove_badge' => filter_var($this->input('remove_badge'), FILTER_VALIDATE_BOOLEAN),
-            ]);
+        if ($this->input('slug') === '') {
+            $this->merge(['slug' => null]);
         }
 
         $this->sanitizeRichTextInput();
@@ -50,28 +46,23 @@ class HomepagePromoBlockRequest extends FormRequest
      */
     public function rules(): array
     {
-        $type = $this->input('type');
-        $requiresImage = $this->isMethod('post')
-            && in_array($type, [
-                HomepagePromoType::FeatureBand->value,
-                HomepagePromoType::PromoStrip->value,
-            ], true);
+        $product = $this->route('product');
 
         return [
-            'type' => ['required', Rule::enum(HomepagePromoType::class)],
-            'title_ar' => ['nullable', 'string', 'max:255'],
-            'title_en' => ['nullable', 'string', 'max:255'],
+            'name_ar' => ['required', 'string', 'max:255'],
+            'name_en' => ['required', 'string', 'max:255'],
+            'slug' => [
+                'nullable',
+                'string',
+                'max:255',
+                'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
+                Rule::unique('products', 'slug')->ignore($product),
+            ],
             'description_ar' => ['nullable', 'string', 'max:15000'],
             'description_en' => ['nullable', 'string', 'max:15000'],
-            'cta_text_ar' => ['nullable', 'string', 'max:255'],
-            'cta_text_en' => ['nullable', 'string', 'max:255'],
-            'cta_url' => ['nullable', 'string', 'max:500'],
-            'layout_variant' => ['nullable', Rule::enum(HomepagePromoLayout::class)],
             'ordering' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['required', 'boolean'],
-            'image' => SafeRasterImage::rules(required: $requiresImage),
-            'badge_image' => SafeRasterImage::rules(required: false),
-            'remove_badge' => ['nullable', 'boolean'],
+            'image' => SafeRasterImage::rules(required: $this->isMethod('post')),
         ];
     }
 }

@@ -4,17 +4,19 @@ namespace App\Support;
 
 class ThemeColor
 {
-    public const DEFAULT_PRIMARY = '#FFD400';
+    public const DEFAULT_PRIMARY = '#7AC142';
 
-    public const DEFAULT_DARK = '#111111';
+    public const DEFAULT_DARK = '#0B1F3A';
 
-    public const DEFAULT_HEADING_TEXT = '#111111';
+    public const DEFAULT_HEADING_TEXT = '#0B1F3A';
 
-    public const DEFAULT_BODY_TEXT = '#111111';
+    public const DEFAULT_BODY_TEXT = '#334155';
 
-    public const DEFAULT_MUTED_TEXT = '#666666';
+    public const DEFAULT_MUTED_TEXT = '#64748B';
 
-    public const DEFAULT_NAV_TEXT = '#FFFFFF';
+    public const DEFAULT_NAV_TEXT = '#0B1F3A';
+
+    public const DEFAULT_NAV_HOVER_TEXT = '#1B4F9C';
 
     public const DEFAULT_HERO_TEXT = '#FFFFFF';
 
@@ -30,7 +32,7 @@ class ThemeColor
         'theme_body_text_color' => self::DEFAULT_BODY_TEXT,
         'theme_muted_text_color' => self::DEFAULT_MUTED_TEXT,
         'theme_nav_text_color' => self::DEFAULT_NAV_TEXT,
-        'theme_nav_hover_text_color' => self::DEFAULT_PRIMARY,
+        'theme_nav_hover_text_color' => self::DEFAULT_NAV_HOVER_TEXT,
         'theme_hero_text_color' => self::DEFAULT_HERO_TEXT,
         'theme_on_dark_text_color' => self::DEFAULT_ON_DARK_TEXT,
     ];
@@ -95,7 +97,7 @@ class ThemeColor
             'theme_body_text_color' => self::resolve($companyInfo->theme_body_text_color ?? null, self::DEFAULT_BODY_TEXT),
             'theme_muted_text_color' => self::resolve($companyInfo->theme_muted_text_color ?? null, self::DEFAULT_MUTED_TEXT),
             'theme_nav_text_color' => self::resolve($companyInfo->theme_nav_text_color ?? null, self::DEFAULT_NAV_TEXT),
-            'theme_nav_hover_text_color' => self::resolve($companyInfo->theme_nav_hover_text_color ?? null, $primary),
+            'theme_nav_hover_text_color' => self::resolve($companyInfo->theme_nav_hover_text_color ?? null, self::DEFAULT_NAV_HOVER_TEXT),
             'theme_hero_text_color' => self::resolve($companyInfo->theme_hero_text_color ?? null, self::DEFAULT_HERO_TEXT),
             'theme_on_dark_text_color' => self::resolve($companyInfo->theme_on_dark_text_color ?? null, self::DEFAULT_ON_DARK_TEXT),
         ];
