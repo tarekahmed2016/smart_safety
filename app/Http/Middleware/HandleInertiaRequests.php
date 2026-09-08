@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Services\CompanyInfoService;
+use App\Services\NavigationService;
 use App\Services\PageService;
 use App\Services\PublicHomeService;
 use App\Services\PublicNavService;
@@ -54,6 +55,7 @@ class HandleInertiaRequests extends Middleware
             ),
             'businessCta' => fn () => app(PublicHomeService::class)->getActiveBusinessCta(),
             'menuPages' => fn () => app(PageService::class)->getPublicMenuPages(),
+            'navigationLinks' => fn () => app(NavigationService::class)->getPublicLinks($request->routeIs('home')),
             'publicNavContext' => fn () => app(PublicNavService::class)->getContext(),
         ];
     }

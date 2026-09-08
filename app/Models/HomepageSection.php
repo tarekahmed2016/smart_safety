@@ -14,6 +14,11 @@ use Illuminate\Database\Eloquent\Model;
     'title_en',
     'ordering',
     'is_visible',
+    'show_in_navigation',
+    'nav_label_ar',
+    'nav_label_en',
+    'nav_order',
+    'anchor_id',
     'settings',
 ])]
 class HomepageSection extends Model
@@ -27,6 +32,8 @@ class HomepageSection extends Model
             'type' => HomepageSectionType::class,
             'ordering' => 'integer',
             'is_visible' => 'boolean',
+            'show_in_navigation' => 'boolean',
+            'nav_order' => 'integer',
             'settings' => 'array',
         ];
     }

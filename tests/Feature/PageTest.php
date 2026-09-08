@@ -34,6 +34,7 @@ function validPagePayload(array $overrides = []): array
         'content_en' => '<p>English <strong>content</strong></p>',
         'show_in_main_menu' => true,
         'menu_order' => 30,
+        'open_in_new_tab' => false,
         'is_active' => true,
     ], $overrides);
 }

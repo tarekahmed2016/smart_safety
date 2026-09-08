@@ -26,6 +26,7 @@ test('server removes script tags from stored rich html', function () {
             'content_en' => '<p>Safe</p>',
             'show_in_main_menu' => false,
             'menu_order' => 100,
+            'open_in_new_tab' => false,
             'is_active' => true,
             'show_on_homepage' => true,
         ])
@@ -47,6 +48,7 @@ test('server removes image event handlers from stored rich html', function () {
             'content_en' => '<p>Safe</p>',
             'show_in_main_menu' => false,
             'menu_order' => 100,
+            'open_in_new_tab' => false,
             'is_active' => true,
             'show_on_homepage' => true,
         ])
@@ -111,6 +113,7 @@ HTML;
             'content_en' => '<p><strong>English</strong></p>',
             'show_in_main_menu' => false,
             'menu_order' => 100,
+            'open_in_new_tab' => false,
             'is_active' => true,
             'show_on_homepage' => true,
         ])

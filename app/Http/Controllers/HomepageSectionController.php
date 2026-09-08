@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\HomepageSectionsUpdateRequest;
 use App\Services\HomepageSectionService;
+use App\Support\HomepageSectionNavigation;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -14,7 +15,12 @@ class HomepageSectionController extends Controller
     public function index(): Response
     {
         return Inertia::render('HomepageSections/HomepageSectionsPage', [
-            'homepageSections' => $this->homepageSectionService->getAllSections(),
+            'homepageSections' => $this->homepageSectionService->getAllSections()
+                ->map(fn ($section) => [
+                    ...$section->toArray(),
+                    'is_navigable' => HomepageSectionNavigation::isNavigable($section->key),
+                ]),
+            'navigableSectionKeys' => HomepageSectionNavigation::navigableKeys(),
         ]);
     }
 

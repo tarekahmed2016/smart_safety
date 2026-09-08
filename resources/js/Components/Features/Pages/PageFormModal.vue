@@ -30,6 +30,7 @@ const form = useForm({
   content_en: '',
   show_in_main_menu: false,
   menu_order: 100,
+  open_in_new_tab: false,
   is_active: true,
 })
 
@@ -50,11 +51,13 @@ watch([() => props.isOpen, () => props.page?.id], ([isOpen, pageId]) => {
     form.content_en = props.page.content_en || ''
     form.show_in_main_menu = Boolean(props.page.show_in_main_menu)
     form.menu_order = props.page.menu_order ?? 100
+    form.open_in_new_tab = Boolean(props.page.open_in_new_tab)
     form.is_active = Boolean(props.page.is_active)
   } else {
     form.reset()
     form.show_in_main_menu = false
     form.menu_order = 100
+    form.open_in_new_tab = false
     form.is_active = true
   }
 
@@ -171,6 +174,10 @@ const handleClose = () => {
             <label class="inline-flex items-center gap-2 text-body text-gray-700 dark:text-gray-300">
               <input v-model="form.show_in_main_menu" type="checkbox" class="rounded border-gray-300" />
               {{ t('pages.form.showInMainMenuLabel') }}
+            </label>
+            <label class="inline-flex items-center gap-2 text-body text-gray-700 dark:text-gray-300">
+              <input v-model="form.open_in_new_tab" type="checkbox" class="rounded border-gray-300" />
+              {{ t('pages.form.openInNewTabLabel') }}
             </label>
             <label class="inline-flex items-center gap-2 text-body text-gray-700 dark:text-gray-300">
               <input v-model="form.is_active" type="checkbox" class="rounded border-gray-300" />

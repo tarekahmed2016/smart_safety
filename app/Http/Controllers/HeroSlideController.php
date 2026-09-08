@@ -40,8 +40,9 @@ class HeroSlideController extends Controller
     public function store(HeroSlideRequest $request)
     {
         $this->heroSlideService->store(
-            data: $request->safe()->except('image'),
+            data: $request->safe()->except(['image', 'mobile_image']),
             image: $request->file('image'),
+            mobileImage: $request->file('mobile_image'),
         );
 
         return redirect()->back()->with('success', 'تم الإضافة بنجاح');
@@ -51,8 +52,9 @@ class HeroSlideController extends Controller
     {
         $this->heroSlideService->update(
             heroSlide: $heroSlide,
-            data: $request->safe()->except('image'),
+            data: $request->safe()->except(['image', 'mobile_image']),
             image: $request->file('image'),
+            mobileImage: $request->file('mobile_image'),
         );
 
         return redirect()->back()->with('success', 'تم التحديث بنجاح');

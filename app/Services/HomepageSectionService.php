@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\HomepageSection;
 use App\Support\HomepageSectionDefaults;
+use App\Support\HomepageSectionNavigation;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -47,7 +48,7 @@ class HomepageSectionService
     }
 
     /**
-     * @param  list<array{id: int, is_visible: bool, ordering: int, title_ar?: string|null, title_en?: string|null}>  $sections
+     * @param  list<array{id: int, is_visible: bool, ordering: int, title_ar?: string|null, title_en?: string|null, show_in_navigation?: bool, nav_label_ar?: string|null, nav_label_en?: string|null, nav_order?: int, anchor_id?: string|null}>  $sections
      */
     public function syncSections(array $sections): void
     {
@@ -55,12 +56,24 @@ class HomepageSectionService
             foreach ($sections as $sectionData) {
                 $section = HomepageSection::query()->findOrFail($sectionData['id']);
 
-                $section->update([
+                $payload = [
                     'is_visible' => (bool) $sectionData['is_visible'],
                     'ordering' => (int) $sectionData['ordering'],
                     'title_ar' => $sectionData['title_ar'] ?? null,
                     'title_en' => $sectionData['title_en'] ?? null,
-                ]);
+                ];
+
+                if (HomepageSectionNavigation::isNavigable($section->key)) {
+                    $payload = array_merge($payload, [
+                        'show_in_navigation' => (bool) ($sectionData['show_in_navigation'] ?? false),
+                        'nav_label_ar' => $sectionData['nav_label_ar'] ?? null,
+                        'nav_label_en' => $sectionData['nav_label_en'] ?? null,
+                        'nav_order' => (int) ($sectionData['nav_order'] ?? $section->nav_order),
+                        'anchor_id' => $sectionData['anchor_id'] ?? null,
+                    ]);
+                }
+
+                $section->update($payload);
             }
         });
     }
@@ -72,6 +85,14 @@ class HomepageSectionService
         }
 
         foreach (HomepageSectionDefaults::sections() as $section) {
+            $navDefaults = HomepageSectionNavigation::defaultsByKey()[$section['key']] ?? [
+                'show_in_navigation' => false,
+                'nav_label_ar' => null,
+                'nav_label_en' => null,
+                'nav_order' => 0,
+                'anchor_id' => null,
+            ];
+
             HomepageSection::query()->create([
                 'key' => $section['key'],
                 'name' => $section['name'],
@@ -81,6 +102,7 @@ class HomepageSectionService
                 'title_ar' => $section['title_ar'],
                 'title_en' => $section['title_en'],
                 'settings' => $section['settings'],
+                ...$navDefaults,
             ]);
         }
     }

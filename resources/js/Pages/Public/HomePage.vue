@@ -84,6 +84,11 @@ const heroBackground = computed(() => {
   return slideWithImage?.image || '/images/plastex/hero.jpg'
 })
 
+const heroMobileImage = computed(() => {
+  const slideWithImage = heroSlides.value.find((slide) => slide.image)
+  return slideWithImage?.mobile_image || null
+})
+
 const aboutText = computed(() => resolveBilingualField(companyInfo.value, 'about', locale.value))
 const aboutFallback = computed(() => t('public.home.about.descriptionWithCompany', { company: companyName.value }))
 const aboutImage = computed(() =>
@@ -132,7 +137,8 @@ const displayFeatures = computed(() => featureHighlights.value.map((item) => ({
   image: item.image || null,
 })))
 
-const displayServices = computed(() => services.value.map((item) => ({
+const displayServices = computed(() => services.value.map((item, index) => ({
+  key: `${item.name_ar || 'service'}-${item.name_en || index}`,
   icon: 'quality',
   title: resolveBilingualField(item, 'name', locale.value),
   text: plainTextFromHtml(resolveBilingualField(item, 'description', locale.value))
@@ -263,12 +269,20 @@ const submitContactForm = () => {
 <template>
   <template v-for="section in normalizedSections" :key="section.key">
     <section v-if="section.type === 'hero'" id="home" class="px-hero">
-      <div
-        class="px-hero-bg has-image"
-        :style="{ backgroundImage: `url('${heroBackground}')` }"
-        role="img"
-        :aria-label="companyName"
-      ></div>
+      <div class="px-hero-bg has-image">
+        <picture class="px-hero-picture">
+          <source
+            v-if="heroMobileImage"
+            media="(max-width: 767px)"
+            :srcset="heroMobileImage"
+          />
+          <img
+            :src="heroBackground"
+            :alt="companyName"
+            class="px-hero-picture-image"
+          />
+        </picture>
+      </div>
       <div class="px-hero-overlay"></div>
       <div class="px-hero-shell">
         <div class="px-hero-content">
@@ -345,23 +359,35 @@ const submitContactForm = () => {
     <section
       v-else-if="section.type === 'services' && displayServices.length"
       id="services"
-      class="px-features"
+      class="px-services"
       :aria-label="t('public.home.services.title')"
     >
       <div class="px-container">
         <div class="px-section-header">
           <h2>{{ resolveSectionTitle(section, null, 'public.home.services.title') }}</h2>
         </div>
-      </div>
-      <div class="px-container px-features-grid">
-        <article v-for="service in displayServices" :key="service.title" class="px-feature">
-          <div class="px-feature-icon" aria-hidden="true">
-            <img v-if="service.image" :src="service.image" :alt="''" />
-            <PlastexLineIcon v-else :name="service.icon" />
-          </div>
-          <h2>{{ service.title }}</h2>
-          <p>{{ service.text }}</p>
-        </article>
+
+        <div class="px-product-grid">
+          <article v-for="service in displayServices" :key="service.key" class="px-product-card">
+            <div class="px-product-media">
+              <img
+                v-if="service.image"
+                :src="service.image"
+                :alt="service.title"
+              />
+              <div v-else class="px-service-media-fallback" aria-hidden="true">
+                <PlastexLineIcon :name="service.icon" />
+              </div>
+            </div>
+            <div class="px-product-body">
+              <h3>{{ service.title }}</h3>
+              <p>{{ service.text }}</p>
+              <a href="#contact" class="px-text-link">
+                {{ t('public.home.services.learnMore') }}
+              </a>
+            </div>
+          </article>
+        </div>
       </div>
     </section>
 

@@ -2,6 +2,9 @@
 import { computed, ref } from 'vue'
 import { useForm, usePage } from '@inertiajs/vue3'
 import { useI18n } from 'vue-i18n'
+import DashboardLayout from '../../Layouts/DashboardLayout.vue'
+
+defineOptions({ layout: DashboardLayout })
 
 const { t } = useI18n()
 const page = usePage()
@@ -14,6 +17,11 @@ const form = useForm({
     ordering: section.ordering,
     title_ar: section.title_ar || '',
     title_en: section.title_en || '',
+    show_in_navigation: Boolean(section.show_in_navigation),
+    nav_label_ar: section.nav_label_ar || '',
+    nav_label_en: section.nav_label_en || '',
+    nav_order: section.nav_order ?? 0,
+    anchor_id: section.anchor_id || '',
   })),
 })
 
@@ -132,6 +140,35 @@ const submit = () => {
                 <div>
                   <label class="form-label text-label">{{ t('homepageSections.titleEnLabel') }}</label>
                   <input v-model="section.title_en" type="text" class="form-input text-body" :placeholder="t('homepageSections.titleEnPlaceholder')" />
+                </div>
+              </div>
+
+              <div
+                v-if="sectionMetaById[section.id]?.is_navigable"
+                class="mt-4 rounded-lg border border-dashed border-gray-300 dark:border-gray-600 p-4 space-y-4"
+              >
+                <h3 class="text-label font-medium text-gray-900 dark:text-gray-100">{{ t('homepageSections.navigationTitle') }}</h3>
+                <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                  <input v-model="section.show_in_navigation" type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                  <span class="text-label">{{ t('homepageSections.showInNavigationLabel') }}</span>
+                </label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="form-label text-label">{{ t('homepageSections.navLabelAr') }}</label>
+                    <input v-model="section.nav_label_ar" type="text" class="form-input text-body" :placeholder="t('homepageSections.navLabelArPlaceholder')" />
+                  </div>
+                  <div>
+                    <label class="form-label text-label">{{ t('homepageSections.navLabelEn') }}</label>
+                    <input v-model="section.nav_label_en" type="text" class="form-input text-body" :placeholder="t('homepageSections.navLabelEnPlaceholder')" />
+                  </div>
+                  <div>
+                    <label class="form-label text-label">{{ t('homepageSections.navOrderLabel') }}</label>
+                    <input v-model.number="section.nav_order" type="number" min="0" class="form-input text-body" />
+                  </div>
+                  <div>
+                    <label class="form-label text-label">{{ t('homepageSections.anchorIdLabel') }}</label>
+                    <input v-model="section.anchor_id" type="text" dir="ltr" class="form-input text-body font-mono" :placeholder="sectionMetaById[section.id]?.key" />
+                  </div>
                 </div>
               </div>
             </div>

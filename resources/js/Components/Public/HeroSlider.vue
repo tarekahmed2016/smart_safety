@@ -126,8 +126,20 @@ onUnmounted(clearTimer)
         >
             <div
                 class="public-hero-slide-bg"
-                :style="slide.image ? { backgroundImage: `url(${slide.image})` } : undefined"
-            ></div>
+            >
+                <picture v-if="slide.image" class="public-hero-slide-picture">
+                    <source
+                        v-if="slide.mobile_image"
+                        media="(max-width: 767px)"
+                        :srcset="slide.mobile_image"
+                    />
+                    <img
+                        :src="slide.image"
+                        :alt="slideTitle(slide) || ''"
+                        class="public-hero-slide-picture-image"
+                    />
+                </picture>
+            </div>
             <div class="public-container public-hero-slide-inner">
                 <div class="public-hero-content">
                     <img

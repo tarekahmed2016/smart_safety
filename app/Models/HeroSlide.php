@@ -47,7 +47,19 @@ class HeroSlide extends Model
      */
     public function attachment(): MorphOne
     {
-        return $this->morphOne(Attachment::class, 'attachable');
+        return $this->morphOne(Attachment::class, 'attachable')
+            ->where(function ($query) {
+                $query->whereNull('collection')->orWhere('collection', 'default');
+            });
+    }
+
+    /**
+     * @return MorphOne<Attachment, $this>
+     */
+    public function mobileAttachment(): MorphOne
+    {
+        return $this->morphOne(Attachment::class, 'attachable')
+            ->where('collection', 'mobile');
     }
 
     /**

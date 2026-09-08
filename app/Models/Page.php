@@ -25,6 +25,7 @@ class Page extends Model
         'content_en',
         'show_in_main_menu',
         'menu_order',
+        'open_in_new_tab',
         'is_active',
     ];
 
@@ -42,6 +43,7 @@ class Page extends Model
             'show_in_main_menu' => 'boolean',
             'is_active' => 'boolean',
             'menu_order' => 'integer',
+            'open_in_new_tab' => 'boolean',
         ];
     }
 

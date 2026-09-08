@@ -31,6 +31,12 @@ class PageRequest extends FormRequest
             ]);
         }
 
+        if ($this->has('open_in_new_tab')) {
+            $this->merge([
+                'open_in_new_tab' => filter_var($this->input('open_in_new_tab'), FILTER_VALIDATE_BOOLEAN),
+            ]);
+        }
+
         if ($this->has('slug') && is_string($this->input('slug'))) {
             $this->merge([
                 'slug' => strtolower(trim($this->input('slug'))),
@@ -71,6 +77,7 @@ class PageRequest extends FormRequest
             'content_en' => ['nullable', 'string', 'max:15000'],
             'show_in_main_menu' => ['required', 'boolean'],
             'menu_order' => ['required', 'integer', 'min:0', 'max:9999'],
+            'open_in_new_tab' => ['required', 'boolean'],
             'is_active' => ['required', 'boolean'],
         ];
     }

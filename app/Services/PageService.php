@@ -19,6 +19,7 @@ class PageService
         'slug',
         'show_in_main_menu',
         'menu_order',
+        'open_in_new_tab',
         'is_active',
     ];
 
@@ -52,7 +53,7 @@ class PageService
     }
 
     /**
-     * @return Collection<int, array{slug: string, menu_title_ar: string, menu_title_en: string, menu_order: int}>
+     * @return Collection<int, array{slug: string, menu_title_ar: string, menu_title_en: string, menu_order: int, open_in_new_tab: bool}>
      */
     public function getPublicMenuPages(): Collection
     {
@@ -66,6 +67,7 @@ class PageService
                 'menu_title_ar' => $page->menu_title_ar ?: $page->title_ar,
                 'menu_title_en' => $page->menu_title_en ?: $page->title_en,
                 'menu_order' => $page->menu_order,
+                'open_in_new_tab' => (bool) $page->open_in_new_tab,
             ])
             ->values();
     }

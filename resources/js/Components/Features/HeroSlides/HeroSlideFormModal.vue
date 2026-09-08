@@ -35,11 +35,15 @@ const form = useForm({
   ordering: '',
   is_active: true,
   image: null,
+  mobile_image: null,
 })
 
 const imagePreview = ref(null)
 const imageInput = ref(null)
 const imageFileName = ref(null)
+const mobileImagePreview = ref(null)
+const mobileImageInput = ref(null)
+const mobileImageFileName = ref(null)
 const editingHeroSlideId = ref(null)
 
 const handleImageChange = (event) => {
@@ -47,6 +51,13 @@ const handleImageChange = (event) => {
   form.image = file
   imageFileName.value = file?.name || null
   imagePreview.value = file ? URL.createObjectURL(file) : null
+}
+
+const handleMobileImageChange = (event) => {
+  const file = event.target.files[0] || null
+  form.mobile_image = file
+  mobileImageFileName.value = file?.name || null
+  mobileImagePreview.value = file ? URL.createObjectURL(file) : null
 }
 
 watch([() => props.isOpen, () => props.heroSlide?.id], ([isOpen, heroSlideId]) => {
@@ -65,18 +76,27 @@ watch([() => props.isOpen, () => props.heroSlide?.id], ([isOpen, heroSlideId]) =
     form.ordering = props.heroSlide.ordering ?? ''
     form.is_active = Boolean(props.heroSlide.is_active)
     form.image = null
+    form.mobile_image = null
     imagePreview.value = props.heroSlide.attachment?.asset_path || null
     imageFileName.value = null
+    mobileImagePreview.value = props.heroSlide.mobile_attachment?.asset_path || null
+    mobileImageFileName.value = null
   } else {
     form.reset()
     form.is_active = true
     form.ordering = props.nextOrdering ?? ''
     imagePreview.value = null
     imageFileName.value = null
+    mobileImagePreview.value = null
+    mobileImageFileName.value = null
   }
 
   if (imageInput.value) {
     imageInput.value.value = ''
+  }
+
+  if (mobileImageInput.value) {
+    mobileImageInput.value.value = ''
   }
 
   form.clearErrors()
@@ -111,6 +131,8 @@ const handleClose = () => {
   editingHeroSlideId.value = null
   imagePreview.value = null
   imageFileName.value = null
+  mobileImagePreview.value = null
+  mobileImageFileName.value = null
   emit('close')
 }
 </script>
@@ -254,12 +276,13 @@ const handleClose = () => {
           <label class="form-label text-label">
             {{ t('heroSlides.form.imageLabel') }} <span v-if="!editingHeroSlideId" class="text-red-500">*</span>
           </label>
+          <p class="text-sm text-muted muted-color mb-2">{{ t('heroSlides.form.imageDesktopHint') }}</p>
           <div class="flex items-center gap-4">
             <img
               v-if="imagePreview"
               :src="imagePreview"
-              alt="Hero slide image preview"
-              class="h-16 rounded-md border border-gray-200 dark:border-gray-700 object-cover"
+              alt="Hero slide desktop image preview"
+              class="h-16 w-28 rounded-md border border-gray-200 dark:border-gray-700 object-cover"
             />
             <div class="flex flex-col gap-1.5 flex-1">
               <button
@@ -283,6 +306,41 @@ const handleClose = () => {
             </div>
           </div>
           <p v-if="form.errors.image" class="form-error">{{ form.errors.image }}</p>
+        </div>
+
+        <div class="rounded-lg border border-dashed border-blue-300 dark:border-blue-700 bg-blue-50/60 dark:bg-blue-950/20 p-4">
+          <label class="form-label text-label">
+            {{ t('heroSlides.form.mobileImageLabel') }}
+          </label>
+          <p class="text-sm text-muted muted-color mb-3">{{ t('heroSlides.form.mobileImageHint') }}</p>
+          <div class="flex items-center gap-4">
+            <img
+              v-if="mobileImagePreview"
+              :src="mobileImagePreview"
+              alt="Hero slide mobile image preview"
+              class="h-24 w-14 rounded-md border border-gray-200 dark:border-gray-700 object-cover"
+            />
+            <div class="flex flex-col gap-1.5 flex-1">
+              <button
+                type="button"
+                @click="mobileImageInput.click()"
+                class="btn btn-secondary px-4 py-2 w-full cursor-pointer"
+              >
+                {{ t('heroSlides.form.chooseMobileFile') }}
+              </button>
+              <span class="text-sm text-muted muted-color truncate text-center">
+                {{ mobileImageFileName || t('heroSlides.form.noFileChosen') }}
+              </span>
+              <input
+                ref="mobileImageInput"
+                type="file"
+                accept="image/*"
+                @change="handleMobileImageChange"
+                class="hidden"
+              />
+            </div>
+          </div>
+          <p v-if="form.errors.mobile_image" class="form-error">{{ form.errors.mobile_image }}</p>
         </div>
 
         <div class="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">

@@ -52,6 +52,7 @@ class HeroSlideRequest extends FormRequest
             'ordering' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['required', 'boolean'],
             'image' => SafeRasterImage::rules(required: $this->isMethod('post')),
+            'mobile_image' => SafeRasterImage::rules(required: false),
         ];
     }
 }

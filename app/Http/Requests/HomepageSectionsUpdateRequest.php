@@ -20,6 +20,10 @@ class HomepageSectionsUpdateRequest extends FormRequest
                     $section['is_visible'] = filter_var($section['is_visible'], FILTER_VALIDATE_BOOLEAN);
                 }
 
+                if (array_key_exists('show_in_navigation', $section)) {
+                    $section['show_in_navigation'] = filter_var($section['show_in_navigation'], FILTER_VALIDATE_BOOLEAN);
+                }
+
                 return $section;
             })
             ->all();
@@ -39,6 +43,11 @@ class HomepageSectionsUpdateRequest extends FormRequest
             'sections.*.ordering' => ['required', 'integer', 'min:0'],
             'sections.*.title_ar' => ['nullable', 'string', 'max:255'],
             'sections.*.title_en' => ['nullable', 'string', 'max:255'],
+            'sections.*.show_in_navigation' => ['sometimes', 'boolean'],
+            'sections.*.nav_label_ar' => ['nullable', 'string', 'max:255'],
+            'sections.*.nav_label_en' => ['nullable', 'string', 'max:255'],
+            'sections.*.nav_order' => ['sometimes', 'integer', 'min:0', 'max:9999'],
+            'sections.*.anchor_id' => ['nullable', 'string', 'max:120', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
         ];
     }
 }

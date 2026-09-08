@@ -36,7 +36,7 @@ class HeroSlideService
         int $perPage = 15
     ): LengthAwarePaginator {
         return HeroSlide::query()
-            ->with('attachment')
+            ->with(['attachment', 'mobileAttachment'])
             ->when($search, fn ($q) => $q->where(function ($query) use ($search) {
                 $query->where('title_ar', 'like', "%{$search}%")
                     ->orWhere('title_en', 'like', "%{$search}%")
@@ -59,7 +59,7 @@ class HeroSlideService
     public function getActiveSlidesForPublic(): Collection
     {
         return HeroSlide::query()
-            ->with('attachment')
+            ->with(['attachment', 'mobileAttachment'])
             ->where('is_active', true)
             ->orderBy('ordering')
             ->get()
@@ -72,6 +72,7 @@ class HeroSlideService
                 'cta_text_en' => $slide->cta_text_en,
                 'cta_url' => $slide->cta_url,
                 'image' => $slide->attachment?->asset_path,
+                'mobile_image' => $slide->mobileAttachment?->asset_path,
             ])
             ->values();
     }
@@ -79,9 +80,9 @@ class HeroSlideService
     /**
      * @param  array<string, mixed>  $data
      */
-    public function store(array $data, UploadedFile $image): HeroSlide
+    public function store(array $data, UploadedFile $image, ?UploadedFile $mobileImage = null): HeroSlide
     {
-        return DB::transaction(function () use ($data, $image) {
+        return DB::transaction(function () use ($data, $image, $mobileImage) {
             $orderingQuery = $this->orderingQuery();
 
             if (! array_key_exists('ordering', $data) || $data['ordering'] === null) {
@@ -93,6 +94,10 @@ class HeroSlideService
 
             $heroSlide = HeroSlide::create($data);
             $this->storeImage(heroSlide: $heroSlide, image: $image);
+
+            if ($mobileImage) {
+                $this->storeMobileImage(heroSlide: $heroSlide, image: $mobileImage);
+            }
 
             $this->activityLogService->recordCreated(
                 subject: $heroSlide,
@@ -107,9 +112,9 @@ class HeroSlideService
     /**
      * @param  array<string, mixed>  $data
      */
-    public function update(HeroSlide $heroSlide, array $data, ?UploadedFile $image = null): HeroSlide
+    public function update(HeroSlide $heroSlide, array $data, ?UploadedFile $image = null, ?UploadedFile $mobileImage = null): HeroSlide
     {
-        return DB::transaction(function () use ($heroSlide, $data, $image) {
+        return DB::transaction(function () use ($heroSlide, $data, $image, $mobileImage) {
             $originalValues = $heroSlide->only(self::ACTIVITY_FIELDS);
             $orderingQuery = $this->orderingQuery();
             $oldOrdering = $heroSlide->ordering;
@@ -128,6 +133,11 @@ class HeroSlideService
             if ($image) {
                 $this->deleteImage(heroSlide: $heroSlide);
                 $this->storeImage(heroSlide: $heroSlide, image: $image);
+            }
+
+            if ($mobileImage) {
+                $this->deleteMobileImage(heroSlide: $heroSlide);
+                $this->storeMobileImage(heroSlide: $heroSlide, image: $mobileImage);
             }
 
             $this->activityLogService->recordChanges(
@@ -151,6 +161,7 @@ class HeroSlideService
             );
 
             $this->deleteImage(heroSlide: $heroSlide);
+            $this->deleteMobileImage(heroSlide: $heroSlide);
             $ordering = $heroSlide->ordering;
             $heroSlide->delete();
 
@@ -169,12 +180,34 @@ class HeroSlideService
         $heroSlide->attachment()->create([
             'name' => $image->getClientOriginalName(),
             'path' => $path,
+            'collection' => 'default',
+        ]);
+    }
+
+    private function storeMobileImage(HeroSlide $heroSlide, UploadedFile $image): void
+    {
+        $path = $image->store('hero-slides/mobile', 'public');
+        $heroSlide->mobileAttachment()->create([
+            'name' => $image->getClientOriginalName(),
+            'path' => $path,
+            'collection' => 'mobile',
         ]);
     }
 
     private function deleteImage(HeroSlide $heroSlide): void
     {
         $attachment = $heroSlide->attachment;
+        if ($attachment && $attachment->path && Storage::disk('public')->exists($attachment->path)) {
+            Storage::disk('public')->delete($attachment->path);
+        }
+        if ($attachment) {
+            $attachment->delete();
+        }
+    }
+
+    private function deleteMobileImage(HeroSlide $heroSlide): void
+    {
+        $attachment = $heroSlide->mobileAttachment;
         if ($attachment && $attachment->path && Storage::disk('public')->exists($attachment->path)) {
             Storage::disk('public')->delete($attachment->path);
         }

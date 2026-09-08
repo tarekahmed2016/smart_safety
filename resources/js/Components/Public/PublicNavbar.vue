@@ -81,6 +81,8 @@ const otherLocaleCode = computed(() => (locale.value === 'ar' ? 'en' : 'ar'))
             v-for="link in navLinks"
             :key="link.key"
             :href="link.href"
+            :target="link.open_in_new_tab ? '_blank' : undefined"
+            :rel="link.open_in_new_tab ? 'noopener noreferrer' : undefined"
             role="listitem"
           >
             {{ link.label }}
@@ -128,6 +130,8 @@ const otherLocaleCode = computed(() => (locale.value === 'ar' ? 'en' : 'ar'))
           v-for="link in navLinks"
           :key="`mobile-${link.key}`"
           :href="link.href"
+          :target="link.open_in_new_tab ? '_blank' : undefined"
+          :rel="link.open_in_new_tab ? 'noopener noreferrer' : undefined"
           @click="closeMenu"
         >
           {{ link.label }}

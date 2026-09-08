@@ -26,6 +26,8 @@ createInertiaApp({
                 || name.startsWith('ContactMessages/')
                 || name.startsWith('HeroSlides/')
                 || name.startsWith('HomepagePromos/')
+                || name.startsWith('HomepageSections/')
+                || name.startsWith('Navigation/')
                 || name.startsWith('Pages/')
                 || name.startsWith('NewsletterSubscribers/')
                 || name.startsWith('CompanyInfo/')
