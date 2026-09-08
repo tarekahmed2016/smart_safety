@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
     'website',
     'ordering',
     'is_active',
+    'show_on_homepage',
 ])]
 class ClientPartner extends Model
 {
@@ -39,6 +40,7 @@ class ClientPartner extends Model
         return [
             'type' => ClientPartnerType::class,
             'is_active' => 'boolean',
+            'show_on_homepage' => 'boolean',
             'ordering' => 'integer',
         ];
     }

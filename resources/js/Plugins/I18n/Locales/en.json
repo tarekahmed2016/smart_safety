@@ -515,6 +515,7 @@
       "orderingLabel": "Ordering",
       "orderingPlaceholder": "Enter display order",
       "activeLabel": "Active",
+      "showOnHomepageLabel": "Show on homepage",
       "imageLabel": "Photo",
       "chooseFile": "Choose File",
       "noFileChosen": "No file chosen",
@@ -568,6 +569,7 @@
       "orderingLabel": "Ordering",
       "orderingPlaceholder": "Enter display order",
       "activeLabel": "Active",
+      "showOnHomepageLabel": "Show on homepage",
       "logoLabel": "Logo",
       "chooseFile": "Choose File",
       "noFileChosen": "No file chosen",
@@ -836,6 +838,8 @@
       "custom_manufacturing": "Custom Manufacturing",
       "industries": "Industries",
       "about": "About",
+      "team_members": "Team Members",
+      "clients_partners": "Clients & Partners",
       "gallery": "Gallery",
       "contact_cta": "Contact CTA",
       "contact_form": "Contact Form"
@@ -1120,7 +1124,21 @@
         "empty": "Team members will appear here once they are published.",
         "noBio": "Dedicated team member committed to quality and excellence.",
         "viewLinkedIn": "LinkedIn Profile",
-        "viewAll": "Meet the Full Team"
+        "viewAll": "Meet the Full Team",
+        "carouselLabel": "Team members carousel",
+        "previous": "Previous team members",
+        "next": "Next team members"
+      },
+      "clientsPartners": {
+        "title": "Clients & Partners",
+        "subtitle": "Trusted organizations and strategic partners we work with.",
+        "empty": "Clients and partners will appear here once they are published.",
+        "carouselLabel": "Clients and partners carousel",
+        "previous": "Previous clients and partners",
+        "next": "Next clients and partners",
+        "clientBadge": "Client",
+        "partnerBadge": "Partner",
+        "visitWebsite": "Visit website"
       },
       "clients": {
         "title": "Our Clients",

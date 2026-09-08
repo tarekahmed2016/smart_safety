@@ -27,6 +27,7 @@ function validClientPartnerPayload(array $overrides = []): array
         'website' => 'https://altarek.example.com',
         'ordering' => 0,
         'is_active' => true,
+        'show_on_homepage' => true,
         'image' => UploadedFile::fake()->image('logo.jpg'),
     ], $overrides);
 }

@@ -22,6 +22,12 @@ class ClientPartnerRequest extends FormRequest
                 'is_active' => filter_var($this->input('is_active'), FILTER_VALIDATE_BOOLEAN),
             ]);
         }
+
+        if ($this->has('show_on_homepage')) {
+            $this->merge([
+                'show_on_homepage' => filter_var($this->input('show_on_homepage'), FILTER_VALIDATE_BOOLEAN),
+            ]);
+        }
     }
 
     /**
@@ -36,6 +42,7 @@ class ClientPartnerRequest extends FormRequest
             'website' => ['nullable', 'url', 'max:2048'],
             'ordering' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['required', 'boolean'],
+            'show_on_homepage' => [$this->isMethod('post') ? 'required' : 'sometimes', 'boolean'],
             'image' => SafeRasterImage::rules(required: $this->isMethod('post')),
         ];
     }

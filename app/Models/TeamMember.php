@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
     'linkedin_url',
     'ordering',
     'is_active',
+    'show_on_homepage',
 ])]
 class TeamMember extends Model
 {
@@ -40,6 +41,7 @@ class TeamMember extends Model
     {
         return [
             'is_active' => 'boolean',
+            'show_on_homepage' => 'boolean',
             'ordering' => 'integer',
         ];
     }

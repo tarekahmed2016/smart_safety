@@ -7,6 +7,8 @@ const DEFAULT_SECTIONS = [
   { key: 'custom_manufacturing', type: 'custom_manufacturing', title_ar: '', title_en: '', settings: {} },
   { key: 'industries', type: 'industries', title_ar: '', title_en: '', settings: {} },
   { key: 'about', type: 'about', title_ar: '', title_en: '', settings: {} },
+  { key: 'team_members', type: 'team_members', title_ar: '', title_en: '', settings: {} },
+  { key: 'clients_partners', type: 'clients_partners', title_ar: '', title_en: '', settings: {} },
   { key: 'gallery', type: 'gallery', title_ar: '', title_en: '', settings: { max_items: 8 } },
   { key: 'contact_cta', type: 'contact_cta', title_ar: '', title_en: '', settings: {} },
   { key: 'contact', type: 'contact_form', title_ar: '', title_en: '', settings: {} },

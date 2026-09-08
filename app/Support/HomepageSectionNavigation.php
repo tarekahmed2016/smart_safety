@@ -17,6 +17,8 @@ class HomepageSectionNavigation
             'custom_manufacturing',
             'industries',
             'gallery',
+            'team_members',
+            'clients_partners',
             'contact',
         ];
     }
@@ -80,6 +82,20 @@ class HomepageSectionNavigation
                 'nav_label_en' => 'Gallery',
                 'nav_order' => 50,
                 'anchor_id' => 'gallery',
+            ],
+            'team_members' => [
+                'show_in_navigation' => false,
+                'nav_label_ar' => 'فريق العمل',
+                'nav_label_en' => 'Team',
+                'nav_order' => 55,
+                'anchor_id' => 'team',
+            ],
+            'clients_partners' => [
+                'show_in_navigation' => false,
+                'nav_label_ar' => 'العملاء والشركاء',
+                'nav_label_en' => 'Clients & Partners',
+                'nav_order' => 60,
+                'anchor_id' => 'clients-partners',
             ],
             'contact' => [
                 'show_in_navigation' => true,

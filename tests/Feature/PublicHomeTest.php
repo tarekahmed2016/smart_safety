@@ -20,6 +20,7 @@ test('homepage is accessible to guests', function () {
             ->has('products')
             ->has('projects')
             ->has('teamMembers')
+            ->has('clientsPartners')
             ->has('clients')
             ->has('partners'));
 });

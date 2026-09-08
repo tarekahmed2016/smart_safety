@@ -31,6 +31,7 @@ function validTeamMemberPayload(array $overrides = []): array
         'linkedin_url' => 'https://linkedin.com/in/ahmed',
         'ordering' => 0,
         'is_active' => true,
+        'show_on_homepage' => true,
         'image' => UploadedFile::fake()->image('member.jpg'),
     ], $overrides);
 }

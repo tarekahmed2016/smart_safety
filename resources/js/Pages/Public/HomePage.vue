@@ -9,6 +9,8 @@ import { plainTextFromHtml } from '../../Composables/useRichText.js'
 import RichTextContent from '../../Components/Common/RichTextContent.vue'
 import PlastexLineIcon from '../../Components/Public/PlastexLineIcon.vue'
 import ProductsCarousel from '../../Components/Public/ProductsCarousel.vue'
+import TeamMembersCarousel from '../../Components/Public/TeamMembersCarousel.vue'
+import ClientsPartnersCarousel from '../../Components/Public/ClientsPartnersCarousel.vue'
 
 const { t, locale } = useI18n()
 const page = usePage()
@@ -20,6 +22,8 @@ const heroSlides = computed(() => page.props.heroSlides || [])
 const products = computed(() => page.props.products || [])
 const projects = computed(() => page.props.projects || [])
 const services = computed(() => page.props.services || [])
+const teamMembers = computed(() => page.props.teamMembers || [])
+const clientsPartners = computed(() => page.props.clientsPartners || [])
 const featureHighlights = computed(() => page.props.featureHighlights || [])
 const industries = computed(() => page.props.industries || [])
 const customManufacturing = computed(() => page.props.customManufacturing || null)
@@ -505,6 +509,28 @@ const submitContactForm = () => {
           />
           <div v-else class="px-media-fallback px-media-fallback-tall" :aria-hidden="true"></div>
         </div>
+      </div>
+    </section>
+
+    <section v-else-if="section.type === 'team_members'" id="team" class="px-team">
+      <div class="px-container">
+        <div class="px-section-header">
+          <h2>{{ resolveSectionTitle(section, null, 'public.home.team.title') }}</h2>
+        </div>
+
+        <TeamMembersCarousel v-if="teamMembers.length" :members="teamMembers" />
+        <p v-else class="px-empty">{{ t('public.home.team.empty') }}</p>
+      </div>
+    </section>
+
+    <section v-else-if="section.type === 'clients_partners'" id="clients-partners" class="px-clients-partners">
+      <div class="px-container">
+        <div class="px-section-header">
+          <h2>{{ resolveSectionTitle(section, null, 'public.home.clientsPartners.title') }}</h2>
+        </div>
+
+        <ClientsPartnersCarousel v-if="clientsPartners.length" :items="clientsPartners" />
+        <p v-else class="px-empty">{{ t('public.home.clientsPartners.empty') }}</p>
       </div>
     </section>
 

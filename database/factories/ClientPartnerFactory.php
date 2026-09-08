@@ -25,6 +25,7 @@ class ClientPartnerFactory extends Factory
             'website' => fake()->optional()->url(),
             'ordering' => fake()->numberBetween(0, 20),
             'is_active' => true,
+            'show_on_homepage' => true,
         ];
     }
 

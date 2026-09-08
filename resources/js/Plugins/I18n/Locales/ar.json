@@ -515,6 +515,7 @@
       "orderingLabel": "الترتيب",
       "orderingPlaceholder": "أدخل ترتيب العرض",
       "activeLabel": "نشط",
+      "showOnHomepageLabel": "إظهار في الصفحة الرئيسية",
       "imageLabel": "الصورة",
       "chooseFile": "اختر ملف",
       "noFileChosen": "لم يتم اختيار ملف",
@@ -568,6 +569,7 @@
       "orderingLabel": "الترتيب",
       "orderingPlaceholder": "أدخل ترتيب العرض",
       "activeLabel": "نشط",
+      "showOnHomepageLabel": "إظهار في الصفحة الرئيسية",
       "logoLabel": "الشعار",
       "chooseFile": "اختر ملف",
       "noFileChosen": "لم يتم اختيار ملف",
@@ -836,6 +838,8 @@
       "custom_manufacturing": "التصنيع حسب الطلب",
       "industries": "القطاعات",
       "about": "من نحن",
+      "team_members": "أعضاء الفريق",
+      "clients_partners": "العملاء والشركاء",
       "gallery": "المعرض",
       "contact_cta": "دعوة التواصل",
       "contact_form": "نموذج التواصل"
@@ -1120,7 +1124,21 @@
         "empty": "ستظهر أعضاء الفريق هنا بعد نشرهم.",
         "noBio": "عضو فريق ملتزم بالجودة والتميز.",
         "viewLinkedIn": "ملف LinkedIn",
-        "viewAll": "تعرّف على الفريق كاملاً"
+        "viewAll": "تعرّف على الفريق كاملاً",
+        "carouselLabel": "عرض أعضاء الفريق",
+        "previous": "أعضاء الفريق السابقون",
+        "next": "أعضاء الفريق التاليون"
+      },
+      "clientsPartners": {
+        "title": "العملاء والشركاء",
+        "subtitle": "مؤسسات وشركاء استراتيجيون نعمل معهم.",
+        "empty": "سيظهر العملاء والشركاء هنا بعد نشرهم.",
+        "carouselLabel": "عرض العملاء والشركاء",
+        "previous": "العملاء والشركاء السابقون",
+        "next": "العملاء والشركاء التاليون",
+        "clientBadge": "عميل",
+        "partnerBadge": "شريك",
+        "visitWebsite": "زيارة الموقع"
       },
       "clients": {
         "title": "عملاؤنا",

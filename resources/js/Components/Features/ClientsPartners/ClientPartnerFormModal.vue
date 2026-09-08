@@ -36,6 +36,7 @@ const form = useForm({
   website: '',
   ordering: '',
   is_active: true,
+  show_on_homepage: true,
   image: null,
 })
 
@@ -76,12 +77,14 @@ watch(() => props.isOpen, async (isOpen) => {
     form.website = props.clientPartner.website || ''
     form.ordering = props.clientPartner.ordering ?? ''
     form.is_active = Boolean(props.clientPartner.is_active)
+    form.show_on_homepage = Boolean(props.clientPartner.show_on_homepage ?? true)
     form.image = null
     logoPreview.value = props.clientPartner.attachment?.asset_path || null
     logoFileName.value = null
   } else {
     form.reset()
     form.is_active = true
+    form.show_on_homepage = true
     form.type = props.nextData?.type || props.defaultType || 'client'
     form.ordering = props.nextData?.ordering ?? ''
     logoPreview.value = null
@@ -195,6 +198,11 @@ const handleClose = () => {
               <p v-if="form.errors.is_active" class="form-error ms-2">{{ form.errors.is_active }}</p>
             </div>
           </div>
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input v-model="form.show_on_homepage" type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+            <span class="text-label">{{ t('clientsPartners.form.showOnHomepageLabel') }}</span>
+          </label>
+          <p v-if="form.errors.show_on_homepage" class="form-error">{{ form.errors.show_on_homepage }}</p>
           <div>
             <label class="form-label text-label">
               {{ t('clientsPartners.form.logoLabel') }} <span v-if="!clientPartner" class="text-red-500">*</span>

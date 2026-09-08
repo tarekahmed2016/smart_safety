@@ -29,6 +29,7 @@ class TeamMemberFactory extends Factory
             'linkedin_url' => fake()->optional()->url(),
             'ordering' => fake()->numberBetween(0, 20),
             'is_active' => true,
+            'show_on_homepage' => true,
         ];
     }
 

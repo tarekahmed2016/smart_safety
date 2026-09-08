@@ -29,6 +29,7 @@ class PublicHomeController extends Controller
             'services' => $this->publicHomeService->getActiveServices(),
             'projects' => $this->publicHomeService->getHomepageGalleryProjects(),
             'teamMembers' => $this->publicHomeService->getActiveTeamMembers(),
+            'clientsPartners' => $this->publicHomeService->getHomepageClientsPartners(),
             'clients' => $this->publicHomeService->getActiveClients(),
             'partners' => $this->publicHomeService->getActivePartners(),
             'certificates' => $this->publicHomeService->getActiveCertificates(),

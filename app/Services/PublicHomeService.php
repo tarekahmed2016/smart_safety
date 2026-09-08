@@ -330,6 +330,7 @@ class PublicHomeService
         return TeamMember::query()
             ->with('attachment')
             ->where('is_active', true)
+            ->where('show_on_homepage', true)
             ->orderBy('ordering')
             ->get()
             ->map(fn (TeamMember $teamMember) => [
@@ -356,6 +357,7 @@ class PublicHomeService
             ->with('attachment')
             ->where('type', ClientPartnerType::Client)
             ->where('is_active', true)
+            ->where('show_on_homepage', true)
             ->orderBy('ordering')
             ->get()
             ->map(fn (ClientPartner $record) => [
@@ -376,6 +378,7 @@ class PublicHomeService
             ->with('attachment')
             ->where('type', ClientPartnerType::Partner)
             ->where('is_active', true)
+            ->where('show_on_homepage', true)
             ->orderBy('ordering')
             ->get()
             ->map(fn (ClientPartner $record) => [
@@ -383,6 +386,28 @@ class PublicHomeService
                 'name_en' => $record->name_en,
                 'website' => $record->website,
                 'logo' => $record->attachment?->asset_path,
+            ])
+            ->values();
+    }
+
+    /**
+     * @return Collection<int, array{type: string, name_ar: string, name_en: string, website: string|null, logo: string|null, ordering: int}>
+     */
+    public function getHomepageClientsPartners(): Collection
+    {
+        return ClientPartner::query()
+            ->with('attachment')
+            ->where('is_active', true)
+            ->where('show_on_homepage', true)
+            ->orderBy('ordering')
+            ->get()
+            ->map(fn (ClientPartner $record) => [
+                'type' => $record->type->value,
+                'name_ar' => $record->name_ar,
+                'name_en' => $record->name_en,
+                'website' => $record->website,
+                'logo' => $record->attachment?->asset_path,
+                'ordering' => $record->ordering,
             ])
             ->values();
     }
