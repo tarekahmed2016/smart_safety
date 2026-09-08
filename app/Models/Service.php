@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
-#[Fillable(['name_ar', 'name_en', 'description_ar', 'description_en', 'ordering', 'is_active'])]
+#[Fillable(['name_ar', 'name_en', 'description_ar', 'description_en', 'ordering', 'is_active', 'show_on_homepage'])]
 class Service extends Model
 {
     /** @use HasFactory<ServiceFactory> */
@@ -28,6 +28,7 @@ class Service extends Model
     {
         return [
             'is_active' => 'boolean',
+            'show_on_homepage' => 'boolean',
             'ordering' => 'integer',
         ];
     }

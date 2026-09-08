@@ -13,6 +13,7 @@ class PublicHomeController extends Controller
     public function __invoke(): Response
     {
         return Inertia::render('Public/HomePage', [
+            'homepageSections' => $this->publicHomeService->getHomepageSections(),
             'companyInfo' => $this->publicHomeService->getPublicCompanyInfo(),
             'heroSlides' => $this->publicHomeService->getActiveHeroSlides(),
             'featureBand' => $this->publicHomeService->getActiveFeatureBand(),
@@ -22,9 +23,11 @@ class PublicHomeController extends Controller
             'industries' => $this->publicHomeService->getActiveIndustries(),
             'customManufacturing' => $this->publicHomeService->getActiveCustomManufacturing(),
             'stats' => $this->publicHomeService->getActiveStats(),
-            'products' => $this->publicHomeService->getActiveProducts(limit: 5),
+            'products' => $this->publicHomeService->getActiveProducts(
+                limit: $this->publicHomeService->getHomepageProductsLimit(),
+            ),
             'services' => $this->publicHomeService->getActiveServices(),
-            'projects' => $this->publicHomeService->getActiveProjects(),
+            'projects' => $this->publicHomeService->getHomepageGalleryProjects(),
             'teamMembers' => $this->publicHomeService->getActiveTeamMembers(),
             'clients' => $this->publicHomeService->getActiveClients(),
             'partners' => $this->publicHomeService->getActivePartners(),

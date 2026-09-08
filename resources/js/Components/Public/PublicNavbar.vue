@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { usePage } from '@inertiajs/vue3'
 import { resolveBilingualField } from '../../Composables/useBilingualContent.js'
 import { usePublicNavLinks } from '../../Composables/usePublicNavLinks.js'
+import { companyNameBrandCssVars, companyNameBrandArFontStyle, companyNameBrandEnFontStyle } from '../../Composables/useCompanyNameBrandTypography.js'
 
 const { t, locale } = useI18n()
 const page = usePage()
@@ -12,10 +13,14 @@ const { navLinks, isHomePage } = usePublicNavLinks()
 const companyInfo = computed(() => page.props.companyInfo || {})
 const businessCta = computed(() => page.props.businessCta || null)
 
-const companyName = computed(() =>
-  resolveBilingualField(companyInfo.value, 'name', locale.value) || t('public.home.defaultCompanyName')
-)
-const logo = computed(() => companyInfo.value.logo || companyInfo.value.attachment?.asset_path || '/images/plastex/logo.svg')
+const companyNameAr = computed(() => companyInfo.value.name_ar || t('public.home.defaultCompanyName'))
+const companyNameEn = computed(() => companyInfo.value.name_en || 'Creative Industry')
+const brandDir = computed(() => (locale.value === 'ar' ? 'rtl' : 'ltr'))
+const brandNameStyle = computed(() => companyNameBrandCssVars(companyInfo.value))
+const brandNameArStyle = computed(() => companyNameBrandArFontStyle(companyInfo.value))
+const brandNameEnStyle = computed(() => companyNameBrandEnFontStyle(companyInfo.value))
+const logoAlt = computed(() => companyNameAr.value || companyNameEn.value)
+const logo = computed(() => companyInfo.value.logo || companyInfo.value.attachment?.asset_path || '/images/creative-industry/logo.jpeg')
 
 const quoteLabel = computed(() => {
   const text = businessCta.value ? resolveBilingualField(businessCta.value, 'cta_text', locale.value) : ''
@@ -59,12 +64,16 @@ const otherLocaleCode = computed(() => (locale.value === 'ar' ? 'en' : 'ar'))
   <header class="px-header">
     <nav class="px-nav" :aria-label="t('public.home.nav.main')">
       <div class="px-nav-inner">
-        <a :href="homeHref" class="px-nav-brand" @click="closeMenu">
+        <a :href="homeHref" class="px-nav-brand" :dir="brandDir" @click="closeMenu">
           <img
             :src="logo"
-            :alt="companyName"
+            :alt="logoAlt"
             class="px-nav-logo"
           />
+          <span class="px-nav-brand-names" :style="brandNameStyle">
+            <span class="px-nav-brand-name-ar" dir="rtl" :style="brandNameArStyle">{{ companyNameAr }}</span>
+            <span class="px-nav-brand-name-en" dir="ltr" :style="brandNameEnStyle">{{ companyNameEn }}</span>
+          </span>
         </a>
 
         <div class="px-nav-links" role="list">

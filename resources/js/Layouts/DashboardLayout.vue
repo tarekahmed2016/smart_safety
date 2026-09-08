@@ -37,6 +37,21 @@ const menuItems = computed(() => {
                 route: route('users.index'),
             },
             {
+                label: t('sidebar.companyInfo'),
+                icon: faBuilding,
+                route: route('company-info.index'),
+            },
+            {
+                label: t('sidebar.homepageSections'),
+                icon: faBullhorn,
+                route: route('homepage-sections.index'),
+            },
+            {
+                label: t('sidebar.homepagePromos'),
+                icon: faBullhorn,
+                route: route('homepage-promos.index'),
+            },
+            {
                 label: t('sidebar.services'),
                 icon: faBriefcase,
                 route: route('services.index'),
@@ -77,11 +92,6 @@ const menuItems = computed(() => {
                 route: route('hero-slides.index'),
             },
             {
-                label: t('sidebar.homepagePromos'),
-                icon: faBullhorn,
-                route: route('homepage-promos.index'),
-            },
-            {
                 label: t('sidebar.pages'),
                 icon: faFileLines,
                 route: route('pages.index'),
@@ -95,7 +105,6 @@ const menuItems = computed(() => {
                 label: t('sidebar.settings'),
                 icon: faCog,
                 children: [
-                    { label: t('sidebar.companyInfo'), icon: faBuilding, route: route('company-info.index') },
                     { label: t('sidebar.themeColors'), icon: faPalette, route: route('theme-colors.index') },
                     { label: t('sidebar.customAssets'), icon: faCode, route: route('custom-assets.index') },
                 ],

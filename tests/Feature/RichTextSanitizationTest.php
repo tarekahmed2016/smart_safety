@@ -23,6 +23,7 @@ test('server sanitizes malicious script tags before storing project description'
             'description_en' => '<p>Safe</p>',
             'ordering' => 1,
             'is_active' => true,
+            'show_on_homepage' => true,
             'image' => UploadedFile::fake()->image('project.jpg'),
         ])
         ->assertRedirect();
@@ -42,6 +43,7 @@ test('server sanitizes event handlers before storing project description', funct
             'description_en' => '<p onclick="alert(1)">Hello</p>',
             'ordering' => 1,
             'is_active' => true,
+            'show_on_homepage' => true,
             'image' => UploadedFile::fake()->image('project.jpg'),
         ])
         ->assertRedirect();
@@ -58,6 +60,7 @@ test('server sanitizes javascript urls before storing project description', func
             'description_en' => '<a href="https://example.org">Safe link</a>',
             'ordering' => 1,
             'is_active' => true,
+            'show_on_homepage' => true,
             'image' => UploadedFile::fake()->image('project.jpg'),
         ])
         ->assertRedirect();
@@ -79,6 +82,7 @@ test('server preserves safe rich text formatting in stored project description',
             'description_en' => '<p><em>Text</em></p>',
             'ordering' => 1,
             'is_active' => true,
+            'show_on_homepage' => true,
             'image' => UploadedFile::fake()->image('project.jpg'),
         ])
         ->assertRedirect();

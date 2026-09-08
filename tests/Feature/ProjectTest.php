@@ -30,6 +30,7 @@ function validProjectPayload(array $overrides = []): array
         'project_url' => 'https://example.com/project',
         'ordering' => 0,
         'is_active' => true,
+        'show_on_homepage' => true,
         'image' => UploadedFile::fake()->image('project.jpg'),
     ], $overrides);
 }

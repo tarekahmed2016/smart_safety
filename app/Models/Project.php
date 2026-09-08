@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
     'project_url',
     'ordering',
     'is_active',
+    'show_on_homepage',
 ])]
 class Project extends Model
 {
@@ -40,6 +41,7 @@ class Project extends Model
         return [
             'project_date' => 'date',
             'is_active' => 'boolean',
+            'show_on_homepage' => 'boolean',
             'ordering' => 'integer',
         ];
     }

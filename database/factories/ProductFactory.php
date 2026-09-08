@@ -28,6 +28,7 @@ class ProductFactory extends Factory
             'description_en' => fake()->optional()->sentence(),
             'ordering' => fake()->numberBetween(0, 20),
             'is_active' => true,
+            'show_on_homepage' => true,
         ];
     }
 

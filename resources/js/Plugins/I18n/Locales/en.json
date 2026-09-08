@@ -49,6 +49,7 @@
     "contactMessages": "Contact Messages",
     "heroSlides": "Hero Slides",
     "homepagePromos": "Homepage Promos",
+    "homepageSections": "Homepage Sections",
     "pages": "Pages",
     "newsletterSubscribers": "Newsletter Subscribers",
     "companyInfo": "Company Info",
@@ -131,6 +132,23 @@
       "nameArPlaceholder": "Enter company name in Arabic",
       "nameEnLabel": "Name (English)",
       "nameEnPlaceholder": "Enter company name in English",
+      "companyNameTextColorLabel": "Header company name color",
+      "companyNameTextColorHelp": "Applies to the Arabic and English names shown beside the logo. Leave empty to use the default color.",
+      "companyNameTextColorPlaceholder": "#0B1F3A",
+      "companyNameBrandTitle": "Header company name style",
+      "companyNameBrandHelp": "Controls the typography of the company name beside the logo in the public header.",
+      "companyNameFontFamilyArLabel": "Arabic font family",
+      "companyNameFontFamilyArPlaceholder": "Cairo, Tajawal, Arial, sans-serif",
+      "companyNameFontFamilyEnLabel": "English font family",
+      "companyNameFontFamilyEnPlaceholder": "Poppins, Arial, sans-serif",
+      "companyNameFontFamilyHelp": "Leave empty to use the site default font for that line.",
+      "companyNameFontSizeArLabel": "Arabic font size (rem)",
+      "companyNameFontSizeEnLabel": "English font size (rem)",
+      "companyNameFontWeightLabel": "Font weight",
+      "companyNameFontWeightDefault": "Default (800)",
+      "companyNameBrandPreviewLabel": "Live preview",
+      "companyNameBrandPreviewLtr": "English layout (LTR)",
+      "companyNameBrandPreviewRtl": "Arabic layout (RTL)",
       "phoneLabel": "Phone",
       "phonePlaceholder": "Enter phone number",
       "emailLabel": "Email",
@@ -331,6 +349,7 @@
       "orderingLabel": "Ordering",
       "orderingPlaceholder": "Enter display order",
       "activeLabel": "Active",
+      "showOnHomepageLabel": "Show on homepage",
       "imageLabel": "Image",
       "chooseFile": "Choose File",
       "noFileChosen": "No file chosen",
@@ -381,6 +400,7 @@
       "orderingLabel": "Ordering",
       "orderingPlaceholder": "Enter display order",
       "activeLabel": "Active",
+      "showOnHomepageLabel": "Show on homepage",
       "imageLabel": "Image",
       "chooseFile": "Choose File",
       "noFileChosen": "No file chosen",
@@ -435,6 +455,7 @@
       "orderingLabel": "Ordering",
       "orderingPlaceholder": "Enter display order",
       "activeLabel": "Active",
+      "showOnHomepageLabel": "Show on homepage",
       "imageLabel": "Image",
       "chooseFile": "Choose File",
       "noFileChosen": "No file chosen",
@@ -780,6 +801,33 @@
       "deleteButton": "Delete"
     }
   },
+  "homepageSections": {
+    "pageTitle": "Homepage Sections",
+    "pageSubtitle": "Control homepage section visibility, order, and optional titles",
+    "help": "Drag sections or use the move buttons to reorder the homepage. Hidden sections will not appear on the public homepage.",
+    "dragHint": "Drag to reorder or use the move buttons.",
+    "visibleLabel": "Visible",
+    "titleArLabel": "Section title (Arabic)",
+    "titleEnLabel": "Section title (English)",
+    "titleArPlaceholder": "Optional override",
+    "titleEnPlaceholder": "Optional override",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "save": "Save changes",
+    "saving": "Saving...",
+    "types": {
+      "hero": "Hero",
+      "features": "Features",
+      "products": "Products",
+      "services": "Services",
+      "custom_manufacturing": "Custom Manufacturing",
+      "industries": "Industries",
+      "about": "About",
+      "gallery": "Gallery",
+      "contact_cta": "Contact CTA",
+      "contact_form": "Contact Form"
+    }
+  },
   "pages": {
     "pageTitle": "Pages Management",
     "pageSubtitle": "Manage informational public pages and main menu placement",
@@ -859,7 +907,7 @@
   },
   "public": {
     "home": {
-      "defaultCompanyName": "PLASTEX",
+      "defaultCompanyName": "Creative Industry",
       "brand": {
         "tagline": "Plastic products manufacturing"
       },
@@ -935,7 +983,10 @@
         "empty": "Products will appear here once they are published.",
         "noDescription": "Contact us to learn more about this product.",
         "details": "Product details",
-        "viewAll": "View all products"
+        "viewAll": "View all products",
+        "carouselLabel": "Products carousel",
+        "previous": "Previous products",
+        "next": "Next products"
       },
       "manufacturing": {
         "title": "Custom manufacturing",

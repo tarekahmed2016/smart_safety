@@ -49,6 +49,7 @@
     "contactMessages": "رسائل التواصل",
     "heroSlides": "شرائح العرض الرئيسي",
     "homepagePromos": "عروض الصفحة الرئيسية",
+    "homepageSections": "أقسام الصفحة الرئيسية",
     "pages": "الصفحات",
     "newsletterSubscribers": "مشتركو النشرة",
     "companyInfo": "بيانات الشركة",
@@ -131,6 +132,23 @@
       "nameArPlaceholder": "أدخل اسم الشركة بالعربية",
       "nameEnLabel": "الاسم (إنجليزي)",
       "nameEnPlaceholder": "أدخل اسم الشركة بالإنجليزية",
+      "companyNameTextColorLabel": "لون اسم الشركة في الهيدر",
+      "companyNameTextColorHelp": "يُطبَّق على الاسم العربي والإنجليزي بجانب الشعار. اتركه فارغًا لاستخدام اللون الافتراضي.",
+      "companyNameTextColorPlaceholder": "#0B1F3A",
+      "companyNameBrandTitle": "تنسيق اسم الشركة في الهيدر",
+      "companyNameBrandHelp": "يتحكم في خط اسم الشركة الظاهر بجانب الشعار في الهيدر العام.",
+      "companyNameFontFamilyArLabel": "نوع الخط العربي",
+      "companyNameFontFamilyArPlaceholder": "Cairo, Tajawal, Arial, sans-serif",
+      "companyNameFontFamilyEnLabel": "نوع الخط الإنجليزي",
+      "companyNameFontFamilyEnPlaceholder": "Poppins, Arial, sans-serif",
+      "companyNameFontFamilyHelp": "اتركه فارغًا لاستخدام خط الموقع الافتراضي لذلك السطر.",
+      "companyNameFontSizeArLabel": "حجم الخط العربي (rem)",
+      "companyNameFontSizeEnLabel": "حجم الخط الإنجليزي (rem)",
+      "companyNameFontWeightLabel": "وزن الخط",
+      "companyNameFontWeightDefault": "الافتراضي (800)",
+      "companyNameBrandPreviewLabel": "معاينة مباشرة",
+      "companyNameBrandPreviewLtr": "تخطيط إنجليزي (LTR)",
+      "companyNameBrandPreviewRtl": "تخطيط عربي (RTL)",
       "phoneLabel": "الهاتف",
       "phonePlaceholder": "أدخل رقم الهاتف",
       "emailLabel": "البريد الإلكتروني",
@@ -331,6 +349,7 @@
       "orderingLabel": "الترتيب",
       "orderingPlaceholder": "أدخل ترتيب العرض",
       "activeLabel": "نشط",
+      "showOnHomepageLabel": "إظهار في الصفحة الرئيسية",
       "imageLabel": "الصورة",
       "chooseFile": "اختر ملف",
       "noFileChosen": "لم يتم اختيار ملف",
@@ -381,6 +400,7 @@
       "orderingLabel": "الترتيب",
       "orderingPlaceholder": "أدخل ترتيب العرض",
       "activeLabel": "نشط",
+      "showOnHomepageLabel": "إظهار في الصفحة الرئيسية",
       "imageLabel": "الصورة",
       "chooseFile": "اختر ملف",
       "noFileChosen": "لم يتم اختيار ملف",
@@ -435,6 +455,7 @@
       "orderingLabel": "الترتيب",
       "orderingPlaceholder": "أدخل ترتيب العرض",
       "activeLabel": "نشط",
+      "showOnHomepageLabel": "إظهار في الصفحة الرئيسية",
       "imageLabel": "الصورة",
       "chooseFile": "اختر ملف",
       "noFileChosen": "لم يتم اختيار ملف",
@@ -780,6 +801,33 @@
       "deleteButton": "حذف"
     }
   },
+  "homepageSections": {
+    "pageTitle": "أقسام الصفحة الرئيسية",
+    "pageSubtitle": "التحكم في إظهار الأقسام وترتيبها والعناوين الاختيارية",
+    "help": "اسحب الأقسام أو استخدم أزرار التحريك لإعادة ترتيب الصفحة الرئيسية. الأقسام المخفية لن تظهر في الموقع العام.",
+    "dragHint": "اسحب لإعادة الترتيب أو استخدم أزرار التحريك.",
+    "visibleLabel": "ظاهر",
+    "titleArLabel": "عنوان القسم (عربي)",
+    "titleEnLabel": "عنوان القسم (إنجليزي)",
+    "titleArPlaceholder": "عنوان اختياري",
+    "titleEnPlaceholder": "عنوان اختياري",
+    "moveUp": "تحريك لأعلى",
+    "moveDown": "تحريك لأسفل",
+    "save": "حفظ التغييرات",
+    "saving": "جاري الحفظ...",
+    "types": {
+      "hero": "القسم الرئيسي",
+      "features": "المزايا",
+      "products": "المنتجات",
+      "services": "الخدمات",
+      "custom_manufacturing": "التصنيع حسب الطلب",
+      "industries": "القطاعات",
+      "about": "من نحن",
+      "gallery": "المعرض",
+      "contact_cta": "دعوة التواصل",
+      "contact_form": "نموذج التواصل"
+    }
+  },
   "pages": {
     "pageTitle": "إدارة الصفحات",
     "pageSubtitle": "إدارة الصفحات العامة ومكان ظهورها في القائمة الرئيسية",
@@ -859,7 +907,7 @@
   },
   "public": {
     "home": {
-      "defaultCompanyName": "PLASTEX",
+      "defaultCompanyName": "الصناعة الإبداعية",
       "brand": {
         "tagline": "لصناعة المنتجات البلاستيكية"
       },
@@ -935,7 +983,10 @@
         "empty": "ستظهر المنتجات هنا بعد نشرها.",
         "noDescription": "تواصل معنا لمعرفة المزيد عن هذا المنتج.",
         "details": "تفاصيل المنتج",
-        "viewAll": "عرض كل المنتجات"
+        "viewAll": "عرض كل المنتجات",
+        "carouselLabel": "عرض منتجات متحرك",
+        "previous": "المنتجات السابقة",
+        "next": "المنتجات التالية"
       },
       "manufacturing": {
         "title": "التصنيع حسب الطلب",

@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
     'cta_text_en',
     'cta_url',
     'layout_variant',
+    'icon',
     'ordering',
     'is_active',
 ])]

@@ -3,6 +3,8 @@ import { usePage } from '@inertiajs/vue3'
 import { useI18n } from 'vue-i18n'
 import { useCompanyInfo } from '../../Composables/useCompanyInfo.js'
 import RichTextEditor from '../../Components/Common/asyncRichTextEditor.js'
+import CompanyHomepageSettingsFields from '../../Components/Features/CompanyInfo/CompanyHomepageSettingsFields.vue'
+import CompanyNameBrandSettingsFields from '../../Components/Features/CompanyInfo/CompanyNameBrandSettingsFields.vue'
 
 const { t } = useI18n()
 const page = usePage()
@@ -13,7 +15,11 @@ const {
   logoInput,
   logoFileName,
   logoPreview,
+  aboutImageInput,
+  aboutImageFileName,
+  aboutImagePreview,
   handleLogoChange,
+  handleAboutImageChange,
   updateCompanyInfo
 } = useCompanyInfo(companyInfo)
 
@@ -53,6 +59,8 @@ const submit = () => updateCompanyInfo()
                 <p v-if="form.errors.name_en" class="form-error">{{ form.errors.name_en }}</p>
               </div>
             </div>
+
+            <CompanyNameBrandSettingsFields :form="form" :logo-preview="logoPreview" />
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -130,6 +138,8 @@ const submit = () => updateCompanyInfo()
             </div>
           </section>
 
+          <CompanyHomepageSettingsFields :form="form" />
+
           <!-- C. About -->
           <section class="space-y-4">
             <h2 class="text-card-title text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-2">
@@ -162,6 +172,23 @@ const submit = () => updateCompanyInfo()
                 />
                 <p v-if="form.errors.about_en" class="form-error">{{ form.errors.about_en }}</p>
               </div>
+            </div>
+
+            <div>
+              <label class="form-label text-label">About section image</label>
+              <div class="flex items-center gap-4">
+                <img v-if="aboutImagePreview" :src="aboutImagePreview" alt="About image preview" class="h-24 w-40 rounded-md border border-gray-200 dark:border-gray-700 object-cover" />
+                <div class="flex flex-col gap-1.5 flex-1">
+                  <button type="button" @click="aboutImageInput.click()" class="btn btn-secondary px-4 py-2 w-full cursor-pointer">
+                    {{ t('companyInfo.form.chooseFile') }}
+                  </button>
+                  <span class="text-sm text-muted muted-color truncate text-center">
+                    {{ aboutImageFileName || t('companyInfo.form.noFileChosen') }}
+                  </span>
+                  <input ref="aboutImageInput" type="file" accept="image/*" @change="handleAboutImageChange" class="hidden" />
+                </div>
+              </div>
+              <p v-if="form.errors.about_image" class="form-error">{{ form.errors.about_image }}</p>
             </div>
           </section>
 

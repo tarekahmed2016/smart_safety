@@ -44,8 +44,8 @@ test('homepage works when company info does not exist', function () {
     $this->get(route('home'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->where('companyInfo.name_ar', 'بلاستكس')
-            ->where('companyInfo.name_en', 'PLASTEX')
+            ->where('companyInfo.name_ar', 'الصناعة الإبداعية')
+            ->where('companyInfo.name_en', 'Creative Industry')
             ->where('companyInfo.phone', '')
             ->where('companyInfo.email', '')
             ->where('companyInfo.logo', null));
@@ -69,6 +69,7 @@ test('homepage passes company info correctly', function () {
         'name_en' => 'Acme Corp',
         'phone' => '0123456789',
         'email' => 'hello@acme.test',
+        'company_name_text_color' => '#E63946',
     ]);
 
     Storage::fake('public');
@@ -83,9 +84,45 @@ test('homepage passes company info correctly', function () {
         ->assertInertia(fn (Assert $page) => $page
             ->where('companyInfo.name_ar', 'شركة أكme')
             ->where('companyInfo.name_en', 'Acme Corp')
+            ->where('companyInfo.company_name_text_color', '#E63946')
             ->where('companyInfo.phone', '0123456789')
             ->where('companyInfo.email', 'hello@acme.test')
             ->where('companyInfo.logo', asset('storage/'.$path)));
+});
+
+test('homepage exposes empty company name text color when unset', function () {
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('companyInfo.company_name_text_color', '')
+            ->where('companyInfo.company_name_font_family_ar', '')
+            ->where('companyInfo.company_name_font_family_en', '')
+            ->where('companyInfo.company_name_font_size_ar', null)
+            ->where('companyInfo.company_name_font_size_en', null)
+            ->where('companyInfo.company_name_font_weight', null));
+});
+
+test('homepage exposes company name brand typography from cms', function () {
+    CompanyInfo::create([
+        'name_ar' => 'الصناعة الإبداعية',
+        'name_en' => 'Creative Industry',
+        'company_name_font_family_ar' => 'Cairo, sans-serif',
+        'company_name_font_family_en' => 'Poppins, sans-serif',
+        'company_name_font_size_ar' => 1.05,
+        'company_name_font_size_en' => 0.78,
+        'company_name_font_weight' => 700,
+        'company_name_text_color' => '#112233',
+    ]);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('companyInfo.company_name_font_family_ar', 'Cairo, sans-serif')
+            ->where('companyInfo.company_name_font_family_en', 'Poppins, sans-serif')
+            ->where('companyInfo.company_name_font_size_ar', 1.05)
+            ->where('companyInfo.company_name_font_size_en', 0.78)
+            ->where('companyInfo.company_name_font_weight', 700)
+            ->where('companyInfo.company_name_text_color', '#112233'));
 });
 
 test('homepage shows only active services in ordering', function () {
@@ -233,7 +270,7 @@ test('authenticated users can still view the public homepage', function () {
         ->assertInertia(fn (Assert $page) => $page->component('Public/HomePage', false));
 });
 
-test('homepage shows only active products up to five in ordering', function () {
+test('homepage shows all active products in ordering', function () {
     Storage::fake('public');
 
     $first = Product::factory()->create([
@@ -270,7 +307,7 @@ test('homepage shows only active products up to five in ordering', function () {
     $this->get(route('home'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->has('products', 5)
+            ->has('products', 7)
             ->where('products.0.name_en', 'First Product')
             ->where('products.0.slug', 'first-product')
             ->where('products.0.image', asset('storage/'.$path))

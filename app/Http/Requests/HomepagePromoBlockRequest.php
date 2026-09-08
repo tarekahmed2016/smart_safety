@@ -69,6 +69,7 @@ class HomepagePromoBlockRequest extends FormRequest
             'layout_variant' => ['nullable', Rule::enum(HomepagePromoLayout::class)],
             'ordering' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['required', 'boolean'],
+            'icon' => ['nullable', 'string', 'max:50'],
             'image' => SafeRasterImage::rules(required: $requiresImage),
             'badge_image' => SafeRasterImage::rules(required: false),
             'remove_badge' => ['nullable', 'boolean'],

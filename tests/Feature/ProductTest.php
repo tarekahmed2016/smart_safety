@@ -27,6 +27,7 @@ function validProductPayload(array $overrides = []): array
         'description_en' => 'Product description',
         'ordering' => 0,
         'is_active' => true,
+        'show_on_homepage' => true,
         'image' => UploadedFile::fake()->image('product.jpg'),
     ], $overrides);
 }

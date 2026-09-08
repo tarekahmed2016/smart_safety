@@ -129,6 +129,7 @@ test('service create update and delete are logged over http', function () {
             'description_en' => 'Professional consulting support.',
             'ordering' => 0,
             'is_active' => true,
+            'show_on_homepage' => true,
             'image' => UploadedFile::fake()->image('service.jpg'),
         ])
         ->assertRedirect();

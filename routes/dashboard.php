@@ -7,6 +7,7 @@ use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\CustomAssetsController;
 use App\Http\Controllers\HeroSlideController;
 use App\Http\Controllers\HomepagePromoBlockController;
+use App\Http\Controllers\HomepageSectionController;
 use App\Http\Controllers\NewsletterSubscriberController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
@@ -54,6 +55,8 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/hero-slides-next-ordering', [HeroSlideController::class, 'getNextOrdering'])->name('hero-slides.next-ordering');
     Route::resource('/homepage-promos', HomepagePromoBlockController::class)->except(['show', 'create', 'edit']);
     Route::get('/homepage-promos-next-ordering', [HomepagePromoBlockController::class, 'getNextOrdering'])->name('homepage-promos.next-ordering');
+    Route::get('/homepage-sections', [HomepageSectionController::class, 'index'])->name('homepage-sections.index');
+    Route::put('/homepage-sections', [HomepageSectionController::class, 'update'])->name('homepage-sections.update');
     Route::get('/newsletter-subscribers', [NewsletterSubscriberController::class, 'index'])->name('newsletter-subscribers.index');
     Route::delete('/newsletter-subscribers/{newsletterSubscriber}', [NewsletterSubscriberController::class, 'destroy'])->name('newsletter-subscribers.destroy');
     Route::put('/newsletter-subscribers/{newsletterSubscriber}/unsubscribe', [NewsletterSubscriberController::class, 'unsubscribe'])->name('newsletter-subscribers.unsubscribe');

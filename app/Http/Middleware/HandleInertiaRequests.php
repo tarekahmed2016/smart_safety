@@ -49,6 +49,7 @@ class HandleInertiaRequests extends Middleware
                     }
 
                     $companyInfo->logo = $companyInfo->attachment?->asset_path;
+                    $companyInfo->about_image = $companyInfo->aboutAttachment?->asset_path;
                 },
             ),
             'businessCta' => fn () => app(PublicHomeService::class)->getActiveBusinessCta(),

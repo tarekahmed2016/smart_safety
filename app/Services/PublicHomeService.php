@@ -20,6 +20,7 @@ class PublicHomeService
         public CompanyInfoService $companyInfoService,
         public HeroSlideService $heroSlideService,
         public HomepagePromoBlockService $homepagePromoBlockService,
+        public HomepageSectionService $homepageSectionService,
         public ProductService $productService,
     ) {}
 
@@ -34,12 +35,60 @@ class PublicHomeService
         return [
             'name_ar' => $companyInfo->name_ar ?? '',
             'name_en' => $companyInfo->name_en ?? '',
+            'company_name_text_color' => $companyInfo->company_name_text_color ?? '',
+            'company_name_font_family_ar' => $companyInfo->company_name_font_family_ar ?? '',
+            'company_name_font_family_en' => $companyInfo->company_name_font_family_en ?? '',
+            'company_name_font_size_ar' => $companyInfo->company_name_font_size_ar !== null && $companyInfo->company_name_font_size_ar !== ''
+                ? (float) $companyInfo->company_name_font_size_ar
+                : null,
+            'company_name_font_size_en' => $companyInfo->company_name_font_size_en !== null && $companyInfo->company_name_font_size_en !== ''
+                ? (float) $companyInfo->company_name_font_size_en
+                : null,
+            'company_name_font_weight' => $companyInfo->company_name_font_weight !== null && $companyInfo->company_name_font_weight !== ''
+                ? (int) $companyInfo->company_name_font_weight
+                : null,
             'phone' => $companyInfo->phone ?? '',
             'email' => $companyInfo->email ?? '',
             'hero_title_ar' => $companyInfo->hero_title_ar ?? '',
             'hero_title_en' => $companyInfo->hero_title_en ?? '',
             'hero_description_ar' => $companyInfo->hero_description_ar ?? '',
             'hero_description_en' => $companyInfo->hero_description_en ?? '',
+            'hero_highlight_ar' => $companyInfo->hero_highlight_ar ?? '',
+            'hero_highlight_en' => $companyInfo->hero_highlight_en ?? '',
+            'hero_primary_cta_text_ar' => $companyInfo->hero_primary_cta_text_ar ?? '',
+            'hero_primary_cta_text_en' => $companyInfo->hero_primary_cta_text_en ?? '',
+            'hero_primary_cta_url' => $companyInfo->hero_primary_cta_url ?? '',
+            'hero_secondary_cta_text_ar' => $companyInfo->hero_secondary_cta_text_ar ?? '',
+            'hero_secondary_cta_text_en' => $companyInfo->hero_secondary_cta_text_en ?? '',
+            'hero_secondary_cta_url' => $companyInfo->hero_secondary_cta_url ?? '',
+            'products_section_title_ar' => $companyInfo->products_section_title_ar ?? '',
+            'products_section_title_en' => $companyInfo->products_section_title_en ?? '',
+            'products_homepage_limit' => (int) ($companyInfo->products_homepage_limit ?? 8),
+            'industries_section_title_ar' => $companyInfo->industries_section_title_ar ?? '',
+            'industries_section_title_en' => $companyInfo->industries_section_title_en ?? '',
+            'about_section_title_ar' => $companyInfo->about_section_title_ar ?? '',
+            'about_section_title_en' => $companyInfo->about_section_title_en ?? '',
+            'about_cta_text_ar' => $companyInfo->about_cta_text_ar ?? '',
+            'about_cta_text_en' => $companyInfo->about_cta_text_en ?? '',
+            'about_cta_url' => $companyInfo->about_cta_url ?? '',
+            'gallery_section_title_ar' => $companyInfo->gallery_section_title_ar ?? '',
+            'gallery_section_title_en' => $companyInfo->gallery_section_title_en ?? '',
+            'contact_section_title_ar' => $companyInfo->contact_section_title_ar ?? '',
+            'contact_section_title_en' => $companyInfo->contact_section_title_en ?? '',
+            'contact_section_subtitle_ar' => $companyInfo->contact_section_subtitle_ar ?? '',
+            'contact_section_subtitle_en' => $companyInfo->contact_section_subtitle_en ?? '',
+            'footer_description_ar' => $companyInfo->footer_description_ar ?? '',
+            'footer_description_en' => $companyInfo->footer_description_en ?? '',
+            'footer_newsletter_title_ar' => $companyInfo->footer_newsletter_title_ar ?? '',
+            'footer_newsletter_title_en' => $companyInfo->footer_newsletter_title_en ?? '',
+            'footer_newsletter_description_ar' => $companyInfo->footer_newsletter_description_ar ?? '',
+            'footer_newsletter_description_en' => $companyInfo->footer_newsletter_description_en ?? '',
+            'footer_newsletter_button_ar' => $companyInfo->footer_newsletter_button_ar ?? '',
+            'footer_newsletter_button_en' => $companyInfo->footer_newsletter_button_en ?? '',
+            'footer_newsletter_placeholder_ar' => $companyInfo->footer_newsletter_placeholder_ar ?? '',
+            'footer_newsletter_placeholder_en' => $companyInfo->footer_newsletter_placeholder_en ?? '',
+            'footer_copyright_ar' => $companyInfo->footer_copyright_ar ?? '',
+            'footer_copyright_en' => $companyInfo->footer_copyright_en ?? '',
             'about_ar' => $companyInfo->about_ar ?? '',
             'about_en' => $companyInfo->about_en ?? '',
             'vision_ar' => $companyInfo->vision_ar ?? '',
@@ -61,7 +110,53 @@ class PublicHomeService
             'custom_css' => $companyInfo->custom_css ?? '',
             'custom_js' => $companyInfo->custom_js ?? '',
             'logo' => $companyInfo->attachment?->asset_path,
+            'about_image' => $companyInfo->aboutAttachment?->asset_path,
         ];
+    }
+
+    public function getHomepageProductsLimit(): ?int
+    {
+        $companyInfo = $this->companyInfoService->getCompanyInfo();
+        $limit = (int) ($companyInfo->products_homepage_limit ?? 8);
+
+        return $limit > 0 ? $limit : null;
+    }
+
+    /**
+     * @return Collection<int, array{key: string, type: string, title_ar: string, title_en: string, settings: array<string, mixed>}>
+     */
+    public function getHomepageSections(): Collection
+    {
+        return $this->homepageSectionService->getVisibleSectionsForPublic();
+    }
+
+    /**
+     * @return Collection<int, array<string, mixed>>
+     */
+    public function getHomepageProducts(?int $limit = null): Collection
+    {
+        $query = Product::query()
+            ->with('attachment')
+            ->where('is_active', true)
+            ->where('show_on_homepage', true)
+            ->orderBy('ordering');
+
+        if ($limit !== null) {
+            $query->limit($limit);
+        }
+
+        return $query
+            ->get()
+            ->map(fn (Product $product) => $this->productService->mapForPublic($product))
+            ->values();
+    }
+
+    /**
+     * @return Collection<int, array<string, mixed>>
+     */
+    public function getActiveProducts(?int $limit = null): Collection
+    {
+        return $this->getHomepageProducts($limit);
     }
 
     /**
@@ -131,18 +226,13 @@ class PublicHomeService
     /**
      * @return Collection<int, array<string, mixed>>
      */
-    public function getActiveProducts(?int $limit = null): Collection
+    public function getHomepageGalleryProducts(): Collection
     {
-        $query = Product::query()
+        return Product::query()
             ->with('attachment')
             ->where('is_active', true)
-            ->orderBy('ordering');
-
-        if ($limit !== null) {
-            $query->limit($limit);
-        }
-
-        return $query
+            ->where('show_on_homepage', true)
+            ->orderBy('ordering')
             ->get()
             ->map(fn (Product $product) => $this->productService->mapForPublic($product))
             ->values();
@@ -170,6 +260,7 @@ class PublicHomeService
         return Service::query()
             ->with('attachment')
             ->where('is_active', true)
+            ->where('show_on_homepage', true)
             ->orderBy('ordering')
             ->get()
             ->map(fn (Service $service) => [
@@ -178,6 +269,31 @@ class PublicHomeService
                 'description_ar' => $service->description_ar,
                 'description_en' => $service->description_en,
                 'image' => $service->attachment?->asset_path,
+            ])
+            ->values();
+    }
+
+    /**
+     * @return Collection<int, array{name_ar: string, name_en: string, client_name_ar: string|null, client_name_en: string|null, description_ar: string|null, description_en: string|null, project_date: string|null, project_url: string|null, image: string|null}>
+     */
+    public function getHomepageGalleryProjects(): Collection
+    {
+        return Project::query()
+            ->with('attachment')
+            ->where('is_active', true)
+            ->where('show_on_homepage', true)
+            ->orderBy('ordering')
+            ->get()
+            ->map(fn (Project $project) => [
+                'name_ar' => $project->name_ar,
+                'name_en' => $project->name_en,
+                'client_name_ar' => $project->client_name_ar,
+                'client_name_en' => $project->client_name_en,
+                'description_ar' => $project->description_ar,
+                'description_en' => $project->description_en,
+                'project_date' => $project->project_date?->format('Y-m-d'),
+                'project_url' => $project->project_url,
+                'image' => $project->attachment?->asset_path,
             ])
             ->values();
     }

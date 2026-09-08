@@ -44,6 +44,7 @@ const form = useForm({
   cta_text_en: '',
   cta_url: '',
   layout_variant: 'content_left',
+  icon: '',
   ordering: '',
   is_active: true,
   image: null,
@@ -72,6 +73,8 @@ const imageRequired = computed(() => {
 
 const showMainImage = computed(() => ['feature_band', 'promo_strip', 'custom_manufacturing', 'industry'].includes(form.type))
 const showBadgeImage = computed(() => form.type === 'feature_band')
+const showIconField = computed(() => ['feature_highlight', 'industry'].includes(form.type))
+const iconOptions = ['handshake', 'experience', 'flexible', 'quality', 'food', 'agri', 'industry', 'packing', 'home', 'medical']
 
 const typeLabel = (promoType) => locale.value === 'ar' ? promoType.label : promoType.name
 
@@ -120,6 +123,7 @@ watch(() => props.isOpen, async (isOpen) => {
     form.cta_text_ar = props.homepagePromo.cta_text_ar || ''
     form.cta_text_en = props.homepagePromo.cta_text_en || ''
     form.cta_url = props.homepagePromo.cta_url || ''
+    form.icon = props.homepagePromo.icon || ''
     form.layout_variant = props.homepagePromo.layout_variant?.value || props.homepagePromo.layout_variant || 'content_left'
     form.ordering = props.homepagePromo.ordering ?? ''
     form.is_active = Boolean(props.homepagePromo.is_active)
@@ -298,6 +302,15 @@ const handleClose = () => {
             :placeholder="t('homepagePromos.form.ctaUrlPlaceholder')"
           />
           <p v-if="form.errors.cta_url" class="form-error">{{ form.errors.cta_url }}</p>
+        </div>
+
+        <div v-if="showIconField">
+          <label class="form-label text-label">Icon</label>
+          <select v-model="form.icon" class="form-input text-body">
+            <option value="">Default</option>
+            <option v-for="icon in iconOptions" :key="icon" :value="icon">{{ icon }}</option>
+          </select>
+          <p v-if="form.errors.icon" class="form-error">{{ form.errors.icon }}</p>
         </div>
 
         <div class="grid grid-cols-2 gap-4">

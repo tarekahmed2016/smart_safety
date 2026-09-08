@@ -26,6 +26,12 @@ class ProductRequest extends FormRequest
             ]);
         }
 
+        if ($this->has('show_on_homepage')) {
+            $this->merge([
+                'show_on_homepage' => filter_var($this->input('show_on_homepage'), FILTER_VALIDATE_BOOLEAN),
+            ]);
+        }
+
         if ($this->input('slug') === '') {
             $this->merge(['slug' => null]);
         }
@@ -62,6 +68,7 @@ class ProductRequest extends FormRequest
             'description_en' => ['nullable', 'string', 'max:15000'],
             'ordering' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['required', 'boolean'],
+            'show_on_homepage' => [$this->isMethod('post') ? 'required' : 'sometimes', 'boolean'],
             'image' => SafeRasterImage::rules(required: $this->isMethod('post')),
         ];
     }

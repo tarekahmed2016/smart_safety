@@ -31,6 +31,7 @@ const form = useForm({
   description_en: '',
   ordering: '',
   is_active: true,
+  show_on_homepage: true,
   image: null,
 })
 
@@ -55,12 +56,14 @@ watch(() => props.isOpen, (isOpen) => {
     form.description_en = props.service.description_en || ''
     form.ordering = props.service.ordering ?? ''
     form.is_active = Boolean(props.service.is_active)
+    form.show_on_homepage = Boolean(props.service.show_on_homepage)
     form.image = null
     imagePreview.value = props.service.attachment?.asset_path || null
     imageFileName.value = null
   } else {
     form.reset()
     form.is_active = true
+    form.show_on_homepage = true
     form.ordering = props.nextOrdering ?? ''
     imagePreview.value = null
     imageFileName.value = null
@@ -202,6 +205,18 @@ const handleClose = () => {
             </label>
             <p v-if="form.errors.is_active" class="form-error ms-2">{{ form.errors.is_active }}</p>
           </div>
+        </div>
+
+        <div>
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input
+              v-model="form.show_on_homepage"
+              type="checkbox"
+              class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <span class="text-label">{{ t('services.form.showOnHomepageLabel') }}</span>
+          </label>
+          <p v-if="form.errors.show_on_homepage" class="form-error">{{ form.errors.show_on_homepage }}</p>
         </div>
 
         <div>

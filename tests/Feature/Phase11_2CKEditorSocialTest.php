@@ -28,6 +28,7 @@ test('admin can save rich text html in service description fields', function () 
             'description_en' => $html,
             'ordering' => 1,
             'is_active' => true,
+            'show_on_homepage' => true,
             'image' => UploadedFile::fake()->image('service.jpg'),
         ])
         ->assertRedirect();
@@ -75,6 +76,7 @@ test('hero slide update route pattern remains record specific post with method s
             'description_en' => '<p>Rich text</p>',
             'ordering' => 1,
             'is_active' => true,
+            'show_on_homepage' => true,
         ])
         ->assertRedirect();
 

@@ -27,6 +27,7 @@ test('server removes script tags from stored rich html', function () {
             'show_in_main_menu' => false,
             'menu_order' => 100,
             'is_active' => true,
+            'show_on_homepage' => true,
         ])
         ->assertRedirect();
 
@@ -47,6 +48,7 @@ test('server removes image event handlers from stored rich html', function () {
             'show_in_main_menu' => false,
             'menu_order' => 100,
             'is_active' => true,
+            'show_on_homepage' => true,
         ])
         ->assertRedirect();
 
@@ -72,6 +74,7 @@ test('server removes javascript urls from stored rich html', function () {
             'description_en' => '<a href="https://example.org">Safe</a>',
             'ordering' => 1,
             'is_active' => true,
+            'show_on_homepage' => true,
             'image' => UploadedFile::fake()->image('project.jpg'),
         ])
         ->assertRedirect();
@@ -109,6 +112,7 @@ HTML;
             'show_in_main_menu' => false,
             'menu_order' => 100,
             'is_active' => true,
+            'show_on_homepage' => true,
         ])
         ->assertRedirect();
 

@@ -42,8 +42,8 @@ test('admin can view company info with empty defaults', function () {
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('CompanyInfo/CompanyInfoPage', false)
-            ->where('companyInfo.name_ar', 'بلاستكس')
-            ->where('companyInfo.name_en', 'PLASTEX')
+            ->where('companyInfo.name_ar', 'الصناعة الإبداعية')
+            ->where('companyInfo.name_en', 'Creative Industry')
             ->where('companyInfo.email', ''));
 });
 
@@ -170,4 +170,84 @@ test('company info rejects oversized logo', function () {
             'logo' => UploadedFile::fake()->image('logo.jpg')->size(5000),
         ])
         ->assertSessionHasErrors('logo');
+});
+
+test('admin can save company name text color', function () {
+    $this->actingAs($this->admin)
+        ->put(route('company-info.update'), [
+            'name_ar' => 'شركة',
+            'name_en' => 'Company',
+            'company_name_text_color' => '#E63946',
+        ])
+        ->assertRedirect();
+
+    expect(CompanyInfo::first()->company_name_text_color)->toBe('#E63946');
+});
+
+test('company info rejects invalid company name text color', function () {
+    $this->actingAs($this->admin)
+        ->put(route('company-info.update'), [
+            'name_ar' => 'شركة',
+            'name_en' => 'Company',
+            'company_name_text_color' => 'red',
+        ])
+        ->assertSessionHasErrors('company_name_text_color');
+});
+
+test('admin can save company name brand typography settings', function () {
+    $this->actingAs($this->admin)
+        ->put(route('company-info.update'), [
+            'name_ar' => 'الصناعة الإبداعية',
+            'name_en' => 'Creative Industry',
+            'company_name_font_family_ar' => 'Cairo, sans-serif',
+            'company_name_font_family_en' => 'Poppins, sans-serif',
+            'company_name_font_size_ar' => 1.1,
+            'company_name_font_size_en' => 0.8,
+            'company_name_font_weight' => 700,
+            'company_name_text_color' => '#123456',
+        ])
+        ->assertRedirect();
+
+    $companyInfo = CompanyInfo::first();
+
+    expect($companyInfo->company_name_font_family_ar)->toBe('Cairo, sans-serif')
+        ->and($companyInfo->company_name_font_family_en)->toBe('Poppins, sans-serif')
+        ->and((float) $companyInfo->company_name_font_size_ar)->toBe(1.1)
+        ->and((float) $companyInfo->company_name_font_size_en)->toBe(0.8)
+        ->and($companyInfo->company_name_font_weight)->toBe(700)
+        ->and($companyInfo->company_name_text_color)->toBe('#123456');
+});
+
+test('company info rejects invalid company name font weight', function () {
+    $this->actingAs($this->admin)
+        ->put(route('company-info.update'), [
+            'name_ar' => 'شركة',
+            'name_en' => 'Company',
+            'company_name_font_weight' => 350,
+        ])
+        ->assertSessionHasErrors('company_name_font_weight');
+});
+
+test('company info rejects invalid company name font size', function () {
+    $this->actingAs($this->admin)
+        ->put(route('company-info.update'), [
+            'name_ar' => 'شركة',
+            'name_en' => 'Company',
+            'company_name_font_size_ar' => 5,
+        ])
+        ->assertSessionHasErrors('company_name_font_size_ar');
+});
+
+test('company info rejects invalid company name font family', function () {
+    $this->actingAs($this->admin)
+        ->put(route('company-info.update'), [
+            'name_ar' => 'شركة',
+            'name_en' => 'Company',
+            'company_name_font_family_ar' => 'Cairo; drop table users;',
+            'company_name_font_family_en' => 'Poppins<script>',
+        ])
+        ->assertSessionHasErrors([
+            'company_name_font_family_ar',
+            'company_name_font_family_en',
+        ]);
 });

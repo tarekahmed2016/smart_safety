@@ -27,7 +27,7 @@ const currentRoute = computed(() => page.url)
 const companyName = computed(() =>
   resolveBilingualField(page.props.companyInfo, 'name', locale.value) || t('sidebar.adminPanel')
 )
-const companyLogo = computed(() => page.props.companyInfo?.logo || page.props.companyInfo?.attachment?.asset_path || null)
+const companyLogo = computed(() => page.props.companyInfo?.logo || page.props.companyInfo?.attachment?.asset_path || '/images/creative-industry/logo.jpeg')
 const companyInitial = computed(() => companyName.value.trim().charAt(0).toUpperCase() || 'A')
 
 const isCollapsed = computed(() => props.collapsed)

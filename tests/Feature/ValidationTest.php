@@ -134,6 +134,7 @@ test('service creation requires name_ar', function () {
             'name_en' => 'Valid Service',
             'ordering' => 0,
             'is_active' => true,
+            'show_on_homepage' => true,
             'image' => UploadedFile::fake()->image('service.jpg'),
         ])
         ->assertSessionHasErrors('name_ar');
@@ -146,6 +147,7 @@ test('service creation requires name_en', function () {
             'name_en' => '',
             'ordering' => 0,
             'is_active' => true,
+            'show_on_homepage' => true,
             'image' => UploadedFile::fake()->image('service.jpg'),
         ])
         ->assertSessionHasErrors('name_en');
@@ -158,6 +160,7 @@ test('service creation rejects name_ar over max length', function () {
             'name_en' => 'Valid Service',
             'ordering' => 0,
             'is_active' => true,
+            'show_on_homepage' => true,
             'image' => UploadedFile::fake()->image('service.jpg'),
         ])
         ->assertSessionHasErrors('name_ar');
@@ -171,6 +174,7 @@ test('service creation rejects description_en over max length', function () {
             'description_en' => str_repeat('a', 15001),
             'ordering' => 0,
             'is_active' => true,
+            'show_on_homepage' => true,
             'image' => UploadedFile::fake()->image('service.jpg'),
         ])
         ->assertSessionHasErrors('description_en');
@@ -183,6 +187,7 @@ test('service creation rejects invalid ordering', function () {
             'name_en' => 'Valid Service',
             'ordering' => -1,
             'is_active' => true,
+            'show_on_homepage' => true,
             'image' => UploadedFile::fake()->image('service.jpg'),
         ])
         ->assertSessionHasErrors('ordering');

@@ -27,6 +27,7 @@ class HomepagePromoBlockService
         'cta_text_en',
         'cta_url',
         'layout_variant',
+        'icon',
         'ordering',
         'is_active',
     ];
@@ -254,6 +255,7 @@ class HomepagePromoBlockService
             'layout_variant' => $block->layout_variant instanceof HomepagePromoLayout
                 ? $block->layout_variant->value
                 : (string) ($block->layout_variant ?? 'content_left'),
+            'icon' => $block->icon,
             'image' => $block->attachment?->asset_path,
             'badge_image' => $block->badgeAttachment?->asset_path,
         ];

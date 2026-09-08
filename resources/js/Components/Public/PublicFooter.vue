@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useForm, usePage } from '@inertiajs/vue3'
 import { resolveBilingualField } from '../../Composables/useBilingualContent.js'
 import { plainTextFromHtml } from '../../Composables/useRichText.js'
+import { formatHomepageTemplate, resolveHomepageField, resolveHomepagePlainField } from '../../Composables/useHomepageContent.js'
 import { usePublicNavLinks } from '../../Composables/usePublicNavLinks.js'
 import SocialLinks from './SocialLinks.vue'
 
@@ -17,8 +18,29 @@ const companyName = computed(() =>
 )
 const aboutText = computed(() => plainTextFromHtml(resolveBilingualField(companyInfo.value, 'about', locale.value)))
 const heroDescription = computed(() => plainTextFromHtml(resolveBilingualField(companyInfo.value, 'hero_description', locale.value)))
-const footerDescription = computed(() => aboutText.value || heroDescription.value || t('public.home.footer.tagline'))
-const logo = computed(() => companyInfo.value.logo || companyInfo.value.attachment?.asset_path || '/images/plastex/logo.svg')
+const footerDescription = computed(() =>
+  resolveHomepagePlainField(companyInfo.value, 'footer_description', locale.value)
+    || aboutText.value
+    || heroDescription.value
+    || t('public.home.footer.tagline')
+)
+const newsletterTitle = computed(() =>
+  resolveHomepageField(companyInfo.value, 'footer_newsletter_title', locale.value, t('public.home.newsletter.title'))
+)
+const newsletterSubtitle = computed(() =>
+  resolveHomepageField(companyInfo.value, 'footer_newsletter_description', locale.value, t('public.home.newsletter.subtitle'))
+)
+const newsletterPlaceholder = computed(() =>
+  resolveHomepageField(companyInfo.value, 'footer_newsletter_placeholder', locale.value, t('public.home.newsletter.emailPlaceholder'))
+)
+const newsletterButton = computed(() =>
+  resolveHomepageField(companyInfo.value, 'footer_newsletter_button', locale.value, t('public.home.newsletter.submit'))
+)
+const copyrightText = computed(() => formatHomepageTemplate(
+  resolveHomepageField(companyInfo.value, 'footer_copyright', locale.value, t('public.home.footer.copyright')),
+  { year, company: companyName.value },
+))
+const logo = computed(() => companyInfo.value.logo || companyInfo.value.attachment?.asset_path || '/images/creative-industry/logo.jpeg')
 const addressText = computed(() => resolveBilingualField(companyInfo.value, 'address', locale.value))
 const year = new Date().getFullYear()
 
@@ -94,11 +116,11 @@ const submitNewsletter = () => {
             </div>
 
             <div>
-                <h4>{{ t('public.home.newsletter.title') }}</h4>
-                <p class="px-footer-newsletter-copy">{{ t('public.home.newsletter.subtitle') }}</p>
+                <h4>{{ newsletterTitle }}</h4>
+                <p class="px-footer-newsletter-copy">{{ newsletterSubtitle }}</p>
                 <form class="px-footer-newsletter" @submit.prevent="submitNewsletter">
                     <label class="sr-only" for="footer-newsletter-email">
-                        {{ t('public.home.newsletter.emailPlaceholder') }}
+                        {{ newsletterPlaceholder }}
                     </label>
                     <input
                         id="footer-newsletter-email"
@@ -106,10 +128,10 @@ const submitNewsletter = () => {
                         type="email"
                         required
                         maxlength="255"
-                        :placeholder="t('public.home.newsletter.emailPlaceholder')"
+                        :placeholder="newsletterPlaceholder"
                     />
                     <button type="submit" class="px-btn px-btn-green" :disabled="newsletterForm.processing">
-                        {{ newsletterForm.processing ? t('public.home.newsletter.submitting') : t('public.home.newsletter.submit') }}
+                        {{ newsletterForm.processing ? t('public.home.newsletter.submitting') : newsletterButton }}
                     </button>
                 </form>
                 <p v-if="newsletterForm.errors.email" class="px-form-error">
@@ -126,7 +148,7 @@ const submitNewsletter = () => {
 
         <div class="px-footer-bottom">
             <div class="px-container">
-                {{ t('public.home.footer.copyright', { year, company: companyName }) }}
+                {{ copyrightText }}
             </div>
         </div>
     </footer>

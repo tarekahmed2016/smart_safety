@@ -20,8 +20,13 @@ class CompanyInfoController extends Controller
 
     public function update(CompanyInfoRequest $request)
     {
-        $companyInfo = CompanyInfo::with('attachment')->first();
-        $this->companyInfoService->update(companyInfo: $companyInfo, data: $request->safe()->except('logo'), logo: $request->file('logo'));
+        $companyInfo = CompanyInfo::with(['attachment', 'aboutAttachment'])->first();
+        $this->companyInfoService->update(
+            companyInfo: $companyInfo,
+            data: $request->safe()->except(['logo', 'about_image']),
+            logo: $request->file('logo'),
+            aboutImage: $request->file('about_image'),
+        );
 
         return redirect()->back()->with('success', 'تم التحديث بنجاح');
     }

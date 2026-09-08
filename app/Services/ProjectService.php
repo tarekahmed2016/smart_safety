@@ -25,6 +25,7 @@ class ProjectService
         'project_url',
         'ordering',
         'is_active',
+        'show_on_homepage',
     ];
 
     public function __construct(public ActivityLogService $activityLogService) {}

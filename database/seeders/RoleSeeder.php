@@ -53,6 +53,8 @@ class RoleSeeder extends Seeder
             'contact-messages.update',
             'contact-messages.delete',
             'settings.update',
+            'homepage-sections.view',
+            'homepage-sections.update',
             'pages.view',
             'pages.create',
             'pages.update',

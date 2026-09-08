@@ -1,9 +1,54 @@
 import { ref } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 
+const homepageDefaults = {
+  hero_highlight_ar: '',
+  hero_highlight_en: '',
+  hero_primary_cta_text_ar: '',
+  hero_primary_cta_text_en: '',
+  hero_primary_cta_url: '',
+  hero_secondary_cta_text_ar: '',
+  hero_secondary_cta_text_en: '',
+  hero_secondary_cta_url: '',
+  products_section_title_ar: '',
+  products_section_title_en: '',
+  products_homepage_limit: 8,
+  industries_section_title_ar: '',
+  industries_section_title_en: '',
+  about_section_title_ar: '',
+  about_section_title_en: '',
+  about_cta_text_ar: '',
+  about_cta_text_en: '',
+  about_cta_url: '',
+  gallery_section_title_ar: '',
+  gallery_section_title_en: '',
+  contact_section_title_ar: '',
+  contact_section_title_en: '',
+  contact_section_subtitle_ar: '',
+  contact_section_subtitle_en: '',
+  footer_description_ar: '',
+  footer_description_en: '',
+  footer_newsletter_title_ar: '',
+  footer_newsletter_title_en: '',
+  footer_newsletter_description_ar: '',
+  footer_newsletter_description_en: '',
+  footer_newsletter_button_ar: '',
+  footer_newsletter_button_en: '',
+  footer_newsletter_placeholder_ar: '',
+  footer_newsletter_placeholder_en: '',
+  footer_copyright_ar: '',
+  footer_copyright_en: '',
+}
+
 const defaultFormValues = (companyInfo) => ({
   name_ar: companyInfo.name_ar || '',
   name_en: companyInfo.name_en || '',
+  company_name_text_color: companyInfo.company_name_text_color || '',
+  company_name_font_family_ar: companyInfo.company_name_font_family_ar || '',
+  company_name_font_family_en: companyInfo.company_name_font_family_en || '',
+  company_name_font_size_ar: companyInfo.company_name_font_size_ar ?? '',
+  company_name_font_size_en: companyInfo.company_name_font_size_en ?? '',
+  company_name_font_weight: companyInfo.company_name_font_weight ? String(companyInfo.company_name_font_weight) : '',
   phone: companyInfo.phone || '',
   email: companyInfo.email || '',
   hero_title_ar: companyInfo.hero_title_ar || '',
@@ -27,7 +72,12 @@ const defaultFormValues = (companyInfo) => ({
   tiktok: companyInfo.tiktok || '',
   snapchat: companyInfo.snapchat || '',
   whatsapp: companyInfo.whatsapp || '',
+  ...Object.fromEntries(Object.entries(homepageDefaults).map(([key, fallback]) => [
+    key,
+    companyInfo[key] ?? fallback,
+  ])),
   logo: null,
+  about_image: null,
 })
 
 export function useCompanyInfo(companyInfo) {
@@ -36,6 +86,9 @@ export function useCompanyInfo(companyInfo) {
   const logoInput = ref(null)
   const logoFileName = ref(null)
   const logoPreview = ref(companyInfo.attachment?.asset_path || null)
+  const aboutImageInput = ref(null)
+  const aboutImageFileName = ref(null)
+  const aboutImagePreview = ref(companyInfo.about_attachment?.asset_path || companyInfo.about_image || null)
 
   const handleLogoChange = (event) => {
     const file = event.target.files[0] || null
@@ -44,14 +97,25 @@ export function useCompanyInfo(companyInfo) {
     logoPreview.value = file ? URL.createObjectURL(file) : (companyInfo.attachment?.asset_path || null)
   }
 
-  // Laravel can't parse multipart bodies on native PUT requests, so spoof the method via POST
+  const handleAboutImageChange = (event) => {
+    const file = event.target.files[0] || null
+    form.about_image = file
+    aboutImageFileName.value = file?.name || null
+    aboutImagePreview.value = file
+      ? URL.createObjectURL(file)
+      : (companyInfo.about_attachment?.asset_path || companyInfo.about_image || null)
+  }
+
   const updateCompanyInfo = (options = {}) =>
     form.transform((data) => ({ ...data, _method: 'put' })).post(route('company-info.update'), {
       preserveScroll: true,
       onSuccess: () => {
         form.logo = null
+        form.about_image = null
         logoFileName.value = null
+        aboutImageFileName.value = null
         if (logoInput.value) logoInput.value.value = ''
+        if (aboutImageInput.value) aboutImageInput.value.value = ''
       },
       ...options,
     })
@@ -61,7 +125,11 @@ export function useCompanyInfo(companyInfo) {
     logoInput,
     logoFileName,
     logoPreview,
+    aboutImageInput,
+    aboutImageFileName,
+    aboutImagePreview,
     handleLogoChange,
+    handleAboutImageChange,
     updateCompanyInfo,
   }
 }

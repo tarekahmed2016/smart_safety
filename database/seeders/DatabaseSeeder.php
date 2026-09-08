@@ -18,6 +18,9 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             UserSeeder::class,
             PlastexContentSeeder::class,
+            CreativeIndustryContentSeeder::class,
+            HomepageContentSeeder::class,
+            HomepageSectionSeeder::class,
         ]);
     }
 }

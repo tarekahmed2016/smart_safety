@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\CompanyInfo;
+use App\Support\HomepageContentDefaults;
 use App\Support\ThemeColor;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -15,6 +16,12 @@ class CompanyInfoService
     private const COMPANY_INFO_FIELDS = [
         'name_ar',
         'name_en',
+        'company_name_text_color',
+        'company_name_font_family_ar',
+        'company_name_font_family_en',
+        'company_name_font_size_ar',
+        'company_name_font_size_en',
+        'company_name_font_weight',
         'phone',
         'email',
         'hero_title_ar',
@@ -38,6 +45,42 @@ class CompanyInfoService
         'tiktok',
         'snapchat',
         'whatsapp',
+        'hero_highlight_ar',
+        'hero_highlight_en',
+        'hero_primary_cta_text_ar',
+        'hero_primary_cta_text_en',
+        'hero_primary_cta_url',
+        'hero_secondary_cta_text_ar',
+        'hero_secondary_cta_text_en',
+        'hero_secondary_cta_url',
+        'products_section_title_ar',
+        'products_section_title_en',
+        'products_homepage_limit',
+        'industries_section_title_ar',
+        'industries_section_title_en',
+        'about_section_title_ar',
+        'about_section_title_en',
+        'about_cta_text_ar',
+        'about_cta_text_en',
+        'about_cta_url',
+        'gallery_section_title_ar',
+        'gallery_section_title_en',
+        'contact_section_title_ar',
+        'contact_section_title_en',
+        'contact_section_subtitle_ar',
+        'contact_section_subtitle_en',
+        'footer_description_ar',
+        'footer_description_en',
+        'footer_newsletter_title_ar',
+        'footer_newsletter_title_en',
+        'footer_newsletter_description_ar',
+        'footer_newsletter_description_en',
+        'footer_newsletter_button_ar',
+        'footer_newsletter_button_en',
+        'footer_newsletter_placeholder_ar',
+        'footer_newsletter_placeholder_en',
+        'footer_copyright_ar',
+        'footer_copyright_en',
     ];
 
     /**
@@ -76,7 +119,7 @@ class CompanyInfoService
 
     public function getCompanyInfo(): CompanyInfo
     {
-        $companyInfo = CompanyInfo::with('attachment')->first();
+        $companyInfo = CompanyInfo::with(['attachment', 'aboutAttachment'])->first();
 
         if (! $companyInfo) {
             return new CompanyInfo($this->emptyDefaults());
@@ -113,14 +156,25 @@ class CompanyInfoService
     /**
      * @param  array<string, mixed>  $data
      */
-    public function update(?CompanyInfo $companyInfo, array $data, ?UploadedFile $logo = null): CompanyInfo
+    public function update(?CompanyInfo $companyInfo, array $data, ?UploadedFile $logo = null, ?UploadedFile $aboutImage = null): CompanyInfo
     {
-        return $this->persist(
+        if (array_key_exists('products_homepage_limit', $data)) {
+            $data['products_homepage_limit'] = max(0, (int) $data['products_homepage_limit']);
+        }
+
+        $companyInfo = $this->persist(
             companyInfo: $companyInfo,
             data: $data,
             allowedFields: self::COMPANY_INFO_FIELDS,
             logo: $logo,
         );
+
+        if ($aboutImage) {
+            $this->deleteAboutImage(companyInfo: $companyInfo);
+            $this->storeAboutImage(companyInfo: $companyInfo, image: $aboutImage);
+        }
+
+        return $companyInfo;
     }
 
     /**
@@ -153,17 +207,19 @@ class CompanyInfoService
     public function emptyDefaults(): array
     {
         return [
-            'name_ar' => 'بلاستكس',
-            'name_en' => 'PLASTEX',
+            'name_ar' => 'الصناعة الإبداعية',
+            'name_en' => 'Creative Industry',
             'hero_title_ar' => "حلول بلاستيكية\nتصنع مستقبل أفضل",
             'hero_title_en' => "Plastic solutions\nthat build a better future",
             'hero_description_ar' => 'نختص في تصنيع المنتجات البلاستيكية وفق متطلبات العملاء، بمعايير جودة عالية وإنتاج مرن يلبي احتياجات القطاعات المختلفة.',
             'hero_description_en' => 'We specialize in manufacturing plastic products according to customer requirements, with high quality standards and flexible production for diverse sectors.',
-            'about_ar' => 'بلاستكس مصنع متخصص في تصنيع المنتجات البلاستيكية وفق متطلبات العملاء، مع خبرة صناعية واسعة وقدرة إنتاجية مرنة.',
-            'about_en' => 'PLASTEX is a specialized plastic manufacturing factory that delivers customer-driven products with broad industrial experience and flexible production capacity.',
+            'about_ar' => 'الصناعة الإبداعية شركة بإدارة عمانية وكادر مميز من مهندسين عمانيين ذوي خبرة أكثر من عشر سنوات.',
+            'about_en' => 'Creative Industry is an Omani-managed company with a distinguished team of Omani engineers with more than ten years of experience.',
+            ...HomepageContentDefaults::companyInfoFields(),
             ...array_fill_keys(array_diff(self::STRING_FIELDS, ThemeColor::fieldNames(), [
                 'name_ar', 'name_en', 'hero_title_ar', 'hero_title_en',
                 'hero_description_ar', 'hero_description_en', 'about_ar', 'about_en',
+                ...array_keys(HomepageContentDefaults::companyInfoFields()),
             ]), ''),
             ...ThemeColor::DEFAULTS,
         ];
@@ -248,6 +304,27 @@ class CompanyInfoService
     private function deleteLogo(CompanyInfo $companyInfo): void
     {
         $attachment = $companyInfo->attachment;
+        if ($attachment && $attachment->path && Storage::disk('public')->exists($attachment->path)) {
+            Storage::disk('public')->delete($attachment->path);
+        }
+        if ($attachment) {
+            $attachment->delete();
+        }
+    }
+
+    private function storeAboutImage(CompanyInfo $companyInfo, UploadedFile $image): void
+    {
+        $path = $image->store('company-info/about', 'public');
+        $companyInfo->aboutAttachment()->create([
+            'name' => $image->getClientOriginalName(),
+            'path' => $path,
+            'collection' => 'about',
+        ]);
+    }
+
+    private function deleteAboutImage(CompanyInfo $companyInfo): void
+    {
+        $attachment = $companyInfo->aboutAttachment;
         if ($attachment && $attachment->path && Storage::disk('public')->exists($attachment->path)) {
             Storage::disk('public')->delete($attachment->path);
         }
