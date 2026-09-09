@@ -746,11 +746,118 @@
     }
   },
   "homepagePromos": {
-    "pageTitle": "إدارة عروض الصفحة الرئيسية",
-    "pageSubtitle": "إدارة كتل العروض وأقسام الدعوة للإجراء في الصفحة الرئيسية",
+    "pageTitle": "عروض الصفحة الرئيسية",
+    "pageSubtitle": "إدارة محتوى الصفحة الرئيسية حسب القسم — الإعدادات والعروض وروابط المحتوى المرتبط",
+    "help": "كل بطاقة تمثل قسمًا في الصفحة الرئيسية. يمكن تعديل ظهور الأقسام وترتيبها من صفحة أقسام الصفحة الرئيسية. يتم إدارة المنتجات والخدمات وأعضاء الفريق والعملاء من صفحاتها المخصصة.",
     "searchPlaceholder": "البحث بالعنوان أو الوصف...",
     "addNew": "إضافة عرض جديد",
     "noPromosFound": "لا توجد عروض",
+    "sectionCard": {
+      "visible": "ظاهر",
+      "hidden": "مخفي",
+      "editSectionSettings": "تعديل إعدادات القسم",
+      "addContent": "إضافة محتوى",
+      "contentSettings": "إعدادات محتوى القسم",
+      "sectionItems": "عناصر القسم",
+      "saveSettings": "حفظ الإعدادات",
+      "saving": "جاري الحفظ..."
+    },
+    "items": {
+      "untitled": "عنصر بدون عنوان",
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "visibleLabel": "ظاهر",
+      "moveUp": "تحريك لأعلى",
+      "moveDown": "تحريك لأسفل",
+      "empty": "لا توجد عناصر في هذا القسم بعد."
+    },
+    "settingsFields": {
+      "products_section_title_ar": "عنوان قسم المنتجات (عربي)",
+      "products_section_title_en": "عنوان قسم المنتجات (إنجليزي)",
+      "products_homepage_limit": "حد المنتجات في الصفحة الرئيسية",
+      "industries_section_title_ar": "عنوان قسم القطاعات (عربي)",
+      "industries_section_title_en": "عنوان قسم القطاعات (إنجليزي)",
+      "about_section_title_ar": "عنوان قسم من نحن (عربي)",
+      "about_section_title_en": "عنوان قسم من نحن (إنجليزي)",
+      "about_cta_text_ar": "نص زر من نحن (عربي)",
+      "about_cta_text_en": "نص زر من نحن (إنجليزي)",
+      "about_cta_url": "رابط زر من نحن",
+      "gallery_section_title_ar": "عنوان المعرض (عربي)",
+      "gallery_section_title_en": "عنوان المعرض (إنجليزي)",
+      "contact_section_title_ar": "عنوان قسم التواصل (عربي)",
+      "contact_section_title_en": "عنوان قسم التواصل (إنجليزي)",
+      "contact_section_subtitle_ar": "وصف قسم التواصل (عربي)",
+      "contact_section_subtitle_en": "وصف قسم التواصل (إنجليزي)",
+      "max_items": "الحد الأقصى لصور المعرض"
+    },
+    "sections": {
+      "features": {
+        "titleAr": "المزايا",
+        "titleEn": "Features",
+        "description": "إدارة بطاقات المزايا الرئيسية المعروضة في قسم المزايا.",
+        "manageLink": "إدارة المزايا"
+      },
+      "products": {
+        "titleAr": "المنتجات",
+        "titleEn": "Products",
+        "description": "عناوين قسم المنتجات وعدد المنتجات المعروضة في الصفحة الرئيسية.",
+        "manageLink": "إدارة المنتجات"
+      },
+      "services": {
+        "titleAr": "الخدمات",
+        "titleEn": "Services",
+        "description": "عناوين قسم الخدمات. يتم إدارة عناصر الخدمات من صفحة الخدمات.",
+        "manageLink": "إدارة الخدمات"
+      },
+      "custom_manufacturing": {
+        "titleAr": "التصنيع حسب الطلب",
+        "titleEn": "Custom Manufacturing",
+        "description": "محتوى التصنيع حسب الطلب والصورة وزر الإجراء.",
+        "manageLink": "إدارة التصنيع حسب الطلب"
+      },
+      "industries": {
+        "titleAr": "القطاعات",
+        "titleEn": "Industries",
+        "description": "بطاقات القطاعات مع الأيقونات والصور.",
+        "manageLink": "إدارة القطاعات"
+      },
+      "about": {
+        "titleAr": "من نحن",
+        "titleEn": "About",
+        "description": "عناوين قسم من نحن وزر الإجراء والإحصائيات.",
+        "manageLink": "تعديل محتوى الشركة"
+      },
+      "team_members": {
+        "titleAr": "أعضاء الفريق",
+        "titleEn": "Team Members",
+        "description": "عناوين قسم الفريق. يتم إدارة الأعضاء وظهورهم في الصفحة الرئيسية من صفحة أعضاء الفريق.",
+        "manageLink": "إدارة أعضاء الفريق"
+      },
+      "clients_partners": {
+        "titleAr": "العملاء والشركاء",
+        "titleEn": "Clients & Partners",
+        "description": "عناوين قسم العملاء والشركاء. يتم إدارة الشعارات والظهور في الصفحة الرئيسية من صفحة العملاء والشركاء.",
+        "manageLink": "إدارة العملاء والشركاء"
+      },
+      "gallery": {
+        "titleAr": "معرض الصور",
+        "titleEn": "Gallery",
+        "description": "عنوان المعرض والحد الأقصى لعدد الصور في الصفحة الرئيسية.",
+        "manageLink": "إدارة مصادر المعرض (المشاريع)"
+      },
+      "contact_cta": {
+        "titleAr": "دعوة التواصل",
+        "titleEn": "Contact CTA",
+        "description": "محتوى بانر دعوة التواصل والصورة والزر.",
+        "manageLink": "إدارة دعوة التواصل"
+      },
+      "contact": {
+        "titleAr": "نموذج التواصل",
+        "titleEn": "Contact Form",
+        "description": "عنوان ووصف قسم نموذج التواصل.",
+        "manageLink": "إعدادات نموذج التواصل"
+      }
+    },
     "filters": {
       "all": "الكل"
     },

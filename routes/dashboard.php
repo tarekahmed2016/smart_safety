@@ -54,8 +54,9 @@ Route::middleware(['admin'])->group(function () {
     Route::delete('/contact-messages/{contactMessage}', [ContactMessageController::class, 'destroy'])->name('contact-messages.destroy');
     Route::resource('/hero-slides', HeroSlideController::class)->except(['show', 'create', 'edit']);
     Route::get('/hero-slides-next-ordering', [HeroSlideController::class, 'getNextOrdering'])->name('hero-slides.next-ordering');
-    Route::resource('/homepage-promos', HomepagePromoBlockController::class)->except(['show', 'create', 'edit']);
+    Route::put('/homepage-promos/section-settings/{sectionKey}', [HomepagePromoBlockController::class, 'updateSectionSettings'])->name('homepage-promos.section-settings.update');
     Route::get('/homepage-promos-next-ordering', [HomepagePromoBlockController::class, 'getNextOrdering'])->name('homepage-promos.next-ordering');
+    Route::resource('/homepage-promos', HomepagePromoBlockController::class)->except(['show', 'create', 'edit']);
     Route::get('/homepage-sections', [HomepageSectionController::class, 'index'])->name('homepage-sections.index');
     Route::put('/homepage-sections', [HomepageSectionController::class, 'update'])->name('homepage-sections.update');
     Route::get('/navigation', [NavigationController::class, 'index'])->name('navigation.index');

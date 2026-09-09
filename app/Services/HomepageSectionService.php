@@ -78,6 +78,37 @@ class HomepageSectionService
         });
     }
 
+    /**
+     * @param  array{title_ar?: string|null, title_en?: string|null, max_items?: int|null}  $data
+     */
+    public function updateSectionContent(string $key, array $data): HomepageSection
+    {
+        $this->ensureDefaultsExist();
+
+        $section = HomepageSection::query()->where('key', $key)->firstOrFail();
+        $payload = [];
+
+        if (array_key_exists('title_ar', $data)) {
+            $payload['title_ar'] = $data['title_ar'];
+        }
+
+        if (array_key_exists('title_en', $data)) {
+            $payload['title_en'] = $data['title_en'];
+        }
+
+        if (array_key_exists('max_items', $data)) {
+            $payload['settings'] = array_merge($section->settings ?? [], [
+                'max_items' => (int) $data['max_items'],
+            ]);
+        }
+
+        if ($payload !== []) {
+            $section->update($payload);
+        }
+
+        return $section->fresh();
+    }
+
     public function ensureDefaultsExist(): void
     {
         if (HomepageSection::query()->exists()) {

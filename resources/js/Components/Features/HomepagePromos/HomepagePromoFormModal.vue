@@ -29,7 +29,11 @@ const props = defineProps({
   promoTypes: {
     type: Array,
     default: () => []
-  }
+  },
+  lockType: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emit = defineEmits(['close'])
@@ -207,7 +211,7 @@ const handleClose = () => {
       </div>
 
       <form @submit.prevent="submit" class="px-6 py-4 space-y-4 max-h-[75vh] overflow-y-auto">
-        <div>
+        <div v-if="!lockType">
           <label class="form-label text-label">
             {{ t('homepagePromos.form.typeLabel') }} <span class="text-red-500">*</span>
           </label>

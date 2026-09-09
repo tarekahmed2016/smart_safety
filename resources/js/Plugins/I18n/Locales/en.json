@@ -746,11 +746,118 @@
     }
   },
   "homepagePromos": {
-    "pageTitle": "Homepage Promos Management",
-    "pageSubtitle": "Manage homepage promo blocks and call-to-action sections",
+    "pageTitle": "Homepage Promos",
+    "pageSubtitle": "Manage homepage content by section — settings, promos, and links to related content",
+    "help": "Each card matches a homepage section. Edit section visibility and order from Homepage Sections. Manage products, services, team members, and partners from their dedicated pages.",
     "searchPlaceholder": "Search by title or description...",
     "addNew": "Add New Promo",
     "noPromosFound": "No homepage promos found",
+    "sectionCard": {
+      "visible": "Visible",
+      "hidden": "Hidden",
+      "editSectionSettings": "Edit section settings",
+      "addContent": "Add content",
+      "contentSettings": "Section content settings",
+      "sectionItems": "Section items",
+      "saveSettings": "Save settings",
+      "saving": "Saving..."
+    },
+    "items": {
+      "untitled": "Untitled item",
+      "active": "Active",
+      "inactive": "Inactive",
+      "visibleLabel": "Visible",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "empty": "No items in this section yet."
+    },
+    "settingsFields": {
+      "products_section_title_ar": "Products section title (Arabic)",
+      "products_section_title_en": "Products section title (English)",
+      "products_homepage_limit": "Homepage products limit",
+      "industries_section_title_ar": "Industries section title (Arabic)",
+      "industries_section_title_en": "Industries section title (English)",
+      "about_section_title_ar": "About section title (Arabic)",
+      "about_section_title_en": "About section title (English)",
+      "about_cta_text_ar": "About CTA label (Arabic)",
+      "about_cta_text_en": "About CTA label (English)",
+      "about_cta_url": "About CTA URL",
+      "gallery_section_title_ar": "Gallery section title (Arabic)",
+      "gallery_section_title_en": "Gallery section title (English)",
+      "contact_section_title_ar": "Contact section title (Arabic)",
+      "contact_section_title_en": "Contact section title (English)",
+      "contact_section_subtitle_ar": "Contact section subtitle (Arabic)",
+      "contact_section_subtitle_en": "Contact section subtitle (English)",
+      "max_items": "Maximum gallery items"
+    },
+    "sections": {
+      "features": {
+        "titleAr": "المزايا",
+        "titleEn": "Features",
+        "description": "Manage feature highlight cards shown in the features section.",
+        "manageLink": "Manage features"
+      },
+      "products": {
+        "titleAr": "المنتجات",
+        "titleEn": "Products",
+        "description": "Homepage products section titles and how many products appear on the homepage.",
+        "manageLink": "Manage products"
+      },
+      "services": {
+        "titleAr": "الخدمات",
+        "titleEn": "Services",
+        "description": "Homepage services section titles. Manage service items from the Services page.",
+        "manageLink": "Manage services"
+      },
+      "custom_manufacturing": {
+        "titleAr": "التصنيع حسب الطلب",
+        "titleEn": "Custom Manufacturing",
+        "description": "Custom manufacturing promo content, image, and call-to-action button.",
+        "manageLink": "Manage custom manufacturing"
+      },
+      "industries": {
+        "titleAr": "القطاعات",
+        "titleEn": "Industries",
+        "description": "Industry cards with icons and images for the industries section.",
+        "manageLink": "Manage industries"
+      },
+      "about": {
+        "titleAr": "من نحن",
+        "titleEn": "About",
+        "description": "About section titles, CTA, and homepage statistics.",
+        "manageLink": "Edit company about content"
+      },
+      "team_members": {
+        "titleAr": "أعضاء الفريق",
+        "titleEn": "Team Members",
+        "description": "Homepage team section titles. Manage team members and homepage visibility from Team Members.",
+        "manageLink": "Manage team members"
+      },
+      "clients_partners": {
+        "titleAr": "العملاء والشركاء",
+        "titleEn": "Clients & Partners",
+        "description": "Homepage clients & partners section titles. Manage logos and homepage visibility from Clients & Partners.",
+        "manageLink": "Manage clients & partners"
+      },
+      "gallery": {
+        "titleAr": "معرض الصور",
+        "titleEn": "Gallery",
+        "description": "Gallery section title and maximum number of images shown on the homepage.",
+        "manageLink": "Manage gallery sources (projects)"
+      },
+      "contact_cta": {
+        "titleAr": "دعوة التواصل",
+        "titleEn": "Contact CTA",
+        "description": "Contact call-to-action banner content, image, and button.",
+        "manageLink": "Manage contact CTA"
+      },
+      "contact": {
+        "titleAr": "نموذج التواصل",
+        "titleEn": "Contact Form",
+        "description": "Contact form section title and subtitle shown above the contact form.",
+        "manageLink": "Manage contact form settings"
+      }
+    },
     "filters": {
       "all": "All"
     },

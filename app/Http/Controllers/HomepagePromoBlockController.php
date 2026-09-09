@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Enums\HomepagePromoType;
 use App\Http\Requests\HomepagePromoBlockRequest;
+use App\Http\Requests\HomepagePromoSectionSettingsRequest;
 use App\Models\HomepagePromoBlock;
 use App\Services\HomepagePromoBlockService;
+use App\Support\HomepagePromoSectionMap;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -13,40 +15,37 @@ class HomepagePromoBlockController extends Controller
 {
     public function __construct(public HomepagePromoBlockService $homepagePromoBlockService) {}
 
-    public function index(Request $request)
+    public function index()
     {
-        $search = (string) $request->input('search', '');
-        $typeFilter = in_array($request->input('type'), array_merge(['all'], HomepagePromoType::values())) ? $request->input('type') : 'all';
-        $sortBy = in_array($request->input('sort_column'), ['id', 'title_ar', 'title_en', 'type', 'ordering', 'created_at']) ? $request->input('sort_column') : 'ordering';
-        $sortDir = $request->input('sort_direction', 'asc') === 'desc' ? 'desc' : 'asc';
-
-        $homepagePromoBlocks = $this->homepagePromoBlockService->getPaginatedPromoBlocks(
-            search: $search,
-            typeFilter: $typeFilter,
-            sortBy: $sortBy,
-            sortDir: $sortDir,
-        );
-
         return Inertia::render('HomepagePromos/HomepagePromosPage', [
-            'homepagePromoBlocks' => $homepagePromoBlocks,
+            'sectionCards' => $this->homepagePromoBlockService->getAdminSectionCards(),
             'promoTypes' => collect(HomepagePromoType::cases())->map(fn (HomepagePromoType $type) => [
                 'value' => $type->value,
                 'label' => $type->label(),
                 'name' => $type->labelEn(),
             ])->values(),
-            'filters' => [
-                'search' => $search,
-                'type' => $typeFilter,
-                'sort_column' => $sortBy,
-                'sort_direction' => $sortDir,
-            ],
         ]);
+    }
+
+    public function updateSectionSettings(HomepagePromoSectionSettingsRequest $request, string $sectionKey)
+    {
+        if (! in_array($sectionKey, HomepagePromoSectionMap::sectionKeys(), true)) {
+            abort(404);
+        }
+
+        $this->homepagePromoBlockService->updateSectionSettings(
+            sectionKey: $sectionKey,
+            companyData: $request->validated('company', []),
+            sectionData: $request->validated('section', []),
+        );
+
+        return redirect()->back()->with('success', 'تم التحديث بنجاح');
     }
 
     public function getNextOrdering(Request $request)
     {
-        $type = HomepagePromoType::tryFrom((string) $request->input('type', HomepagePromoType::FeatureBand->value))
-            ?? HomepagePromoType::FeatureBand;
+        $type = HomepagePromoType::tryFrom((string) $request->input('type', HomepagePromoType::FeatureHighlight->value))
+            ?? HomepagePromoType::FeatureHighlight;
 
         return response()->json([
             'ordering' => nextOrdering(model: $this->homepagePromoBlockService->orderingQuery(type: $type)),

@@ -682,8 +682,7 @@
     display: block;
 }
 
-.px-team-body,
-.px-client-body {
+.px-team-body {
     padding: 1rem 1.1rem 1.2rem;
     display: flex;
     flex-direction: column;
@@ -691,8 +690,17 @@
     flex: 1;
 }
 
-.px-team-body h3,
-.px-client-body h3 {
+.px-client-body {
+    padding: 1rem 1.1rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    text-align: center;
+}
+
+.px-team-body h3 {
     color: var(--px-navy);
     font-size: 1.05rem;
     font-weight: 800;
@@ -711,14 +719,67 @@
     line-height: 1.55;
 }
 
+.px-client-body h3 {
+    width: 100%;
+    text-align: center;
+    color: var(--px-navy);
+    font-size: 1.05rem;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.px-client-body p {
+    width: 100%;
+    text-align: center;
+}
+
+.px-client-body .px-text-link {
+    display: inline-block;
+    align-self: center;
+    margin-inline: auto;
+    text-align: center;
+}
+
 .px-client-badge {
-    align-self: flex-start;
+    align-self: center;
+    margin-inline: auto;
     border-radius: 999px;
     background: rgba(27, 79, 156, 0.1);
     color: var(--px-blue);
     font-size: 0.75rem;
     font-weight: 700;
     padding: 0.2rem 0.55rem;
+}
+
+/* Clients & Partners cards: enforce centered text over carousel/product inheritance */
+.px-clients-partners .px-client-card .px-client-body {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.px-clients-partners .px-client-card .px-client-body .px-client-badge {
+    align-self: center;
+    margin-inline: auto;
+}
+
+.px-clients-partners .px-client-card .px-client-body h3 {
+    width: 100%;
+    text-align: center;
+}
+
+.px-clients-partners .px-client-card .px-client-body p,
+.px-clients-partners .px-client-card .px-client-body .px-text-link {
+    width: 100%;
+    text-align: center;
+}
+
+.px-clients-partners .px-client-card .px-client-body .px-text-link {
+    display: inline-block;
+    width: auto;
+    align-self: center;
+    margin-inline: auto;
 }
 
 .px-product-carousel-nav {
@@ -873,6 +934,11 @@
 .px-product-body .px-text-link {
     margin-top: auto;
     align-self: flex-start;
+}
+
+.px-client-card .px-client-body .px-text-link {
+    margin-top: 0;
+    align-self: center;
 }
 
 .px-section-footer {

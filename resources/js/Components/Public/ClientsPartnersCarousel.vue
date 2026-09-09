@@ -106,3 +106,34 @@ const itemTypeLabel = (item) => (
     </button>
   </div>
 </template>
+
+<style>
+.px-clients-partners .px-client-card .px-client-body {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.px-clients-partners .px-client-card .px-client-body .px-client-badge {
+  align-self: center;
+  margin-inline: auto;
+}
+
+.px-clients-partners .px-client-card .px-client-body h3 {
+  width: 100%;
+  text-align: center;
+}
+
+.px-clients-partners .px-client-card .px-client-body p,
+.px-clients-partners .px-client-card .px-client-body .px-text-link {
+  text-align: center;
+}
+
+.px-clients-partners .px-client-card .px-client-body .px-text-link {
+  display: inline-block;
+  width: auto;
+  align-self: center;
+  margin-inline: auto;
+}
+</style>

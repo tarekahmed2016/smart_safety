@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Enums\HomepagePromoLayout;
 use App\Enums\HomepagePromoType;
+use App\Models\CompanyInfo;
 use App\Models\HomepagePromoBlock;
+use App\Support\HomepagePromoSectionMap;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\UploadedFile;
@@ -32,7 +34,112 @@ class HomepagePromoBlockService
         'is_active',
     ];
 
-    public function __construct(public ActivityLogService $activityLogService) {}
+    public function __construct(
+        public ActivityLogService $activityLogService,
+        public HomepageSectionService $homepageSectionService,
+        public CompanyInfoService $companyInfoService,
+    ) {}
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public function getAdminSectionCards(): array
+    {
+        $sections = $this->homepageSectionService->getAllSections()
+            ->where('key', '!=', 'hero')
+            ->values();
+
+        $blocksByType = HomepagePromoBlock::query()
+            ->with(['attachment', 'badgeAttachment'])
+            ->orderBy('ordering')
+            ->get()
+            ->groupBy(fn (HomepagePromoBlock $block) => $block->type instanceof HomepagePromoType
+                ? $block->type->value
+                : (string) $block->type);
+
+        $companyInfo = $this->companyInfoService->getCompanyInfo();
+
+        return $sections
+            ->filter(fn ($section) => in_array($section->key, HomepagePromoSectionMap::sectionKeys(), true))
+            ->sortBy('ordering')
+            ->values()
+            ->map(function ($section) use ($blocksByType, $companyInfo) {
+                $key = $section->key;
+                $items = collect();
+
+                foreach (HomepagePromoSectionMap::promoTypesForSection($key) as $type) {
+                    $items = $items->merge($blocksByType->get($type->value, collect()));
+                }
+
+                $companySettings = [];
+                foreach (HomepagePromoSectionMap::companySettingFields($key) as $field) {
+                    $companySettings[$field] = $companyInfo->{$field};
+                }
+
+                $sectionSettings = [];
+                if (in_array('title_ar', HomepagePromoSectionMap::sectionSettingFields($key), true)) {
+                    $sectionSettings['title_ar'] = $section->title_ar;
+                    $sectionSettings['title_en'] = $section->title_en;
+                }
+
+                if (in_array('max_items', HomepagePromoSectionMap::sectionSettingFields($key), true)) {
+                    $sectionSettings['max_items'] = (int) (($section->settings ?? [])['max_items'] ?? 8);
+                }
+
+                return [
+                    'key' => $key,
+                    'section' => [
+                        'id' => $section->id,
+                        'key' => $section->key,
+                        'name' => $section->name,
+                        'type' => $section->type instanceof \App\Enums\HomepageSectionType
+                            ? $section->type->value
+                            : (string) $section->type,
+                        'ordering' => $section->ordering,
+                        'is_visible' => (bool) $section->is_visible,
+                        'title_ar' => $section->title_ar,
+                        'title_en' => $section->title_en,
+                        'settings' => $section->settings ?? [],
+                    ],
+                    'items' => $items
+                        ->sortBy('ordering')
+                        ->values()
+                        ->map(fn (HomepagePromoBlock $block) => $this->mapBlockForAdmin($block))
+                        ->all(),
+                    'company_settings' => $companySettings,
+                    'section_settings' => $sectionSettings,
+                    'manage_route' => HomepagePromoSectionMap::manageRouteName($key),
+                    'default_promo_type' => HomepagePromoSectionMap::defaultPromoType($key)?->value,
+                    'can_add_promo' => HomepagePromoSectionMap::canManagePromos($key),
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @param  array<string, mixed>  $companyData
+     * @param  array<string, mixed>  $sectionData
+     */
+    public function updateSectionSettings(string $sectionKey, array $companyData, array $sectionData): void
+    {
+        if ($companyData !== []) {
+            $companyInfo = CompanyInfo::query()->first();
+
+            if ($companyInfo) {
+                $this->companyInfoService->update(
+                    companyInfo: $companyInfo,
+                    data: $companyData,
+                    logo: null,
+                    aboutImage: null,
+                );
+            }
+        }
+
+        if ($sectionData !== []) {
+            $this->homepageSectionService->updateSectionContent($sectionKey, $sectionData);
+        }
+    }
 
     public function getPaginatedPromoBlocks(
         string $search = '',
@@ -236,6 +343,35 @@ class HomepagePromoBlockService
 
             shiftOrdering(model: $this->orderingQuery(type: $type), from: $ordering, direction: 'down');
         });
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function mapBlockForAdmin(HomepagePromoBlock $block): array
+    {
+        return [
+            'id' => $block->id,
+            'type' => $block->type_formatted,
+            'title_ar' => $block->title_ar,
+            'title_en' => $block->title_en,
+            'description_ar' => $block->description_ar,
+            'description_en' => $block->description_en,
+            'cta_text_ar' => $block->cta_text_ar,
+            'cta_text_en' => $block->cta_text_en,
+            'cta_url' => $block->cta_url,
+            'layout_variant' => $block->layout_formatted,
+            'icon' => $block->icon,
+            'ordering' => $block->ordering,
+            'is_active' => (bool) $block->is_active,
+            'is_active_formatted' => $block->is_active_formatted,
+            'attachment' => $block->attachment ? [
+                'asset_path' => $block->attachment->asset_path,
+            ] : null,
+            'badge_attachment' => $block->badgeAttachment ? [
+                'asset_path' => $block->badgeAttachment->asset_path,
+            ] : null,
+        ];
     }
 
     /**
