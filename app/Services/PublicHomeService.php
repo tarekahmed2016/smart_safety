@@ -22,6 +22,7 @@ class PublicHomeService
         public HomepagePromoBlockService $homepagePromoBlockService,
         public HomepageSectionService $homepageSectionService,
         public ProductService $productService,
+        public CompanyGoalService $companyGoalService,
     ) {}
 
     /**
@@ -68,6 +69,8 @@ class PublicHomeService
             'industries_section_title_en' => $companyInfo->industries_section_title_en ?? '',
             'about_section_title_ar' => $companyInfo->about_section_title_ar ?? '',
             'about_section_title_en' => $companyInfo->about_section_title_en ?? '',
+            'about_highlight_ar' => $companyInfo->about_highlight_ar ?? '',
+            'about_highlight_en' => $companyInfo->about_highlight_en ?? '',
             'about_cta_text_ar' => $companyInfo->about_cta_text_ar ?? '',
             'about_cta_text_en' => $companyInfo->about_cta_text_en ?? '',
             'about_cta_url' => $companyInfo->about_cta_url ?? '',
@@ -226,6 +229,22 @@ class PublicHomeService
     /**
      * @return Collection<int, array<string, mixed>>
      */
+    public function getActiveAboutHighlights(): Collection
+    {
+        return $this->homepagePromoBlockService->getActiveBlocksForPublic(HomepagePromoType::AboutHighlight);
+    }
+
+    /**
+     * @return Collection<int, array<string, mixed>>
+     */
+    public function getActiveWhyUsHighlights(): Collection
+    {
+        return $this->homepagePromoBlockService->getActiveBlocksForPublic(HomepagePromoType::WhyUsHighlight);
+    }
+
+    /**
+     * @return Collection<int, array<string, mixed>>
+     */
     public function getHomepageGalleryProducts(): Collection
     {
         return Product::query()
@@ -320,6 +339,14 @@ class PublicHomeService
                 'image' => $project->attachment?->asset_path,
             ])
             ->values();
+    }
+
+    /**
+     * @return Collection<int, array{text_ar: string, text_en: string, ordering: int}>
+     */
+    public function getActiveCompanyGoals(): Collection
+    {
+        return $this->companyGoalService->getActiveGoalsForPublic();
     }
 
     /**

@@ -64,65 +64,76 @@ const otherLocaleCode = computed(() => (locale.value === 'ar' ? 'en' : 'ar'))
   <header class="px-header">
     <nav class="px-nav" :aria-label="t('public.home.nav.main')">
       <div class="px-nav-inner">
-        <a :href="homeHref" class="px-nav-brand" :dir="brandDir" @click="closeMenu">
-          <img
-            :src="logo"
-            :alt="logoAlt"
-            class="px-nav-logo"
-          />
-          <span class="px-nav-brand-names" :style="brandNameStyle">
-            <span class="px-nav-brand-name-ar" dir="rtl" :style="brandNameArStyle">{{ companyNameAr }}</span>
-            <span class="px-nav-brand-name-en" dir="ltr" :style="brandNameEnStyle">{{ companyNameEn }}</span>
-          </span>
-        </a>
-
-        <div class="px-nav-links" role="list">
-          <a
-            v-for="link in navLinks"
-            :key="link.key"
-            :href="link.href"
-            :target="link.open_in_new_tab ? '_blank' : undefined"
-            :rel="link.open_in_new_tab ? 'noopener noreferrer' : undefined"
-            role="listitem"
-          >
-            {{ link.label }}
+        <div class="px-nav-bar">
+          <a :href="homeHref" class="px-nav-brand" :dir="brandDir" @click="closeMenu">
+            <img
+              :src="logo"
+              :alt="logoAlt"
+              class="px-nav-logo"
+            />
+            <span class="px-nav-brand-names" :style="brandNameStyle">
+              <span
+                v-if="locale === 'ar'"
+                class="px-nav-brand-name-ar"
+                dir="rtl"
+                :style="brandNameArStyle"
+              >{{ companyNameAr }}</span>
+              <span
+                class="px-nav-brand-name-en"
+                dir="ltr"
+                :style="brandNameEnStyle"
+              >{{ companyNameEn }}</span>
+            </span>
           </a>
-        </div>
 
-        <div class="px-nav-actions">
+          <div class="px-nav-links" role="list">
+            <a
+              v-for="link in navLinks"
+              :key="link.key"
+              :href="link.href"
+              :target="link.open_in_new_tab ? '_blank' : undefined"
+              :rel="link.open_in_new_tab ? 'noopener noreferrer' : undefined"
+              role="listitem"
+            >
+              {{ link.label }}
+            </a>
+          </div>
+
+          <div class="px-nav-actions">
+            <button
+              type="button"
+              class="px-lang-switch"
+              :aria-label="t('public.home.nav.selectLanguage')"
+              @click="setLanguage(otherLocaleCode)"
+            >
+              <svg class="px-lang-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18" />
+              </svg>
+              <span>{{ otherLocaleShortLabel }}</span>
+            </button>
+            <a :href="quoteUrl" class="px-btn px-btn-blue px-nav-cta">
+              <svg class="px-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z" />
+                <path d="M14 3v6h6M9 13h6M9 17h4" />
+              </svg>
+              {{ quoteLabel }}
+            </a>
+          </div>
+
           <button
             type="button"
-            class="px-lang-switch"
-            :aria-label="t('public.home.nav.selectLanguage')"
-            @click="setLanguage(otherLocaleCode)"
+            class="px-nav-toggle"
+            :class="{ open: isMenuOpen }"
+            :aria-label="t('public.home.nav.toggleMenu')"
+            :aria-expanded="isMenuOpen"
+            @click="toggleMenu"
           >
-            <svg class="px-lang-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-              <circle cx="12" cy="12" r="9" />
-              <path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18" />
-            </svg>
-            <span>{{ otherLocaleShortLabel }}</span>
+            <span></span>
+            <span></span>
+            <span></span>
           </button>
-          <a :href="quoteUrl" class="px-btn px-btn-blue px-nav-cta">
-            <svg class="px-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-              <path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z" />
-              <path d="M14 3v6h6M9 13h6M9 17h4" />
-            </svg>
-            {{ quoteLabel }}
-          </a>
         </div>
-
-        <button
-          type="button"
-          class="px-nav-toggle"
-          :class="{ open: isMenuOpen }"
-          :aria-label="t('public.home.nav.toggleMenu')"
-          :aria-expanded="isMenuOpen"
-          @click="toggleMenu"
-        >
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
       </div>
 
       <div v-if="isMenuOpen" class="px-mobile-nav">

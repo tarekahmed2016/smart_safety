@@ -4,6 +4,8 @@ import { computed } from 'vue'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useI18n } from 'vue-i18n'
 import { resolveBilingualField } from '../../Composables/useBilingualContent.js'
+import LocalizedHeading from '../../Components/Public/LocalizedHeading.vue'
+import PublicMediaPlaceholder from '../../Components/Public/PublicMediaPlaceholder.vue'
 
 defineOptions({ layout: PublicLayout })
 
@@ -35,10 +37,10 @@ const productExcerpt = (product) =>
               :src="product.image"
               :alt="productName(product)"
             />
-            <div v-else class="px-media-fallback" aria-hidden="true"></div>
+            <PublicMediaPlaceholder v-else icon="cube" />
           </div>
-          <div class="px-product-body">
-            <h2>{{ productName(product) }}</h2>
+          <div class="px-product-body" :dir="locale === 'ar' ? 'rtl' : 'ltr'">
+            <LocalizedHeading :text="productName(product)" tag="h2" />
             <p>{{ productExcerpt(product) }}</p>
             <Link :href="route('public.products.show', { slug: product.slug })" class="px-text-link">
               {{ t('public.home.products.details') }}

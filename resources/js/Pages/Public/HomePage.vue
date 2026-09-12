@@ -8,6 +8,7 @@ import { useHomepageSections } from '../../Composables/useHomepageSections.js'
 import { plainTextFromHtml } from '../../Composables/useRichText.js'
 import RichTextContent from '../../Components/Common/RichTextContent.vue'
 import PlastexLineIcon from '../../Components/Public/PlastexLineIcon.vue'
+import PublicMediaPlaceholder from '../../Components/Public/PublicMediaPlaceholder.vue'
 import ProductsCarousel from '../../Components/Public/ProductsCarousel.vue'
 import TeamMembersCarousel from '../../Components/Public/TeamMembersCarousel.vue'
 import ClientsPartnersCarousel from '../../Components/Public/ClientsPartnersCarousel.vue'
@@ -28,8 +29,11 @@ const featureHighlights = computed(() => page.props.featureHighlights || [])
 const industries = computed(() => page.props.industries || [])
 const customManufacturing = computed(() => page.props.customManufacturing || null)
 const stats = computed(() => page.props.stats || [])
+const aboutHighlights = computed(() => page.props.aboutHighlights || [])
+const whyUsHighlights = computed(() => page.props.whyUsHighlights || [])
 const businessCta = computed(() => page.props.businessCta || null)
 const menuPages = computed(() => page.props.menuPages || [])
+const companyGoals = computed(() => page.props.companyGoals || [])
 
 const companyName = computed(() =>
   resolveBilingualField(companyInfo.value, 'name', locale.value) || t('public.home.defaultCompanyName')
@@ -95,13 +99,7 @@ const heroMobileImage = computed(() => {
 
 const aboutText = computed(() => resolveBilingualField(companyInfo.value, 'about', locale.value))
 const aboutFallback = computed(() => t('public.home.about.descriptionWithCompany', { company: companyName.value }))
-const aboutImage = computed(() =>
-  companyInfo.value.about_image
-    || customManufacturing.value?.image
-    || heroBackground.value
-    || products.value.find((item) => item.image)?.image
-    || null
-)
+const aboutImage = computed(() => companyInfo.value.about_image || heroBackground.value || null)
 
 const aboutMoreHref = computed(() => {
   const configuredUrl = resolveHomepageScalar(companyInfo.value, 'about_cta_url')
@@ -115,6 +113,52 @@ const aboutMoreHref = computed(() => {
 const aboutMoreLabel = computed(() =>
   resolveHomepageField(companyInfo.value, 'about_cta_text', locale.value, t('public.home.about.more'))
 )
+
+const aboutHighlight = computed(() =>
+  resolveHomepageField(companyInfo.value, 'about_highlight', locale.value, t('public.home.about.highlight'))
+)
+
+const aboutTitleParts = (section) => highlightTitleParts(
+  resolveSectionTitle(section, 'about_section_title', 'public.home.about.factoryTitle'),
+  aboutHighlight.value,
+)
+
+const highlightTitleParts = (title, highlight) => {
+  if (highlight && title.includes(highlight)) {
+    const index = title.indexOf(highlight)
+
+    return [
+      { text: title.slice(0, index), highlight: false },
+      { text: highlight, highlight: true },
+      { text: title.slice(index + highlight.length), highlight: false },
+    ].filter((part) => part.text)
+  }
+
+  return [{ text: title, highlight: false }]
+}
+
+const servicesTitleParts = (section) => highlightTitleParts(
+  resolveSectionTitle(section, null, 'public.home.services.manufacturingTitle'),
+  resolveBilingualField(section?.settings || {}, 'highlight', locale.value) || t('public.home.services.highlight'),
+)
+
+const servicesSubtitle = (section) =>
+  resolveBilingualField(section?.settings || {}, 'subtitle', locale.value) || t('public.home.services.subtitle')
+
+const serviceIconFor = (item, index) => {
+  const english = (item.name_en || '').toLowerCase()
+  const arabic = item.name_ar || ''
+
+  if (arabic.includes('بلاستيك') || english.includes('plastic')) {
+    return 'packing'
+  }
+
+  if (arabic.includes('تصنيع') || english.includes('manufactur')) {
+    return 'industry'
+  }
+
+  return index === 0 ? 'industry' : 'packing'
+}
 
 const manufacturingTitle = computed(() =>
   customManufacturing.value
@@ -132,7 +176,7 @@ const manufacturingCta = computed(() =>
     : t('public.home.manufacturing.cta')
 )
 const manufacturingUrl = computed(() => customManufacturing.value?.cta_url || '#contact')
-const manufacturingImage = computed(() => customManufacturing.value?.image || aboutImage.value)
+const manufacturingImage = computed(() => customManufacturing.value?.image || null)
 
 const displayFeatures = computed(() => featureHighlights.value.map((item) => ({
   icon: item.icon || 'quality',
@@ -143,7 +187,7 @@ const displayFeatures = computed(() => featureHighlights.value.map((item) => ({
 
 const displayServices = computed(() => services.value.map((item, index) => ({
   key: `${item.name_ar || 'service'}-${item.name_en || index}`,
-  icon: 'quality',
+  icon: serviceIconFor(item, index),
   title: resolveBilingualField(item, 'name', locale.value),
   text: plainTextFromHtml(resolveBilingualField(item, 'description', locale.value))
     || t('public.home.services.noDescription'),
@@ -159,12 +203,87 @@ const displayIndustries = computed(() => industries.value.map((item) => ({
 const displayStats = computed(() => stats.value.map((item) => ({
   value: resolveBilingualField(item, 'title', locale.value),
   label: plainTextFromHtml(resolveBilingualField(item, 'description', locale.value)),
+  icon: item.icon || null,
 })))
+
+const displayAboutHighlights = computed(() => aboutHighlights.value.map((item) => ({
+  title: resolveBilingualField(item, 'title', locale.value),
+  text: plainTextFromHtml(resolveBilingualField(item, 'description', locale.value)),
+  icon: item.icon || 'quality',
+})))
+
+const displayWhyUs = computed(() => whyUsHighlights.value.map((item) => ({
+  title: resolveBilingualField(item, 'title', locale.value),
+  text: plainTextFromHtml(resolveBilingualField(item, 'description', locale.value)),
+  icon: item.icon || 'flag',
+  image: item.image || null,
+})))
+
+const whyUsTitleParts = (section) => highlightTitleParts(
+  resolveSectionHeadline(section, 'public.home.whyUs.headline'),
+  resolveBilingualField(section?.settings || {}, 'highlight', locale.value) || t('public.home.whyUs.highlight'),
+)
 
 const productName = (product) => resolveBilingualField(product, 'name', locale.value)
 const productExcerpt = (product) =>
   resolveBilingualField(product, 'excerpt', locale.value)
     || t('public.home.products.noDescription')
+
+const fallbackGoals = computed(() => [
+  t('public.home.goals.items.1'),
+  t('public.home.goals.items.2'),
+  t('public.home.goals.items.3'),
+  t('public.home.goals.items.4'),
+  t('public.home.goals.items.5'),
+  t('public.home.goals.items.6'),
+].filter(Boolean))
+
+const displayGoals = computed(() => {
+  if (companyGoals.value.length) {
+    return companyGoals.value
+      .map((goal) => resolveBilingualField(goal, 'text', locale.value).trim())
+      .filter(Boolean)
+  }
+
+  return fallbackGoals.value
+})
+
+const resolveSectionHeadline = (section, fallbackKey = 'public.home.goals.headline') => {
+  const fromSection = resolveBilingualField(section, 'headline', locale.value)
+  if (fromSection) {
+    return fromSection
+  }
+
+  const fromSettings = resolveBilingualField(section?.settings || {}, 'headline', locale.value)
+  if (fromSettings) {
+    return fromSettings
+  }
+
+  return t(fallbackKey)
+}
+
+const resolveVisionMissionCard = (type) => {
+  const heading = t(`public.home.visionMission.${type}Heading`)
+  const fallbackBody = t(`public.home.visionMission.${type}Body`)
+  const cmsHtml = resolveBilingualField(companyInfo.value, type, locale.value)
+  const cmsText = plainTextFromHtml(cmsHtml).replace(/\s+/g, ' ').trim()
+  const headingText = heading.replace(/\s+/g, ' ').trim()
+
+  if (!cmsText) {
+    return { heading, html: '', text: fallbackBody }
+  }
+
+  if (cmsText.startsWith(headingText)) {
+    const remainder = cmsText.slice(headingText.length).replace(/^[\s،,.:;:-]+/, '').trim()
+
+    return { heading, html: '', text: remainder || fallbackBody }
+  }
+
+  return { heading, html: cmsHtml, text: cmsText }
+}
+
+const visionCard = computed(() => resolveVisionMissionCard('vision'))
+const missionCard = computed(() => resolveVisionMissionCard('mission'))
 
 const resolveSectionTitle = (section, companyField, fallbackKey) => {
   const fromSection = resolveBilingualField(section, 'title', locale.value)
@@ -241,6 +360,7 @@ const contactCtaUrl = computed(() => {
   return '#contact-form'
 })
 const contactCtaBackground = computed(() => businessCta.value?.image || heroBackground.value)
+const industriesBackground = computed(() => heroBackground.value || null)
 
 const contactForm = useForm({
   name: '',
@@ -271,6 +391,7 @@ const submitContactForm = () => {
 </script>
 
 <template>
+  <div class="plastex-home">
   <template v-for="section in normalizedSections" :key="section.key">
     <section v-if="section.type === 'hero'" id="home" class="px-hero">
       <div class="px-hero-bg has-image">
@@ -306,19 +427,11 @@ const submitContactForm = () => {
           <p v-else class="px-hero-copy">{{ heroDescriptionFallback }}</p>
           <div class="px-hero-actions">
             <a :href="heroPrimaryCtaUrl" class="px-btn px-btn-green">
-              <svg class="px-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                <path d="M22 2L11 13" />
-                <path d="M22 2l-7 20-4-9-9-4 20-7z" />
-              </svg>
+              <PlastexLineIcon name="send" />
               {{ heroPrimaryCtaLabel }}
             </a>
             <a :href="heroSecondaryCtaUrl" class="px-btn px-btn-outline">
-              <svg class="px-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                <rect x="3" y="3" width="7" height="7" rx="1" />
-                <rect x="14" y="3" width="7" height="7" rx="1" />
-                <rect x="3" y="14" width="7" height="7" rx="1" />
-                <rect x="14" y="14" width="7" height="7" rx="1" />
-              </svg>
+              <PlastexLineIcon name="products" />
               {{ heroSecondaryCtaLabel }}
             </a>
           </div>
@@ -343,6 +456,37 @@ const submitContactForm = () => {
       </div>
     </section>
 
+    <section
+      v-else-if="section.type === 'why_us' && displayWhyUs.length"
+      id="why-us"
+      class="px-why-us"
+      :aria-label="t('public.home.whyUs.title')"
+    >
+      <div class="px-container">
+        <div class="px-section-header">
+          <p class="px-about-eyebrow">{{ resolveSectionTitle(section, null, 'public.home.whyUs.title') }}</p>
+          <h2>
+            <span
+              v-for="(part, index) in whyUsTitleParts(section)"
+              :key="`${part.text}-${index}`"
+              :class="{ 'px-hero-highlight': part.highlight }"
+            >{{ part.text }}</span>
+          </h2>
+        </div>
+
+        <div class="px-why-us-grid">
+          <article v-for="item in displayWhyUs" :key="item.title" class="px-why-card">
+            <div class="px-why-card-icon" aria-hidden="true">
+              <img v-if="item.image" :src="item.image" :alt="''" />
+              <PlastexLineIcon v-else :name="item.icon" />
+            </div>
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.text }}</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <section v-else-if="section.type === 'products'" id="products" class="px-products">
       <div class="px-container">
         <div class="px-section-header">
@@ -361,17 +505,25 @@ const submitContactForm = () => {
     </section>
 
     <section
-      v-else-if="section.type === 'services' && displayServices.length"
+      v-else-if="section.type === 'services'"
       id="services"
       class="px-services"
       :aria-label="t('public.home.services.title')"
     >
       <div class="px-container">
         <div class="px-section-header">
-          <h2>{{ resolveSectionTitle(section, null, 'public.home.services.title') }}</h2>
+          <p class="px-about-eyebrow">{{ t('public.home.services.title') }}</p>
+          <h2>
+            <span
+              v-for="(part, index) in servicesTitleParts(section)"
+              :key="`${part.text}-${index}`"
+              :class="{ 'px-hero-highlight': part.highlight }"
+            >{{ part.text }}</span>
+          </h2>
+          <p class="px-section-lede">{{ servicesSubtitle(section) }}</p>
         </div>
 
-        <div class="px-product-grid">
+        <div v-if="displayServices.length" class="px-product-grid">
           <article v-for="service in displayServices" :key="service.key" class="px-product-card">
             <div class="px-product-media">
               <img
@@ -392,6 +544,7 @@ const submitContactForm = () => {
             </div>
           </article>
         </div>
+        <p v-else class="px-empty">{{ t('public.home.services.empty') }}</p>
       </div>
     </section>
 
@@ -405,6 +558,7 @@ const submitContactForm = () => {
               :alt="manufacturingTitle"
               class="px-split-visual-image"
             />
+            <PublicMediaPlaceholder v-else icon="cube" />
           </div>
           <h2>{{ manufacturingTitle }}</h2>
           <RichTextContent
@@ -418,8 +572,8 @@ const submitContactForm = () => {
       </div>
       <div
         class="px-split-industries"
-        :class="{ 'has-image': Boolean(heroBackground) }"
-        :style="heroBackground ? { backgroundImage: `url('${heroBackground}')` } : undefined"
+        :class="{ 'has-image': Boolean(industriesBackground) }"
+        :style="industriesBackground ? { backgroundImage: `url('${industriesBackground}')` } : undefined"
       >
         <div v-if="displayIndustries.length" class="px-split-industries-inner">
           <h2>{{ resolveSectionTitle(section.industries, 'industries_section_title', 'public.home.industries.title') }}</h2>
@@ -446,6 +600,7 @@ const submitContactForm = () => {
               :alt="manufacturingTitle"
               class="px-split-visual-image"
             />
+            <PublicMediaPlaceholder v-else icon="cube" />
           </div>
           <h2>{{ manufacturingTitle }}</h2>
           <RichTextContent
@@ -463,8 +618,8 @@ const submitContactForm = () => {
       v-else-if="section.type === 'industries'"
       id="industries"
       class="px-split-industries px-split-industries--standalone"
-      :class="{ 'has-image': Boolean(heroBackground) }"
-      :style="heroBackground ? { backgroundImage: `url('${heroBackground}')` } : undefined"
+      :class="{ 'has-image': Boolean(industriesBackground) }"
+      :style="industriesBackground ? { backgroundImage: `url('${industriesBackground}')` } : undefined"
     >
       <div v-if="displayIndustries.length" class="px-split-industries-inner px-container">
         <h2>{{ resolveSectionTitle(section, 'industries_section_title', 'public.home.industries.title') }}</h2>
@@ -480,10 +635,73 @@ const submitContactForm = () => {
       </div>
     </section>
 
+    <section v-else-if="section.type === 'vision_mission'" id="vision-mission" class="px-vision-mission">
+      <div class="px-container">
+        <div class="px-goals-header">
+          <p class="px-goals-eyebrow">{{ resolveSectionTitle(section, null, 'public.home.visionMission.title') }}</p>
+          <h2 class="px-goals-headline">{{ resolveSectionHeadline(section, 'public.home.visionMission.headline') }}</h2>
+        </div>
+
+        <div class="px-vm-grid">
+          <article class="px-vm-card">
+            <div class="px-vm-icon" aria-hidden="true">
+              <PlastexLineIcon name="vision" />
+            </div>
+            <p class="px-vm-label">{{ t('public.home.visionMission.visionLabel') }}</p>
+            <h3>{{ visionCard.heading }}</h3>
+            <RichTextContent
+              v-if="visionCard.html"
+              :content="visionCard.html"
+              tag="div"
+              class="px-vm-copy"
+            />
+            <p v-else class="px-vm-copy">{{ visionCard.text }}</p>
+          </article>
+
+          <article class="px-vm-card">
+            <div class="px-vm-icon" aria-hidden="true">
+              <PlastexLineIcon name="mission" />
+            </div>
+            <p class="px-vm-label">{{ t('public.home.visionMission.missionLabel') }}</p>
+            <h3>{{ missionCard.heading }}</h3>
+            <RichTextContent
+              v-if="missionCard.html"
+              :content="missionCard.html"
+              tag="div"
+              class="px-vm-copy"
+            />
+            <p v-else class="px-vm-copy">{{ missionCard.text }}</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section v-else-if="section.type === 'goals'" id="goals" class="px-goals">
+      <div class="px-container">
+        <div class="px-goals-header">
+          <p class="px-goals-eyebrow">{{ resolveSectionTitle(section, null, 'public.home.goals.title') }}</p>
+          <h2 class="px-goals-headline">{{ resolveSectionHeadline(section) }}</h2>
+        </div>
+
+        <ul v-if="displayGoals.length" class="px-goals-grid">
+          <li v-for="(goal, index) in displayGoals" :key="`${goal}-${index}`" class="px-goal-card">
+            <span class="px-goal-icon" aria-hidden="true">
+              <PlastexLineIcon name="flag" />
+            </span>
+            <p>{{ goal }}</p>
+          </li>
+        </ul>
+        <p v-else class="px-empty">{{ t('public.home.goals.empty') }}</p>
+      </div>
+    </section>
+
     <section v-else-if="section.type === 'about'" id="about" class="px-about">
       <div class="px-container px-about-grid">
         <div class="px-about-copy">
-          <h2>{{ resolveSectionTitle(section, 'about_section_title', 'public.home.about.factoryTitle') }}</h2>
+          <p class="px-about-eyebrow">{{ t('public.home.about.title') }}</p>
+          <h2>
+            <span v-for="(part, index) in aboutTitleParts(section)" :key="`${part.text}-${index}`" :class="{ 'px-hero-highlight': part.highlight }">{{ part.text }}</span>
+          </h2>
           <RichTextContent
             v-if="aboutText"
             :content="aboutText"
@@ -492,10 +710,22 @@ const submitContactForm = () => {
           />
           <p v-else class="px-about-text">{{ aboutFallback }}</p>
 
+          <div v-if="displayAboutHighlights.length" class="px-about-highlights">
+            <article v-for="item in displayAboutHighlights" :key="item.title" class="px-about-highlight">
+              <span class="px-about-highlight-icon" aria-hidden="true">
+                <PlastexLineIcon :name="item.icon" />
+              </span>
+              <div class="px-about-highlight-copy">
+                <strong>{{ item.title }}</strong>
+                <p v-if="item.text">{{ item.text }}</p>
+              </div>
+            </article>
+          </div>
+
           <div v-if="displayStats.length" class="px-stats-grid">
-            <article v-for="stat in displayStats" :key="stat.label" class="px-stat">
+            <article v-for="stat in displayStats" :key="stat.label || stat.value" class="px-stat">
               <strong>{{ stat.value }}</strong>
-              <span>{{ stat.label }}</span>
+              <span v-if="stat.label">{{ stat.label }}</span>
             </article>
           </div>
 
@@ -507,7 +737,7 @@ const submitContactForm = () => {
             :src="aboutImage"
             :alt="t('public.home.about.imageAlt', { company: companyName })"
           />
-          <div v-else class="px-media-fallback px-media-fallback-tall" :aria-hidden="true"></div>
+          <PublicMediaPlaceholder v-else icon="industry" tall />
         </div>
       </div>
     </section>
@@ -564,20 +794,37 @@ const submitContactForm = () => {
     <section v-else-if="section.type === 'contact_form'" id="contact" class="px-contact">
       <div class="px-container px-contact-grid">
         <div>
+          <p class="px-about-eyebrow">{{ t('public.home.contact.eyebrow') }}</p>
           <h2>{{ resolveSectionTitle(section, 'contact_section_title', 'public.home.contact.title') }}</h2>
           <p>{{ resolveHomepageField(companyInfo, 'contact_section_subtitle', locale, t('public.home.contact.subtitle')) }}</p>
           <ul class="px-contact-details">
             <li v-if="companyInfo.phone">
-              <span>{{ t('public.home.contact.phone') }}</span>
-              <a :href="`tel:${companyInfo.phone}`" dir="ltr">{{ companyInfo.phone }}</a>
+              <span class="px-contact-icon" aria-hidden="true"><PlastexLineIcon name="phone" /></span>
+              <div>
+                <span>{{ t('public.home.contact.phone') }}</span>
+                <a :href="`tel:${companyInfo.phone}`" dir="ltr">{{ companyInfo.phone }}</a>
+              </div>
             </li>
             <li v-if="companyInfo.email">
-              <span>{{ t('public.home.contact.email') }}</span>
-              <a :href="`mailto:${companyInfo.email}`">{{ companyInfo.email }}</a>
+              <span class="px-contact-icon" aria-hidden="true"><PlastexLineIcon name="envelope" /></span>
+              <div>
+                <span>{{ t('public.home.contact.email') }}</span>
+                <a :href="`mailto:${companyInfo.email}`">{{ companyInfo.email }}</a>
+              </div>
             </li>
             <li v-if="resolveBilingualField(companyInfo, 'address', locale)">
-              <span>{{ t('public.home.contact.address') }}</span>
-              <p>{{ resolveBilingualField(companyInfo, 'address', locale) }}</p>
+              <span class="px-contact-icon" aria-hidden="true"><PlastexLineIcon name="location-dot" /></span>
+              <div>
+                <span>{{ t('public.home.contact.address') }}</span>
+                <p>{{ resolveBilingualField(companyInfo, 'address', locale) }}</p>
+              </div>
+            </li>
+            <li v-if="whatsappUrl">
+              <span class="px-contact-icon" aria-hidden="true"><PlastexLineIcon name="whatsapp" /></span>
+              <div>
+                <span>{{ t('public.home.contact.whatsapp') }}</span>
+                <a :href="whatsappUrl" target="_blank" rel="noopener noreferrer" dir="ltr">{{ companyInfo.phone || t('public.home.contact.whatsapp') }}</a>
+              </div>
             </li>
           </ul>
         </div>
@@ -619,4 +866,5 @@ const submitContactForm = () => {
       </div>
     </section>
   </template>
+  </div>
 </template>

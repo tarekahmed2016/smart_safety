@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { resolveBilingualField } from '../../Composables/useBilingualContent.js'
 import { useHorizontalCarousel } from '../../Composables/useHorizontalCarousel.js'
 import RichTextContent from '../Common/RichTextContent.vue'
+import PublicMediaPlaceholder from './PublicMediaPlaceholder.vue'
 
 const props = defineProps({
   members: {
@@ -74,7 +75,7 @@ const memberBioHtml = (member) => resolveBilingualField(member, 'bio', locale.va
               :src="member.image"
               :alt="memberName(member)"
             />
-            <div v-else class="px-media-fallback" :aria-hidden="true"></div>
+            <PublicMediaPlaceholder v-else icon="user-tie" />
           </div>
           <div class="px-team-body">
             <h3>{{ memberName(member) }}</h3>

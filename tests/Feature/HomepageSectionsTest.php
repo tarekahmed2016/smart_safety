@@ -174,5 +174,34 @@ test('homepage sections are returned in configured order', function () {
         ->assertInertia(fn (Assert $page) => $page
             ->where('homepageSections.0.key', 'hero')
             ->where('homepageSections.1.key', 'gallery')
-            ->where('homepageSections.2.key', 'products'));
+            ->where('homepageSections.2.key', 'about'));
+});
+
+test('homepage visible sections follow the main navigation order', function () {
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('homepageSections', function ($sections) {
+                $keys = collect($sections)->pluck('key')->values();
+
+                $expected = [
+                    'hero',
+                    'features',
+                    'about',
+                    'why_us',
+                    'services',
+                    'products',
+                    'vision_mission',
+                    'goals',
+                    'team_members',
+                    'clients_partners',
+                    'gallery',
+                    'custom_manufacturing',
+                    'industries',
+                    'contact_cta',
+                    'contact',
+                ];
+
+                return $keys->all() === $expected;
+            }));
 });

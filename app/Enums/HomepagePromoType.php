@@ -11,6 +11,8 @@ enum HomepagePromoType: string
     case Industry = 'industry';
     case CustomManufacturing = 'custom_manufacturing';
     case Stat = 'stat';
+    case AboutHighlight = 'about_highlight';
+    case WhyUsHighlight = 'why_us_highlight';
 
     public function label(): string
     {
@@ -22,6 +24,8 @@ enum HomepagePromoType: string
             self::Industry => 'قطاع',
             self::CustomManufacturing => 'التصنيع حسب الطلب',
             self::Stat => 'إحصائية',
+            self::AboutHighlight => 'ميزة من نحن',
+            self::WhyUsHighlight => 'ميزة لماذا نحن',
         };
     }
 
@@ -35,6 +39,8 @@ enum HomepagePromoType: string
             self::Industry => 'Industry',
             self::CustomManufacturing => 'Custom Manufacturing',
             self::Stat => 'Statistic',
+            self::AboutHighlight => 'About Highlight',
+            self::WhyUsHighlight => 'Why Us Highlight',
         };
     }
 

@@ -38,17 +38,21 @@ class HomepageSectionService
      */
     public function mapForPublic(HomepageSection $section): array
     {
+        $settings = $section->settings ?? [];
+
         return [
             'key' => $section->key,
             'type' => $section->type->value,
             'title_ar' => $section->title_ar ?? '',
             'title_en' => $section->title_en ?? '',
-            'settings' => $section->settings ?? [],
+            'headline_ar' => (string) ($settings['headline_ar'] ?? ''),
+            'headline_en' => (string) ($settings['headline_en'] ?? ''),
+            'settings' => $settings,
         ];
     }
 
     /**
-     * @param  list<array{id: int, is_visible: bool, ordering: int, title_ar?: string|null, title_en?: string|null, show_in_navigation?: bool, nav_label_ar?: string|null, nav_label_en?: string|null, nav_order?: int, anchor_id?: string|null}>  $sections
+     * @param  list<array{id: int, is_visible: bool, ordering: int, title_ar?: string|null, title_en?: string|null, headline_ar?: string|null, headline_en?: string|null, highlight_ar?: string|null, highlight_en?: string|null, show_in_navigation?: bool, nav_label_ar?: string|null, nav_label_en?: string|null, nav_order?: int, anchor_id?: string|null}>  $sections
      */
     public function syncSections(array $sections): void
     {
@@ -62,6 +66,17 @@ class HomepageSectionService
                     'title_ar' => $sectionData['title_ar'] ?? null,
                     'title_en' => $sectionData['title_en'] ?? null,
                 ];
+
+                $settingsKeys = ['headline_ar', 'headline_en', 'highlight_ar', 'highlight_en'];
+                if (collect($settingsKeys)->contains(fn (string $key) => array_key_exists($key, $sectionData))) {
+                    $settings = $section->settings ?? [];
+                    foreach ($settingsKeys as $key) {
+                        if (array_key_exists($key, $sectionData)) {
+                            $settings[$key] = $sectionData[$key];
+                        }
+                    }
+                    $payload['settings'] = $settings;
+                }
 
                 if (HomepageSectionNavigation::isNavigable($section->key)) {
                     $payload = array_merge($payload, [
@@ -79,7 +94,7 @@ class HomepageSectionService
     }
 
     /**
-     * @param  array{title_ar?: string|null, title_en?: string|null, max_items?: int|null}  $data
+     * @param  array{title_ar?: string|null, title_en?: string|null, max_items?: int|null, headline_ar?: string|null, headline_en?: string|null, highlight_ar?: string|null, highlight_en?: string|null, subtitle_ar?: string|null, subtitle_en?: string|null}  $data
      */
     public function updateSectionContent(string $key, array $data): HomepageSection
     {
@@ -96,10 +111,46 @@ class HomepageSectionService
             $payload['title_en'] = $data['title_en'];
         }
 
+        $settings = $section->settings ?? [];
+        $settingsChanged = false;
+
         if (array_key_exists('max_items', $data)) {
-            $payload['settings'] = array_merge($section->settings ?? [], [
-                'max_items' => (int) $data['max_items'],
-            ]);
+            $settings['max_items'] = (int) $data['max_items'];
+            $settingsChanged = true;
+        }
+
+        if (array_key_exists('headline_ar', $data)) {
+            $settings['headline_ar'] = $data['headline_ar'];
+            $settingsChanged = true;
+        }
+
+        if (array_key_exists('headline_en', $data)) {
+            $settings['headline_en'] = $data['headline_en'];
+            $settingsChanged = true;
+        }
+
+        if (array_key_exists('subtitle_ar', $data)) {
+            $settings['subtitle_ar'] = $data['subtitle_ar'];
+            $settingsChanged = true;
+        }
+
+        if (array_key_exists('subtitle_en', $data)) {
+            $settings['subtitle_en'] = $data['subtitle_en'];
+            $settingsChanged = true;
+        }
+
+        if (array_key_exists('highlight_ar', $data)) {
+            $settings['highlight_ar'] = $data['highlight_ar'];
+            $settingsChanged = true;
+        }
+
+        if (array_key_exists('highlight_en', $data)) {
+            $settings['highlight_en'] = $data['highlight_en'];
+            $settingsChanged = true;
+        }
+
+        if ($settingsChanged) {
+            $payload['settings'] = $settings;
         }
 
         if ($payload !== []) {

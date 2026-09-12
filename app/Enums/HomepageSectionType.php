@@ -11,6 +11,9 @@ enum HomepageSectionType: string
     case CustomManufacturing = 'custom_manufacturing';
     case Industries = 'industries';
     case About = 'about';
+    case WhyUs = 'why_us';
+    case VisionMission = 'vision_mission';
+    case Goals = 'goals';
     case TeamMembers = 'team_members';
     case ClientsPartners = 'clients_partners';
     case Gallery = 'gallery';

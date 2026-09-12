@@ -6,6 +6,7 @@ use App\Enums\HomepagePromoType;
 use App\Models\CompanyInfo;
 use App\Models\HomepagePromoBlock;
 use App\Support\HomepageContentDefaults;
+use App\Support\HomepageWhyUsContentDefaults;
 use Illuminate\Database\Seeder;
 
 class HomepageContentSeeder extends Seeder
@@ -14,6 +15,7 @@ class HomepageContentSeeder extends Seeder
     {
         $this->seedCompanyHomepageFields();
         $this->seedFeatureHighlights();
+        $this->seedWhyUsHighlights();
         $this->seedIndustries();
         $this->seedCustomManufacturing();
     }
@@ -78,6 +80,38 @@ class HomepageContentSeeder extends Seeder
                 'description_ar' => $feature['description_ar'],
                 'description_en' => $feature['description_en'],
                 'ordering' => $index,
+                'is_active' => true,
+            ];
+
+            if ($block) {
+                $block->update($payload);
+            } else {
+                HomepagePromoBlock::create($payload);
+            }
+        }
+    }
+
+    private function seedWhyUsHighlights(): void
+    {
+        foreach (HomepageWhyUsContentDefaults::items() as $item) {
+            $block = HomepagePromoBlock::query()
+                ->where('type', HomepagePromoType::WhyUsHighlight)
+                ->where(function ($query) use ($item) {
+                    $query->where('ordering', $item['ordering'])
+                        ->orWhereIn('title_en', $item['match_en'])
+                        ->orWhereIn('title_ar', $item['match_ar']);
+                })
+                ->orderByRaw('CASE WHEN ordering = ? THEN 0 ELSE 1 END', [$item['ordering']])
+                ->first();
+
+            $payload = [
+                'type' => HomepagePromoType::WhyUsHighlight,
+                'icon' => $item['icon'],
+                'title_ar' => $item['title_ar'],
+                'title_en' => $item['title_en'],
+                'description_ar' => $item['description_ar'],
+                'description_en' => $item['description_en'],
+                'ordering' => $item['ordering'],
                 'is_active' => true,
             ];
 

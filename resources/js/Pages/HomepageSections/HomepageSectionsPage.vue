@@ -17,6 +17,10 @@ const form = useForm({
     ordering: section.ordering,
     title_ar: section.title_ar || '',
     title_en: section.title_en || '',
+    headline_ar: section.settings?.headline_ar || '',
+    headline_en: section.settings?.headline_en || '',
+    highlight_ar: section.settings?.highlight_ar || '',
+    highlight_en: section.settings?.highlight_en || '',
     show_in_navigation: Boolean(section.show_in_navigation),
     nav_label_ar: section.nav_label_ar || '',
     nav_label_en: section.nav_label_en || '',
@@ -140,6 +144,34 @@ const submit = () => {
                 <div>
                   <label class="form-label text-label">{{ t('homepageSections.titleEnLabel') }}</label>
                   <input v-model="section.title_en" type="text" class="form-input text-body" :placeholder="t('homepageSections.titleEnPlaceholder')" />
+                </div>
+              </div>
+
+              <div
+                v-if="['goals', 'vision_mission', 'why_us'].includes(sectionMetaById[section.id]?.type)"
+                class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4"
+              >
+                <div>
+                  <label class="form-label text-label">{{ t('homepageSections.headlineArLabel') }}</label>
+                  <input v-model="section.headline_ar" type="text" class="form-input text-body" :placeholder="t('homepageSections.headlineArPlaceholder')" />
+                </div>
+                <div>
+                  <label class="form-label text-label">{{ t('homepageSections.headlineEnLabel') }}</label>
+                  <input v-model="section.headline_en" type="text" class="form-input text-body" :placeholder="t('homepageSections.headlineEnPlaceholder')" />
+                </div>
+              </div>
+
+              <div
+                v-if="sectionMetaById[section.id]?.type === 'why_us'"
+                class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4"
+              >
+                <div>
+                  <label class="form-label text-label">{{ t('homepagePromos.settingsFields.highlight_ar') }}</label>
+                  <input v-model="section.highlight_ar" type="text" class="form-input text-body" />
+                </div>
+                <div>
+                  <label class="form-label text-label">{{ t('homepagePromos.settingsFields.highlight_en') }}</label>
+                  <input v-model="section.highlight_en" type="text" class="form-input text-body" />
                 </div>
               </div>
 

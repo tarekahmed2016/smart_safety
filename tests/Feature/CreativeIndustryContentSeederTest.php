@@ -3,6 +3,7 @@
 use App\Enums\ClientPartnerType;
 use App\Enums\HomepagePromoType;
 use App\Models\ClientPartner;
+use App\Models\CompanyGoal;
 use App\Models\CompanyInfo;
 use App\Models\HomepagePromoBlock;
 use App\Models\Page;
@@ -43,8 +44,13 @@ test('creative industry content seeder imports cms records without changing hero
         ->and(Product::count())->toBe(8)
         ->and(ClientPartner::where('type', ClientPartnerType::Client)->count())->toBe(7)
         ->and(Page::where('slug', 'goals')->exists())->toBeTrue()
+        ->and(CompanyGoal::count())->toBe(6)
         ->and(Page::where('slug', 'why-us')->exists())->toBeTrue()
-        ->and(HomepagePromoBlock::where('type', HomepagePromoType::Stat)->count())->toBe(3)
+        ->and(HomepagePromoBlock::where('type', HomepagePromoType::Stat)->count())->toBe(2)
+        ->and(HomepagePromoBlock::where('type', HomepagePromoType::AboutHighlight)->count())->toBe(4)
+        ->and(HomepagePromoBlock::where('type', HomepagePromoType::WhyUsHighlight)->count())->toBe(3)
+        ->and($companyInfo->about_section_title_ar)->toBe('شركة عمانية بكوادر متميزة')
+        ->and($companyInfo->about_highlight_ar)->toBe('متميزة')
         ->and(HomepagePromoBlock::where('type', HomepagePromoType::BusinessCta)->count())->toBeGreaterThanOrEqual(1);
 });
 

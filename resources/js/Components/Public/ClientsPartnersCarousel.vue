@@ -3,6 +3,7 @@ import { toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { resolveBilingualField } from '../../Composables/useBilingualContent.js'
 import { useHorizontalCarousel } from '../../Composables/useHorizontalCarousel.js'
+import PublicMediaPlaceholder from './PublicMediaPlaceholder.vue'
 
 const props = defineProps({
   items: {
@@ -75,7 +76,7 @@ const itemTypeLabel = (item) => (
               :src="item.logo"
               :alt="itemName(item)"
             />
-            <div v-else class="px-media-fallback" :aria-hidden="true"></div>
+            <PublicMediaPlaceholder v-else icon="handshake" />
           </div>
           <div class="px-client-body">
             <span class="px-client-badge">{{ itemTypeLabel(item) }}</span>

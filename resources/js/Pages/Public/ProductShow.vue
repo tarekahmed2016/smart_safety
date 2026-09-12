@@ -5,6 +5,7 @@ import { computed } from 'vue'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useI18n } from 'vue-i18n'
 import { resolveBilingualField } from '../../Composables/useBilingualContent.js'
+import LocalizedHeading from '../../Components/Public/LocalizedHeading.vue'
 
 defineOptions({ layout: PublicLayout })
 
@@ -24,7 +25,7 @@ const productDescription = computed(() => resolveBilingualField(product.value, '
         <span aria-hidden="true"> / </span>
         <Link :href="route('public.products.index')">{{ t('public.home.nav.products') }}</Link>
       </p>
-      <h1>{{ productName }}</h1>
+      <LocalizedHeading :text="productName" tag="h1" />
     </div>
   </section>
 
@@ -38,7 +39,7 @@ const productDescription = computed(() => resolveBilingualField(product.value, '
         />
         <div v-else class="px-media-fallback px-media-fallback-tall" aria-hidden="true"></div>
       </div>
-      <div class="px-product-detail-copy">
+      <div class="px-product-detail-copy" :dir="locale === 'ar' ? 'rtl' : 'ltr'">
         <RichTextContent
           v-if="productDescription"
           :content="productDescription"

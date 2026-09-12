@@ -30,7 +30,7 @@ test('admin homepage promos index returns section cards without hero', function 
         ->get(route('homepage-promos.index'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->has('sectionCards', 11)
+            ->has('sectionCards', 14)
             ->where('sectionCards.0.key', 'features')
             ->where('sectionCards.0.items.0.title_en', 'Quality')
             ->missing('homepagePromoBlocks'));
@@ -42,9 +42,10 @@ test('section cards exclude hero and follow homepage section ordering', function
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->where('sectionCards.0.key', 'features')
-            ->where('sectionCards.1.key', 'products')
-            ->where('sectionCards.2.key', 'services')
-            ->where('sectionCards.10.key', 'contact'));
+            ->where('sectionCards.1.key', 'about')
+            ->where('sectionCards.2.key', 'why_us')
+            ->where('sectionCards.3.key', 'services')
+            ->where('sectionCards.13.key', 'contact'));
 });
 
 test('admin can update homepage promo section settings for products', function () {

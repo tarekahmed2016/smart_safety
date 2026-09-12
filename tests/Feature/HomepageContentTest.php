@@ -21,6 +21,7 @@ test('company info table contains homepage content columns', function () {
     expect(Schema::hasColumns('company_info', [
         'hero_highlight_ar',
         'hero_primary_cta_text_ar',
+        'about_highlight_ar',
         'products_homepage_limit',
         'footer_copyright_en',
     ]))->toBeTrue();

@@ -4,6 +4,8 @@ import { Link } from '@inertiajs/vue3'
 import { useI18n } from 'vue-i18n'
 import { resolveBilingualField } from '../../Composables/useBilingualContent.js'
 import { useHorizontalCarousel } from '../../Composables/useHorizontalCarousel.js'
+import LocalizedHeading from './LocalizedHeading.vue'
+import PublicMediaPlaceholder from './PublicMediaPlaceholder.vue'
 
 const props = defineProps({
   products: {
@@ -74,10 +76,10 @@ const productExcerpt = (product) =>
               :src="product.image"
               :alt="productName(product)"
             />
-            <div v-else class="px-media-fallback" :aria-hidden="true"></div>
+            <PublicMediaPlaceholder v-else icon="cube" />
           </div>
-          <div class="px-product-body">
-            <h3>{{ productName(product) }}</h3>
+          <div class="px-product-body" :dir="locale === 'ar' ? 'rtl' : 'ltr'">
+            <LocalizedHeading :text="productName(product)" tag="h3" />
             <p>{{ productExcerpt(product) }}</p>
             <Link :href="route('public.products.show', { slug: product.slug })" class="px-text-link">
               {{ t('public.home.products.details') }}

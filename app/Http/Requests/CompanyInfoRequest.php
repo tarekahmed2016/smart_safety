@@ -94,6 +94,8 @@ class CompanyInfoRequest extends FormRequest
             'industries_section_title_en' => ['nullable', 'string', 'max:255'],
             'about_section_title_ar' => ['nullable', 'string', 'max:255'],
             'about_section_title_en' => ['nullable', 'string', 'max:255'],
+            'about_highlight_ar' => ['nullable', 'string', 'max:255'],
+            'about_highlight_en' => ['nullable', 'string', 'max:255'],
             'about_cta_text_ar' => ['nullable', 'string', 'max:255'],
             'about_cta_text_en' => ['nullable', 'string', 'max:255'],
             'about_cta_url' => ['nullable', 'string', 'max:500'],

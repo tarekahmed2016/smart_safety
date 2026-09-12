@@ -43,6 +43,7 @@
     "services": "Services",
     "products": "Products",
     "projects": "Projects",
+    "companyGoals": "Our Goals",
     "teamMembers": "Team Members",
     "clientsPartners": "Clients & Partners",
     "certificatesAwards": "Certificates & Awards",
@@ -472,6 +473,42 @@
       "deleteButton": "Delete"
     }
   },
+  "companyGoals": {
+    "pageTitle": "Goals Management",
+    "pageSubtitle": "Manage company goals shown on the homepage",
+    "searchPlaceholder": "Search goal text...",
+    "addNew": "Add Goal",
+    "noGoalsFound": "No goals found",
+    "table": {
+      "text": "Goal",
+      "ordering": "Ordering",
+      "status": "Status",
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "form": {
+      "addTitle": "Add Goal",
+      "editTitle": "Edit Goal",
+      "textArLabel": "Text (Arabic)",
+      "textArPlaceholder": "Enter the goal in Arabic",
+      "textEnLabel": "Text (English)",
+      "textEnPlaceholder": "Enter the goal in English",
+      "orderingLabel": "Ordering",
+      "orderingPlaceholder": "Enter display order",
+      "activeLabel": "Active",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "save": "Save"
+    },
+    "deleteModal": {
+      "title": "Delete Goal",
+      "confirmMessage": "Are you sure you want to delete {name}?",
+      "cancel": "Cancel",
+      "deleting": "Deleting...",
+      "deleteButton": "Delete"
+    }
+  },
   "teamMembers": {
     "pageTitle": "Team Members Management",
     "pageSubtitle": "Manage your company team profiles",
@@ -779,6 +816,8 @@
       "industries_section_title_en": "Industries section title (English)",
       "about_section_title_ar": "About section title (Arabic)",
       "about_section_title_en": "About section title (English)",
+      "about_highlight_ar": "About title highlight (Arabic)",
+      "about_highlight_en": "About title highlight (English)",
       "about_cta_text_ar": "About CTA label (Arabic)",
       "about_cta_text_en": "About CTA label (English)",
       "about_cta_url": "About CTA URL",
@@ -788,6 +827,12 @@
       "contact_section_title_en": "Contact section title (English)",
       "contact_section_subtitle_ar": "Contact section subtitle (Arabic)",
       "contact_section_subtitle_en": "Contact section subtitle (English)",
+      "headline_ar": "Main headline (Arabic)",
+      "headline_en": "Main headline (English)",
+      "highlight_ar": "Title highlight (Arabic)",
+      "highlight_en": "Title highlight (English)",
+      "subtitle_ar": "Section description (Arabic)",
+      "subtitle_en": "Section description (English)",
       "max_items": "Maximum gallery items"
     },
     "sections": {
@@ -824,8 +869,26 @@
       "about": {
         "titleAr": "من نحن",
         "titleEn": "About",
-        "description": "About section titles, CTA, and homepage statistics.",
+        "description": "About section titles, highlight cards, CTA, and homepage statistics.",
         "manageLink": "Edit company about content"
+      },
+      "why_us": {
+        "titleAr": "لماذا نحن",
+        "titleEn": "Why Us",
+        "description": "Why Us section titles and the three advantage cards.",
+        "manageLink": "Manage Why Us content"
+      },
+      "vision_mission": {
+        "titleAr": "رؤيتنا ورسالتنا",
+        "titleEn": "Vision & Mission",
+        "description": "Vision and mission section titles. Edit the content from Company Info.",
+        "manageLink": "Edit vision and mission"
+      },
+      "goals": {
+        "titleAr": "أهدافنا",
+        "titleEn": "Goals",
+        "description": "Goals section titles. Manage goal items from the Goals page.",
+        "manageLink": "Manage goals"
       },
       "team_members": {
         "titleAr": "أعضاء الفريق",
@@ -925,6 +988,10 @@
     "titleEnLabel": "Section title (English)",
     "titleArPlaceholder": "Optional override",
     "titleEnPlaceholder": "Optional override",
+    "headlineArLabel": "Main headline (Arabic)",
+    "headlineEnLabel": "Main headline (English)",
+    "headlineArPlaceholder": "نسعى لتحقيق التميز",
+    "headlineEnPlaceholder": "We strive for excellence",
     "moveUp": "Move up",
     "moveDown": "Move down",
     "save": "Save changes",
@@ -945,6 +1012,9 @@
       "custom_manufacturing": "Custom Manufacturing",
       "industries": "Industries",
       "about": "About",
+      "why_us": "Why Us",
+      "vision_mission": "Vision & Mission",
+      "goals": "Goals",
       "team_members": "Team Members",
       "clients_partners": "Clients & Partners",
       "gallery": "Gallery",
@@ -1065,13 +1135,16 @@
       "nav": {
         "home": "Home",
         "about": "About Us",
-        "products": "Products",
+        "whyUs": "Why Us",
+        "products": "Our Products",
         "customManufacturing": "Custom Manufacturing",
         "gallery": "Gallery",
-        "services": "Services",
+        "services": "Our Services",
+        "vision": "Our Vision",
+        "goals": "Our Goals",
         "projects": "Projects",
         "team": "Team",
-        "clients": "Clients",
+        "clients": "Our Clients",
         "partners": "Partners",
         "certificates": "Certificates",
         "awards": "Awards",
@@ -1162,8 +1235,8 @@
         "slideAlt": "Gallery image {number}"
       },
       "contactCta": {
-        "title": "Have a project or a question?",
-        "subtitle": "Talk to our team about custom manufacturing, products, or a quotation.",
+        "title": "Have a project in mind?",
+        "subtitle": "We are here to turn your industrial ideas into reality with the highest quality standards.",
         "button": "Contact us"
       },
       "newsletter": {
@@ -1181,7 +1254,8 @@
       },
       "about": {
         "title": "About Us",
-        "factoryTitle": "About the factory",
+        "factoryTitle": "An Omani company with distinguished talent",
+        "highlight": "distinguished",
         "subtitle": "Learn more about our factory and how we serve our clients.",
         "descriptionWithCompany": "{company} manufactures plastic products according to customer requirements, with a focus on quality, flexibility, and long-term partnership.",
         "more": "More about us",
@@ -1209,9 +1283,39 @@
           }
         }
       },
+      "whyUs": {
+        "title": "Why Us",
+        "headline": "What sets Creative Industry apart",
+        "highlight": "Creative Industry"
+      },
+      "visionMission": {
+        "title": "Vision & Mission",
+        "headline": "Towards an integrated industry",
+        "visionLabel": "Our Vision",
+        "missionLabel": "Our Mission",
+        "visionHeading": "Building an integrated group of industrial companies",
+        "visionBody": "Economically successful and advanced scientifically, administratively, and industrially, serving society and contributing to sustainable development.",
+        "missionHeading": "Professional industrial solutions",
+        "missionBody": "Providing professional industrial solutions that improve performance for factories and brands, using the latest technologies and the highest quality standards."
+      },
+      "goals": {
+        "title": "Our Goals",
+        "headline": "We strive for excellence",
+        "empty": "Goals will appear here once they are published.",
+        "items": {
+          "1": "Building trust in Omani products and helping them compete in global markets.",
+          "2": "Accelerating the transition toward the Fourth Industrial Revolution in the Sultanate.",
+          "3": "Supporting Oman’s progress toward advanced economies and transformative manufacturing industries.",
+          "4": "Building and developing factories with modern technologies and global quality standards.",
+          "5": "Developing and designing plastic products using advanced industrial technologies.",
+          "6": "Providing industrial consulting that supports Oman’s industrial sector."
+        }
+      },
       "services": {
         "title": "Our Services",
-        "subtitle": "Explore the services we offer to support your needs.",
+        "manufacturingTitle": "Manufacturing Services",
+        "highlight": "Manufacturing",
+        "subtitle": "We provide manufacturing and plastic industry services for brands and factories.",
         "empty": "Services will appear here once they are published.",
         "noDescription": "Contact us to learn more about this service.",
         "learnMore": "Learn More"
@@ -1270,8 +1374,9 @@
         "empty": "Awards will appear here once they are published."
       },
       "contact": {
-        "title": "Contact Us",
-        "subtitle": "Reach out to us using the details below or send us a message.",
+        "eyebrow": "Contact Us",
+        "title": "Have a project in mind?",
+        "subtitle": "We are here to turn your industrial ideas into reality with the highest quality standards.",
         "phone": "Phone",
         "email": "Email",
         "address": "Address",
@@ -1286,15 +1391,15 @@
         "whatsapp": "WhatsApp",
         "notAvailable": "Contact details will appear here once they are configured.",
         "contactMethodHint": "Please provide either an email address or a phone number so we can reach you.",
-        "formName": "Name",
-        "formNamePlaceholder": "Your name",
+        "formName": "Full name",
+        "formNamePlaceholder": "Enter your name",
         "formEmail": "Email",
-        "formEmailPlaceholder": "Enter email address",
-        "formPhone": "Phone",
-        "formPhonePlaceholder": "+971 50 000 0000",
+        "formEmailPlaceholder": "{'example@email.com'}",
+        "formPhone": "Phone number",
+        "formPhonePlaceholder": "+968 XXXX XXXX",
         "formSubject": "Subject",
         "formSubjectPlaceholder": "How can we help?",
-        "formMessage": "Message",
+        "formMessage": "Your message",
         "formMessagePlaceholder": "Write your message here...",
         "formSend": "Send Message",
         "formSending": "Sending...",

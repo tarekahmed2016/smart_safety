@@ -221,3 +221,99 @@ test('navigation links are sorted by nav order on homepage', function () {
             ->where('navigationLinks.0.key', 'section-services')
             ->where('navigationLinks.1.key', 'section-hero'));
 });
+
+test('public navigation uses the configured labels order and anchors', function () {
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('navigationLinks', function ($links) {
+                $items = collect($links)->values();
+
+                $expected = [
+                    ['key' => 'section-hero', 'label_ar' => 'الرئيسية', 'label_en' => 'Home', 'href' => '#home'],
+                    ['key' => 'section-about', 'label_ar' => 'من نحن', 'label_en' => 'About Us', 'href' => '#about'],
+                    ['key' => 'section-why_us', 'label_ar' => 'لماذا نحن', 'label_en' => 'Why Us', 'href' => '#why-us'],
+                    ['key' => 'section-services', 'label_ar' => 'خدماتنا', 'label_en' => 'Our Services', 'href' => '#services'],
+                    ['key' => 'section-products', 'label_ar' => 'منتجاتنا', 'label_en' => 'Our Products', 'href' => '#products'],
+                    ['key' => 'section-vision_mission', 'label_ar' => 'رؤيتنا', 'label_en' => 'Our Vision', 'href' => '#vision-mission'],
+                    ['key' => 'section-goals', 'label_ar' => 'أهدافنا', 'label_en' => 'Our Goals', 'href' => '#goals'],
+                    ['key' => 'section-clients_partners', 'label_ar' => 'عملاؤنا', 'label_en' => 'Our Clients', 'href' => '#clients-partners'],
+                    ['key' => 'section-gallery', 'label_ar' => 'معرض الصور', 'label_en' => 'Gallery', 'href' => '#gallery'],
+                    ['key' => 'section-custom_manufacturing', 'label_ar' => 'التصنيع حسب الطلب', 'label_en' => 'Custom Manufacturing', 'href' => '#custom-manufacturing'],
+                    ['key' => 'section-contact', 'label_ar' => 'تواصل معنا', 'label_en' => 'Contact Us', 'href' => '#contact-form'],
+                ];
+
+                if ($items->count() !== count($expected)) {
+                    return false;
+                }
+
+                foreach ($expected as $index => $link) {
+                    $actual = $items[$index] ?? null;
+
+                    if (! $actual
+                        || $actual['key'] !== $link['key']
+                        || $actual['label_ar'] !== $link['label_ar']
+                        || $actual['label_en'] !== $link['label_en']
+                        || ! str_ends_with((string) $actual['href'], $link['href'])) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }));
+});
+
+test('gallery nav link follows homepage section visibility and navigation settings', function () {
+    $gallery = HomepageSection::query()->where('key', 'gallery')->firstOrFail();
+
+    expect($gallery->is_visible)->toBeTrue()
+        ->and($gallery->show_in_navigation)->toBeTrue()
+        ->and($gallery->anchor_id)->toBe('gallery');
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('homepageSections', fn ($sections) => collect($sections)->contains('key', 'gallery'))
+            ->where('navigationLinks', fn ($links) => collect($links)
+                ->contains(fn ($link) => $link['key'] === 'section-gallery'
+                    && $link['label_ar'] === 'معرض الصور'
+                    && $link['label_en'] === 'Gallery'
+                    && str_ends_with((string) $link['href'], '#gallery'))));
+
+    HomepageSection::query()->where('key', 'gallery')->update([
+        'show_in_navigation' => false,
+    ]);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('homepageSections', fn ($sections) => collect($sections)->contains('key', 'gallery'))
+            ->where('navigationLinks', fn ($links) => collect($links)
+                ->contains(fn ($link) => ($link['key'] ?? '') === 'section-gallery') === false));
+
+    HomepageSection::query()->where('key', 'gallery')->update([
+        'is_visible' => false,
+        'show_in_navigation' => true,
+    ]);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('homepageSections', fn ($sections) => collect($sections)->where('key', 'gallery')->isEmpty())
+            ->where('navigationLinks', fn ($links) => collect($links)
+                ->contains(fn ($link) => ($link['key'] ?? '') === 'section-gallery') === false));
+});
+
+test('public document uses company logo favicon links', function () {
+    expect(file_exists(public_path('favicon.ico')))->toBeTrue()
+        ->and(file_exists(public_path('favicon-32x32.png')))->toBeTrue()
+        ->and(file_exists(public_path('apple-touch-icon.png')))->toBeTrue();
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertSee('rel="icon"', false)
+        ->assertSee('rel="shortcut icon"', false)
+        ->assertSee('rel="apple-touch-icon"', false)
+        ->assertSee('favicon-32x32.png', false)
+        ->assertSee('favicon.ico', false);
+});

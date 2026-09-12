@@ -46,6 +46,21 @@ class HomepagePromoSectionSettingsRequest extends FormRequest
             $rules['section.max_items'] = ['nullable', 'integer', 'min:1', 'max:50'];
         }
 
+        if (in_array('headline_ar', $sectionFields, true)) {
+            $rules['section.headline_ar'] = ['nullable', 'string', 'max:255'];
+            $rules['section.headline_en'] = ['nullable', 'string', 'max:255'];
+        }
+
+        if (in_array('highlight_ar', $sectionFields, true)) {
+            $rules['section.highlight_ar'] = ['nullable', 'string', 'max:255'];
+            $rules['section.highlight_en'] = ['nullable', 'string', 'max:255'];
+        }
+
+        if (in_array('subtitle_ar', $sectionFields, true)) {
+            $rules['section.subtitle_ar'] = ['nullable', 'string', 'max:1000'];
+            $rules['section.subtitle_en'] = ['nullable', 'string', 'max:1000'];
+        }
+
         return $rules;
     }
 

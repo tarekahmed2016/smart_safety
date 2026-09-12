@@ -43,6 +43,7 @@
     "services": "الخدمات",
     "products": "المنتجات",
     "projects": "المشاريع",
+    "companyGoals": "أهدافنا",
     "teamMembers": "أعضاء الفريق",
     "clientsPartners": "العملاء والشركاء",
     "certificatesAwards": "الشهادات والجوائز",
@@ -472,6 +473,42 @@
       "deleteButton": "حذف"
     }
   },
+  "companyGoals": {
+    "pageTitle": "إدارة الأهداف",
+    "pageSubtitle": "إدارة أهداف الشركة المعروضة في الصفحة الرئيسية",
+    "searchPlaceholder": "ابحث في نص الهدف...",
+    "addNew": "إضافة هدف",
+    "noGoalsFound": "لا توجد أهداف",
+    "table": {
+      "text": "الهدف",
+      "ordering": "الترتيب",
+      "status": "الحالة",
+      "actions": "الإجراءات",
+      "edit": "تعديل",
+      "delete": "حذف"
+    },
+    "form": {
+      "addTitle": "إضافة هدف",
+      "editTitle": "تعديل الهدف",
+      "textArLabel": "النص (عربي)",
+      "textArPlaceholder": "أدخل الهدف بالعربية",
+      "textEnLabel": "النص (إنجليزي)",
+      "textEnPlaceholder": "أدخل الهدف بالإنجليزية",
+      "orderingLabel": "الترتيب",
+      "orderingPlaceholder": "أدخل ترتيب العرض",
+      "activeLabel": "نشط",
+      "cancel": "إلغاء",
+      "saving": "جاري الحفظ...",
+      "save": "حفظ"
+    },
+    "deleteModal": {
+      "title": "حذف الهدف",
+      "confirmMessage": "هل أنت متأكد من حذف {name}؟",
+      "cancel": "إلغاء",
+      "deleting": "جاري الحذف...",
+      "deleteButton": "حذف"
+    }
+  },
   "teamMembers": {
     "pageTitle": "إدارة أعضاء الفريق",
     "pageSubtitle": "إدارة ملفات أعضاء فريق الشركة",
@@ -779,6 +816,8 @@
       "industries_section_title_en": "عنوان قسم القطاعات (إنجليزي)",
       "about_section_title_ar": "عنوان قسم من نحن (عربي)",
       "about_section_title_en": "عنوان قسم من نحن (إنجليزي)",
+      "about_highlight_ar": "كلمة التمييز في عنوان من نحن (عربي)",
+      "about_highlight_en": "كلمة التمييز في عنوان من نحن (إنجليزي)",
       "about_cta_text_ar": "نص زر من نحن (عربي)",
       "about_cta_text_en": "نص زر من نحن (إنجليزي)",
       "about_cta_url": "رابط زر من نحن",
@@ -788,6 +827,12 @@
       "contact_section_title_en": "عنوان قسم التواصل (إنجليزي)",
       "contact_section_subtitle_ar": "وصف قسم التواصل (عربي)",
       "contact_section_subtitle_en": "وصف قسم التواصل (إنجليزي)",
+      "headline_ar": "العنوان الرئيسي (عربي)",
+      "headline_en": "العنوان الرئيسي (إنجليزي)",
+      "highlight_ar": "كلمة التمييز (عربي)",
+      "highlight_en": "كلمة التمييز (إنجليزي)",
+      "subtitle_ar": "وصف القسم (عربي)",
+      "subtitle_en": "وصف القسم (إنجليزي)",
       "max_items": "الحد الأقصى لصور المعرض"
     },
     "sections": {
@@ -824,8 +869,26 @@
       "about": {
         "titleAr": "من نحن",
         "titleEn": "About",
-        "description": "عناوين قسم من نحن وزر الإجراء والإحصائيات.",
+        "description": "عناوين قسم من نحن وبطاقات المزايا وزر الإجراء والإحصائيات.",
         "manageLink": "تعديل محتوى الشركة"
+      },
+      "why_us": {
+        "titleAr": "لماذا نحن",
+        "titleEn": "Why Us",
+        "description": "عناوين قسم لماذا نحن وبطاقات المزايا.",
+        "manageLink": "إدارة محتوى لماذا نحن"
+      },
+      "vision_mission": {
+        "titleAr": "رؤيتنا ورسالتنا",
+        "titleEn": "Vision & Mission",
+        "description": "عناوين قسم الرؤية والرسالة. يتم تعديل المحتوى من بيانات الشركة.",
+        "manageLink": "تعديل الرؤية والرسالة"
+      },
+      "goals": {
+        "titleAr": "أهدافنا",
+        "titleEn": "Goals",
+        "description": "عناوين قسم الأهداف. تتم إدارة عناصر الأهداف من صفحة الأهداف.",
+        "manageLink": "إدارة الأهداف"
       },
       "team_members": {
         "titleAr": "أعضاء الفريق",
@@ -925,6 +988,10 @@
     "titleEnLabel": "عنوان القسم (إنجليزي)",
     "titleArPlaceholder": "عنوان اختياري",
     "titleEnPlaceholder": "عنوان اختياري",
+    "headlineArLabel": "العنوان الرئيسي (عربي)",
+    "headlineEnLabel": "العنوان الرئيسي (إنجليزي)",
+    "headlineArPlaceholder": "نسعى لتحقيق التميز",
+    "headlineEnPlaceholder": "We strive for excellence",
     "moveUp": "تحريك لأعلى",
     "moveDown": "تحريك لأسفل",
     "save": "حفظ التغييرات",
@@ -945,6 +1012,9 @@
       "custom_manufacturing": "التصنيع حسب الطلب",
       "industries": "القطاعات",
       "about": "من نحن",
+      "why_us": "لماذا نحن",
+      "vision_mission": "رؤيتنا ورسالتنا",
+      "goals": "أهدافنا",
       "team_members": "أعضاء الفريق",
       "clients_partners": "العملاء والشركاء",
       "gallery": "المعرض",
@@ -1065,13 +1135,16 @@
       "nav": {
         "home": "الرئيسية",
         "about": "من نحن",
-        "products": "المنتجات",
+        "whyUs": "لماذا نحن",
+        "products": "منتجاتنا",
         "customManufacturing": "التصنيع حسب الطلب",
         "gallery": "معرض الصور",
-        "services": "الخدمات",
+        "services": "خدماتنا",
+        "vision": "رؤيتنا",
+        "goals": "أهدافنا",
         "projects": "المشاريع",
         "team": "الفريق",
-        "clients": "العملاء",
+        "clients": "عملاؤنا",
         "partners": "الشركاء",
         "certificates": "الشهادات",
         "awards": "الجوائز",
@@ -1162,8 +1235,8 @@
         "slideAlt": "صورة المعرض {number}"
       },
       "contactCta": {
-        "title": "لديك مشروع أو استفسار؟",
-        "subtitle": "تحدث مع فريقنا حول التصنيع حسب الطلب أو المنتجات أو طلب عرض سعر.",
+        "title": "هل لديك مشروع في ذهنك؟",
+        "subtitle": "نحن هنا لتحويل أفكارك الصناعية إلى واقع ملموس بأعلى معايير الجودة.",
         "button": "تواصل معنا"
       },
       "newsletter": {
@@ -1181,7 +1254,8 @@
       },
       "about": {
         "title": "من نحن",
-        "factoryTitle": "نبذة عن المصنع",
+        "factoryTitle": "شركة عمانية بكوادر متميزة",
+        "highlight": "متميزة",
         "subtitle": "تعرّف أكثر على مصنعنا وكيف نخدم عملاءنا.",
         "descriptionWithCompany": "تصنع {company} المنتجات البلاستيكية وفق متطلبات العملاء، مع التركيز على الجودة والمرونة والشراكة طويلة الأمد.",
         "more": "المزيد عنا",
@@ -1209,9 +1283,39 @@
           }
         }
       },
+      "whyUs": {
+        "title": "لماذا نحن",
+        "headline": "ما يميز الصناعة الإبداعية",
+        "highlight": "الصناعة الإبداعية"
+      },
+      "visionMission": {
+        "title": "رؤيتنا ورسالتنا",
+        "headline": "نحو صناعة متكاملة",
+        "visionLabel": "رؤيتنا",
+        "missionLabel": "رسالتنا",
+        "visionHeading": "تكوين مجموعة شركات صناعية متكاملة",
+        "visionBody": "ناجحة اقتصاديًا، متقدمة علميًا وإداريًا وصناعيًا، لخدمة المجتمع والمساهمة في التنمية المستدامة.",
+        "missionHeading": "حلول صناعية احترافية",
+        "missionBody": "تقديم حلول صناعية احترافية تسهّل الأداء على المصانع وعلى العلامات التجارية، بأحدث التقنيات وأعلى معايير الجودة."
+      },
+      "goals": {
+        "title": "أهدافنا",
+        "headline": "نسعى لتحقيق التميز",
+        "empty": "ستظهر الأهداف هنا بعد نشرها.",
+        "items": {
+          "1": "نساهم في زرع الثقة في المنتج العماني ومنحه المجال للمنافسة في الأسواق العالمية",
+          "2": "المساهمة في التحول بوتيرة أسرع نحو الثورة الصناعية الرابعة في السلطنة",
+          "3": "المساهمة في وصول السلطنة إلى مصاف الدول المتقدمة وتحفيز التقدم في الصناعات التحويلية",
+          "4": "بناء وتطوير المصانع بأحدث التقنيات وبأعلى معايير الجودة العالمية",
+          "5": "تطوير المنتجات البلاستيكية وتصميمها باستخدام أفضل التقنيات الصناعية",
+          "6": "تقديم الاستشارات الصناعية التي تسهم في تطوير المجال الصناعي في السلطنة"
+        }
+      },
       "services": {
         "title": "خدماتنا",
-        "subtitle": "استكشف الخدمات التي نقدمها لدعم احتياجاتك.",
+        "manufacturingTitle": "خدمات التصنيع",
+        "highlight": "التصنيع",
+        "subtitle": "نقدّم خدمات التصنيع والصناعة البلاستيكية للعلامات التجارية والمصانع.",
         "empty": "ستظهر الخدمات هنا بعد نشرها.",
         "noDescription": "تواصل معنا لمعرفة المزيد عن هذه الخدمة.",
         "learnMore": "اعرف المزيد"
@@ -1270,8 +1374,9 @@
         "empty": "ستظهر الجوائز هنا بعد نشرها."
       },
       "contact": {
-        "title": "تواصل معنا",
-        "subtitle": "تواصل معنا باستخدام البيانات أدناه أو أرسل لنا رسالة.",
+        "eyebrow": "تواصل معنا",
+        "title": "هل لديك مشروع في ذهنك؟",
+        "subtitle": "نحن هنا لتحويل أفكارك الصناعية إلى واقع ملموس بأعلى معايير الجودة.",
         "phone": "الهاتف",
         "email": "البريد الإلكتروني",
         "address": "العنوان",
@@ -1286,15 +1391,15 @@
         "whatsapp": "واتساب",
         "notAvailable": "ستظهر بيانات التواصل هنا بعد إعدادها.",
         "contactMethodHint": "يرجى تقديم البريد الإلكتروني أو رقم الهاتف حتى نتمكن من التواصل معك.",
-        "formName": "الاسم",
-        "formNamePlaceholder": "اسمك",
+        "formName": "الاسم الكامل",
+        "formNamePlaceholder": "أدخل اسمك",
         "formEmail": "البريد الإلكتروني",
-        "formEmailPlaceholder": "أدخل البريد الإلكتروني",
-        "formPhone": "الهاتف",
-        "formPhonePlaceholder": "+971 50 000 0000",
+        "formEmailPlaceholder": "{'example@email.com'}",
+        "formPhone": "رقم الهاتف",
+        "formPhonePlaceholder": "+968 XXXX XXXX",
         "formSubject": "الموضوع",
         "formSubjectPlaceholder": "كيف يمكننا مساعدتك؟",
-        "formMessage": "الرسالة",
+        "formMessage": "رسالتك",
         "formMessagePlaceholder": "اكتب رسالتك هنا...",
         "formSend": "إرسال الرسالة",
         "formSending": "جاري الإرسال...",

@@ -28,3 +28,57 @@ export function resolveBilingualField(item, field, locale) {
 export function bilingualFieldKey(field, locale) {
   return `${field}_${locale}`
 }
+
+/**
+ * Keep Arabic titles readable when they also contain Latin product codes.
+ *
+ * @param {string} text
+ * @param {string} locale
+ * @returns {string}
+ */
+export function sanitizeLocalizedTitle(text, locale) {
+  const value = String(text || '').trim()
+
+  if (!value) {
+    return ''
+  }
+
+  if (locale !== 'ar') {
+    return value
+  }
+
+  return value.replace(/\s*\([^)]*[A-Za-z][^)]*\)/g, '').replace(/\s{2,}/g, ' ').trim()
+}
+
+/**
+ * @param {string} text
+ * @returns {{text: string, isolate: boolean}[]}
+ */
+export function mixedScriptParts(text) {
+  const value = String(text || '')
+
+  if (!value) {
+    return []
+  }
+
+  const parts = []
+  const latinRun = /[A-Za-z0-9][A-Za-z0-9+./&_-]*/g
+  let lastIndex = 0
+  let match = latinRun.exec(value)
+
+  while (match) {
+    if (match.index > lastIndex) {
+      parts.push({ text: value.slice(lastIndex, match.index), isolate: false })
+    }
+
+    parts.push({ text: match[0], isolate: true })
+    lastIndex = match.index + match[0].length
+    match = latinRun.exec(value)
+  }
+
+  if (lastIndex < value.length) {
+    parts.push({ text: value.slice(lastIndex), isolate: false })
+  }
+
+  return parts
+}

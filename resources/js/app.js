@@ -20,6 +20,7 @@ createInertiaApp({
                 || name.startsWith('Services/')
                 || name.startsWith('Products/')
                 || name.startsWith('Projects/')
+                || name.startsWith('CompanyGoals/')
                 || name.startsWith('TeamMembers/')
                 || name.startsWith('ClientsPartners/')
                 || name.startsWith('CertificatesAwards/')

@@ -168,7 +168,10 @@ test('admin can manage homepage promo blocks with bilingual content', function (
         ]))
         ->assertRedirect();
 
-    $block = HomepagePromoBlock::first();
+    $block = HomepagePromoBlock::query()
+        ->where('type', HomepagePromoType::BusinessCta)
+        ->latest('id')
+        ->first();
 
     expect($block)->not->toBeNull()
         ->and($block->type)->toBe(HomepagePromoType::BusinessCta)
@@ -194,7 +197,7 @@ test('admin can delete homepage promo block', function () {
         ->delete(route('homepage-promos.destroy', $block))
         ->assertRedirect();
 
-    expect(HomepagePromoBlock::count())->toBe(0)
+    expect(HomepagePromoBlock::query()->whereKey($block->id)->doesntExist())->toBeTrue()
         ->and(ActivityLog::where('event', Event::Deleted)->where('subject_id', $block->id)->exists())->toBeTrue();
 });
 

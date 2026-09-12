@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\CompanyInfo;
+use App\Support\HomepageAboutContentDefaults;
 use App\Support\HomepageContentDefaults;
 use App\Support\ThemeColor;
 use Illuminate\Http\UploadedFile;
@@ -60,6 +61,8 @@ class CompanyInfoService
         'industries_section_title_en',
         'about_section_title_ar',
         'about_section_title_en',
+        'about_highlight_ar',
+        'about_highlight_en',
         'about_cta_text_ar',
         'about_cta_text_en',
         'about_cta_url',
@@ -213,8 +216,8 @@ class CompanyInfoService
             'hero_title_en' => "Plastic solutions\nthat build a better future",
             'hero_description_ar' => 'نختص في تصنيع المنتجات البلاستيكية وفق متطلبات العملاء، بمعايير جودة عالية وإنتاج مرن يلبي احتياجات القطاعات المختلفة.',
             'hero_description_en' => 'We specialize in manufacturing plastic products according to customer requirements, with high quality standards and flexible production for diverse sectors.',
-            'about_ar' => 'الصناعة الإبداعية شركة بإدارة عمانية وكادر مميز من مهندسين عمانيين ذوي خبرة أكثر من عشر سنوات.',
-            'about_en' => 'Creative Industry is an Omani-managed company with a distinguished team of Omani engineers with more than ten years of experience.',
+            'about_ar' => HomepageAboutContentDefaults::companyFields()['about_ar'],
+            'about_en' => HomepageAboutContentDefaults::companyFields()['about_en'],
             ...HomepageContentDefaults::companyInfoFields(),
             ...array_fill_keys(array_diff(self::STRING_FIELDS, ThemeColor::fieldNames(), [
                 'name_ar', 'name_en', 'hero_title_ar', 'hero_title_en',

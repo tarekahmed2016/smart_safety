@@ -77,8 +77,8 @@ const imageRequired = computed(() => {
 
 const showMainImage = computed(() => ['feature_band', 'promo_strip', 'custom_manufacturing', 'industry'].includes(form.type))
 const showBadgeImage = computed(() => form.type === 'feature_band')
-const showIconField = computed(() => ['feature_highlight', 'industry'].includes(form.type))
-const iconOptions = ['handshake', 'experience', 'flexible', 'quality', 'food', 'agri', 'industry', 'packing', 'home', 'medical']
+const showIconField = computed(() => ['feature_highlight', 'industry', 'about_highlight', 'why_us_highlight'].includes(form.type))
+const iconOptions = ['handshake', 'experience', 'flexible', 'quality', 'food', 'agri', 'industry', 'packing', 'home', 'medical', 'shield', 'globe', 'trophy', 'flag', 'bolt', 'sprout', 'vision', 'mission']
 
 const typeLabel = (promoType) => locale.value === 'ar' ? promoType.label : promoType.name
 

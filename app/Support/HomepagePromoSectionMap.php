@@ -13,14 +13,17 @@ class HomepagePromoSectionMap
     {
         return [
             'features',
-            'products',
-            'services',
-            'custom_manufacturing',
-            'industries',
             'about',
+            'why_us',
+            'services',
+            'products',
+            'vision_mission',
+            'goals',
             'team_members',
             'clients_partners',
             'gallery',
+            'custom_manufacturing',
+            'industries',
             'contact_cta',
             'contact',
         ];
@@ -35,7 +38,8 @@ class HomepagePromoSectionMap
             'features' => [HomepagePromoType::FeatureHighlight],
             'custom_manufacturing' => [HomepagePromoType::CustomManufacturing],
             'industries' => [HomepagePromoType::Industry],
-            'about' => [HomepagePromoType::Stat],
+            'about' => [HomepagePromoType::Stat, HomepagePromoType::AboutHighlight],
+            'why_us' => [HomepagePromoType::WhyUsHighlight],
             'contact_cta' => [HomepagePromoType::BusinessCta],
             default => [],
         };
@@ -69,6 +73,8 @@ class HomepagePromoSectionMap
             'about' => [
                 'about_section_title_ar',
                 'about_section_title_en',
+                'about_highlight_ar',
+                'about_highlight_en',
                 'about_cta_text_ar',
                 'about_cta_text_en',
                 'about_cta_url',
@@ -93,9 +99,17 @@ class HomepagePromoSectionMap
     public static function sectionSettingFields(string $key): array
     {
         return match ($key) {
-            'services', 'team_members', 'clients_partners' => [
+            'services' => [
                 'title_ar',
                 'title_en',
+                'subtitle_ar',
+                'subtitle_en',
+            ],
+            'vision_mission', 'goals', 'why_us', 'team_members', 'clients_partners' => [
+                'title_ar',
+                'title_en',
+                ...($key === 'goals' || $key === 'vision_mission' || $key === 'why_us' ? ['headline_ar', 'headline_en'] : []),
+                ...($key === 'why_us' ? ['highlight_ar', 'highlight_en'] : []),
             ],
             'gallery' => [
                 'max_items',
@@ -109,10 +123,12 @@ class HomepagePromoSectionMap
         return match ($key) {
             'products' => 'products.index',
             'services' => 'services.index',
+            'goals' => 'company-goals.index',
             'team_members' => 'team-members.index',
             'clients_partners' => 'clients-partners.index',
             'gallery' => 'projects.index',
             'about' => 'company-info.index',
+            'vision_mission' => 'company-info.index',
             default => null,
         };
     }

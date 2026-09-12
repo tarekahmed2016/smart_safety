@@ -143,6 +143,22 @@ const settingsFieldLabel = (field) => t(`homepagePromos.settingsFields.${field}`
               class="form-input text-body"
             />
           </div>
+          <div v-if="card.section_settings.headline_ar !== undefined">
+            <label class="form-label text-label">{{ t('homepagePromos.settingsFields.headline_ar') }}</label>
+            <input v-model="settingsForm.section.headline_ar" type="text" class="form-input text-body" />
+          </div>
+          <div v-if="card.section_settings.headline_en !== undefined">
+            <label class="form-label text-label">{{ t('homepagePromos.settingsFields.headline_en') }}</label>
+            <input v-model="settingsForm.section.headline_en" type="text" class="form-input text-body" />
+          </div>
+          <div v-if="card.section_settings.highlight_ar !== undefined">
+            <label class="form-label text-label">{{ t('homepagePromos.settingsFields.highlight_ar') }}</label>
+            <input v-model="settingsForm.section.highlight_ar" type="text" class="form-input text-body" />
+          </div>
+          <div v-if="card.section_settings.highlight_en !== undefined">
+            <label class="form-label text-label">{{ t('homepagePromos.settingsFields.highlight_en') }}</label>
+            <input v-model="settingsForm.section.highlight_en" type="text" class="form-input text-body" />
+          </div>
         </template>
       </div>
 

@@ -17,6 +17,8 @@ const homepageDefaults = {
   industries_section_title_en: '',
   about_section_title_ar: '',
   about_section_title_en: '',
+  about_highlight_ar: '',
+  about_highlight_en: '',
   about_cta_text_ar: '',
   about_cta_text_en: '',
   about_cta_url: '',

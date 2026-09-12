@@ -64,9 +64,14 @@ class HomepagePromoBlockFactory extends Factory
         return $this->state(fn () => ['type' => HomepagePromoType::CustomManufacturing]);
     }
 
-    public function stat(): static
+    public function aboutHighlight(): static
     {
-        return $this->state(fn () => ['type' => HomepagePromoType::Stat]);
+        return $this->state(fn () => ['type' => HomepagePromoType::AboutHighlight]);
+    }
+
+    public function whyUsHighlight(): static
+    {
+        return $this->state(fn () => ['type' => HomepagePromoType::WhyUsHighlight]);
     }
 
     public function inactive(): static

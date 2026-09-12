@@ -86,6 +86,21 @@ class HomepagePromoBlockService
                     $sectionSettings['max_items'] = (int) (($section->settings ?? [])['max_items'] ?? 8);
                 }
 
+                if (in_array('headline_ar', HomepagePromoSectionMap::sectionSettingFields($key), true)) {
+                    $sectionSettings['headline_ar'] = (string) (($section->settings ?? [])['headline_ar'] ?? '');
+                    $sectionSettings['headline_en'] = (string) (($section->settings ?? [])['headline_en'] ?? '');
+                }
+
+                if (in_array('subtitle_ar', HomepagePromoSectionMap::sectionSettingFields($key), true)) {
+                    $sectionSettings['subtitle_ar'] = (string) (($section->settings ?? [])['subtitle_ar'] ?? '');
+                    $sectionSettings['subtitle_en'] = (string) (($section->settings ?? [])['subtitle_en'] ?? '');
+                }
+
+                if (in_array('highlight_ar', HomepagePromoSectionMap::sectionSettingFields($key), true)) {
+                    $sectionSettings['highlight_ar'] = (string) (($section->settings ?? [])['highlight_ar'] ?? '');
+                    $sectionSettings['highlight_en'] = (string) (($section->settings ?? [])['highlight_en'] ?? '');
+                }
+
                 return [
                     'key' => $key,
                     'section' => [

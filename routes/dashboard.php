@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CertificateAwardController;
 use App\Http\Controllers\ClientPartnerController;
+use App\Http\Controllers\CompanyGoalController;
 use App\Http\Controllers\CompanyInfoController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\CustomAssetsController;
@@ -42,6 +43,8 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/rich-text/images', [RichTextImageController::class, 'store'])->name('rich-text-images.store');
     Route::resource('/projects', ProjectController::class)->except(['show', 'create', 'edit']);
     Route::get('/projects-next-ordering', [ProjectController::class, 'getNextOrdering'])->name('projects.next-ordering');
+    Route::resource('/company-goals', CompanyGoalController::class)->except(['show', 'create', 'edit']);
+    Route::get('/company-goals-next-ordering', [CompanyGoalController::class, 'getNextOrdering'])->name('company-goals.next-ordering');
     Route::resource('/team-members', TeamMemberController::class)->except(['show', 'create', 'edit']);
     Route::get('/team-members-next-ordering', [TeamMemberController::class, 'getNextOrdering'])->name('team-members.next-ordering');
     Route::resource('/clients-partners', ClientPartnerController::class)->except(['show', 'create', 'edit']);

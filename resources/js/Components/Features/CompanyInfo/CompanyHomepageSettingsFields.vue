@@ -75,6 +75,14 @@ defineProps({
         <input v-model="form.about_section_title_en" type="text" class="form-input text-body" />
       </div>
       <div>
+        <label class="form-label text-label">About title highlight (AR)</label>
+        <input v-model="form.about_highlight_ar" type="text" class="form-input text-body" />
+      </div>
+      <div>
+        <label class="form-label text-label">About title highlight (EN)</label>
+        <input v-model="form.about_highlight_en" type="text" class="form-input text-body" />
+      </div>
+      <div>
         <label class="form-label text-label">About CTA label (AR)</label>
         <input v-model="form.about_cta_text_ar" type="text" class="form-input text-body" />
       </div>
