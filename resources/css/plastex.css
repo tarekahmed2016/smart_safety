@@ -905,6 +905,17 @@
 .px-product-carousel .px-product-card {
     flex: 0 0 min(82vw, 17.5rem);
     width: min(82vw, 17.5rem);
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    pointer-events: auto;
+}
+
+.px-product-carousel .px-product-media,
+.px-product-carousel .px-product-media img {
+    pointer-events: auto;
+    position: relative;
+    z-index: 1;
 }
 
 .px-product-carousel .px-team-card,
@@ -1954,10 +1965,6 @@
     }
 }
 
-.px-product-media-trigger {
-    cursor: pointer;
-}
-
 .px-product-modal-backdrop {
     position: fixed;
     inset: 0;
@@ -1968,6 +1975,12 @@
     padding: 1.25rem;
     background: rgba(11, 31, 58, 0.42);
     backdrop-filter: blur(6px);
+    pointer-events: auto;
+}
+
+.px-product-modal-backdrop[aria-hidden="true"] {
+    display: none;
+    pointer-events: none;
 }
 
 .px-product-modal {
@@ -2023,12 +2036,30 @@
     font-weight: 800;
 }
 
+.px-product-modal-media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 12rem;
+    margin-bottom: 1.25rem;
+    padding: 0.75rem;
+    background: #fff;
+}
+
+.px-product-modal-media img {
+    width: 100%;
+    max-width: 22rem;
+    max-height: 18rem;
+    object-fit: contain;
+    display: block;
+}
+
 .px-product-modal-sizes {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.5rem;
-    margin-bottom: 1.5rem;
+    margin: 0 0 1.25rem;
 }
 
 .px-product-size-pill {
@@ -2043,30 +2074,7 @@
     letter-spacing: 0.01em;
 }
 
-.px-product-modal-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.px-product-modal-media {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 12rem;
-    padding: 0.75rem;
-    background: #fff;
-}
-
-.px-product-modal-media img {
-    width: 100%;
-    max-width: 22rem;
-    max-height: 18rem;
-    object-fit: contain;
-    display: block;
-}
-
-.px-product-modal-copy {
+.px-product-modal-details {
     color: var(--px-body);
     font-size: 0.95rem;
     line-height: 1.9;
@@ -2074,51 +2082,4 @@
 
 .px-product-modal-details p {
     margin: 0 0 0.9rem;
-}
-
-.px-product-modal-specs {
-    margin-top: 1.25rem;
-}
-
-.px-product-modal-specs h3 {
-    margin: 0 0 0.75rem;
-    color: var(--px-navy);
-    font-size: 1.05rem;
-    font-weight: 800;
-}
-
-.px-product-modal-specs ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.px-product-modal-specs li {
-    position: relative;
-    padding-inline-start: 1.15rem;
-    margin-bottom: 0.45rem;
-}
-
-.px-product-modal-specs li::before {
-    content: "";
-    position: absolute;
-    top: 0.62rem;
-    inset-inline-start: 0;
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 999px;
-    background: var(--px-green);
-}
-
-@media (min-width: 768px) {
-    .px-product-modal-grid {
-        display: grid;
-        grid-template-columns: minmax(14rem, 0.9fr) minmax(0, 1.2fr);
-        align-items: start;
-        gap: 2rem;
-    }
-
-    .px-product-modal-grid.is-media-only {
-        grid-template-columns: 1fr;
-    }
 }

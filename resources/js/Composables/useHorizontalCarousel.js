@@ -27,7 +27,10 @@ export function useHorizontalCarousel(itemsRef, options = {}) {
   let dragStartX = 0
   let dragStartOffset = 0
   let dragDistance = 0
+  let pointerActive = false
+  let activePointerId = null
   const ignoreClick = ref(false)
+  const dragThreshold = 8
 
   const carouselItems = computed(() => {
     const items = itemsRef.value || []
@@ -137,41 +140,60 @@ export function useHorizontalCarousel(itemsRef, options = {}) {
       return
     }
 
-    isDragging.value = true
+    if (event.target.closest('a, button')) {
+      return
+    }
+
+    pointerActive = true
+    activePointerId = event.pointerId
+    isDragging.value = false
     isManualPaused.value = true
     ignoreClick.value = false
     dragDistance = 0
     dragStartX = event.clientX
     dragStartOffset = offset.value
-    event.currentTarget.setPointerCapture(event.pointerId)
   }
 
   const onPointerMove = (event) => {
-    if (!isDragging.value) {
+    if (!pointerActive || event.pointerId !== activePointerId) {
       return
     }
 
-    const delta = (dragStartX - event.clientX) * scrollDirection.value
     dragDistance = Math.max(dragDistance, Math.abs(event.clientX - dragStartX))
-    if (dragDistance > 8) {
+
+    if (!isDragging.value) {
+      if (dragDistance <= dragThreshold) {
+        return
+      }
+
+      isDragging.value = true
       ignoreClick.value = true
+
+      if (event.currentTarget?.setPointerCapture) {
+        event.currentTarget.setPointerCapture(event.pointerId)
+      }
     }
+
+    const delta = (dragStartX - event.clientX) * scrollDirection.value
     offset.value = dragStartOffset + delta
     normalizeOffset()
     applyTransform()
   }
 
   const onPointerUp = (event) => {
-    if (!isDragging.value) {
+    if (!pointerActive || (activePointerId !== null && event.pointerId !== activePointerId)) {
       return
+    }
+
+    pointerActive = false
+    activePointerId = null
+
+    if (isDragging.value && event.currentTarget?.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
     }
 
     isDragging.value = false
     pauseBriefly()
-
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId)
-    }
   }
 
   const step = () => {

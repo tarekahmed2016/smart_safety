@@ -33,8 +33,6 @@ const form = useForm({
   details_ar: '',
   details_en: '',
   sizes: [],
-  specifications_ar: [],
-  specifications_en: [],
   ordering: '',
   is_active: true,
   show_on_homepage: true,
@@ -44,13 +42,18 @@ const form = useForm({
 const imagePreview = ref(null)
 const imageInput = ref(null)
 const imageFileName = ref(null)
+const existingImageUrl = ref(null)
+
+const revokePreviewUrl = () => {
+  if (typeof imagePreview.value === 'string' && imagePreview.value.startsWith('blob:')) {
+    URL.revokeObjectURL(imagePreview.value)
+  }
+}
 
 const cloneSizes = (sizes) => (Array.isArray(sizes) ? sizes.map((size) => ({
   value: size?.value || '',
   unit: size?.unit || '',
 })) : [])
-
-const cloneSpecs = (items) => (Array.isArray(items) ? items.map((item) => String(item || '')) : [])
 
 const addSize = () => {
   form.sizes.push({ value: '', unit: 'mm' })
@@ -69,32 +72,28 @@ const moveSize = (index, direction) => {
   form.sizes = items
 }
 
-const addSpecification = (field) => {
-  form[field].push('')
-}
-
-const removeSpecification = (field, index) => {
-  form[field].splice(index, 1)
-}
-
-const moveSpecification = (field, index, direction) => {
-  const target = index + direction
-  if (target < 0 || target >= form[field].length) return
-  const items = [...form[field]]
-  const [moved] = items.splice(index, 1)
-  items.splice(target, 0, moved)
-  form[field] = items
-}
-
 const handleImageChange = (event) => {
   const file = event.target.files[0] || null
+  revokePreviewUrl()
   form.image = file
   imageFileName.value = file?.name || null
-  imagePreview.value = file ? URL.createObjectURL(file) : null
+  imagePreview.value = file ? URL.createObjectURL(file) : existingImageUrl.value
+}
+
+const clearSelectedImage = () => {
+  revokePreviewUrl()
+  form.image = null
+  imageFileName.value = null
+  imagePreview.value = existingImageUrl.value
+  if (imageInput.value) {
+    imageInput.value.value = ''
+  }
 }
 
 watch(() => props.isOpen, (isOpen) => {
   if (!isOpen) return
+
+  revokePreviewUrl()
 
   if (props.product) {
     form.name_ar = props.product.name_ar || ''
@@ -105,19 +104,19 @@ watch(() => props.isOpen, (isOpen) => {
     form.details_ar = props.product.details_ar || ''
     form.details_en = props.product.details_en || ''
     form.sizes = cloneSizes(props.product.sizes)
-    form.specifications_ar = cloneSpecs(props.product.specifications_ar)
-    form.specifications_en = cloneSpecs(props.product.specifications_en)
     form.ordering = props.product.ordering ?? ''
     form.is_active = Boolean(props.product.is_active)
     form.show_on_homepage = Boolean(props.product.show_on_homepage)
     form.image = null
-    imagePreview.value = props.product.attachment?.asset_path || null
+    existingImageUrl.value = props.product.attachment?.asset_path || null
+    imagePreview.value = existingImageUrl.value
     imageFileName.value = null
   } else {
     form.reset()
     form.is_active = true
     form.show_on_homepage = true
     form.ordering = props.nextOrdering ?? ''
+    existingImageUrl.value = null
     imagePreview.value = null
     imageFileName.value = null
   }
@@ -146,6 +145,8 @@ const submit = () => {
 const handleClose = () => {
   form.reset()
   form.clearErrors()
+  revokePreviewUrl()
+  existingImageUrl.value = null
   imagePreview.value = null
   imageFileName.value = null
   emit('close')
@@ -173,62 +174,203 @@ const handleClose = () => {
       </div>
 
       <form @submit.prevent="submit" class="px-6 py-4 space-y-4 max-h-[75vh] overflow-y-auto">
-        <div class="space-y-4 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-          <h3 class="text-label font-medium text-gray-900 dark:text-gray-100">{{ t('bilingual.arabic') }}</h3>
+        <div class="space-y-3 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+          <h3 class="text-label font-medium text-gray-900 dark:text-gray-100">{{ t('products.form.imagesSectionTitle') }}</h3>
+          <label class="form-label text-label">
+            {{ t('products.form.imageLabel') }} <span v-if="!product" class="text-red-500">*</span>
+          </label>
 
-          <div>
-            <label class="form-label text-label">
-              {{ t('products.form.nameArLabel') }} <span class="text-red-500">*</span>
-            </label>
-            <input
-              v-model="form.name_ar"
-              type="text"
-              required
-              class="form-input text-body"
-              :placeholder="t('products.form.nameArPlaceholder')"
+          <div
+            class="flex min-h-40 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white p-3 sm:min-h-52"
+          >
+            <img
+              v-if="imagePreview"
+              :src="imagePreview"
+              alt="Product image preview"
+              class="max-h-40 w-auto max-w-full object-contain sm:max-h-56"
             />
-            <p v-if="form.errors.name_ar" class="form-error">{{ form.errors.name_ar }}</p>
+            <span v-else class="text-sm text-muted muted-color text-center">
+              {{ t('products.form.noImagePreview') }}
+            </span>
+          </div>
+
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <button
+              type="button"
+              @click="imageInput.click()"
+              class="btn btn-secondary px-4 py-2 w-full sm:w-auto cursor-pointer"
+            >
+              {{ product ? t('products.form.replaceFile') : t('products.form.chooseFile') }}
+            </button>
+            <button
+              v-if="form.image"
+              type="button"
+              @click="clearSelectedImage"
+              class="btn btn-danger px-4 py-2 w-full sm:w-auto"
+            >
+              {{ t('products.form.removeSelectedImage') }}
+            </button>
+            <span class="text-sm text-muted muted-color truncate text-center sm:text-start sm:flex-1">
+              {{ imageFileName || t('products.form.noFileChosen') }}
+            </span>
+            <input
+              ref="imageInput"
+              type="file"
+              accept="image/*"
+              :required="!product"
+              @change="handleImageChange"
+              class="hidden"
+            />
+          </div>
+          <p v-if="form.errors.image" class="form-error">{{ form.errors.image }}</p>
+        </div>
+
+        <div class="space-y-4 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+          <h3 class="text-label font-medium text-gray-900 dark:text-gray-100">{{ t('products.form.basicSectionTitle') }}</h3>
+
+          <div class="space-y-4 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <h4 class="text-label font-medium text-gray-900 dark:text-gray-100">{{ t('bilingual.arabic') }}</h4>
+
+            <div>
+              <label class="form-label text-label">
+                {{ t('products.form.nameArLabel') }} <span class="text-red-500">*</span>
+              </label>
+              <input
+                v-model="form.name_ar"
+                type="text"
+                required
+                class="form-input text-body"
+                :placeholder="t('products.form.nameArPlaceholder')"
+              />
+              <p v-if="form.errors.name_ar" class="form-error">{{ form.errors.name_ar }}</p>
+            </div>
+
+            <div>
+              <label class="form-label text-label">{{ t('products.form.descriptionArLabel') }}</label>
+              <RichTextEditor
+                v-model="form.description_ar"
+                :active="isOpen"
+                dir="rtl"
+                :placeholder="t('products.form.descriptionArPlaceholder')"
+              />
+              <p v-if="form.errors.description_ar" class="form-error">{{ form.errors.description_ar }}</p>
+            </div>
+          </div>
+
+          <div class="space-y-4 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <h4 class="text-label font-medium text-gray-900 dark:text-gray-100">{{ t('bilingual.english') }}</h4>
+
+            <div>
+              <label class="form-label text-label">
+                {{ t('products.form.nameEnLabel') }} <span class="text-red-500">*</span>
+              </label>
+              <input
+                v-model="form.name_en"
+                type="text"
+                required
+                class="form-input text-body"
+                :placeholder="t('products.form.nameEnPlaceholder')"
+              />
+              <p v-if="form.errors.name_en" class="form-error">{{ form.errors.name_en }}</p>
+            </div>
+
+            <div>
+              <label class="form-label text-label">{{ t('products.form.descriptionEnLabel') }}</label>
+              <RichTextEditor
+                v-model="form.description_en"
+                :active="isOpen"
+                dir="ltr"
+                :placeholder="t('products.form.descriptionEnPlaceholder')"
+              />
+              <p v-if="form.errors.description_en" class="form-error">{{ form.errors.description_en }}</p>
+            </div>
           </div>
 
           <div>
-            <label class="form-label text-label">{{ t('products.form.descriptionArLabel') }}</label>
-            <RichTextEditor
-              v-model="form.description_ar"
-              :active="isOpen"
-              dir="rtl"
-              :placeholder="t('products.form.descriptionArPlaceholder')"
+            <label class="form-label text-label">{{ t('products.form.slugLabel') }}</label>
+            <input
+              v-model="form.slug"
+              type="text"
+              class="form-input text-body"
+              :placeholder="t('products.form.slugPlaceholder')"
             />
-            <p v-if="form.errors.description_ar" class="form-error">{{ form.errors.description_ar }}</p>
+            <p class="text-muted muted-color mt-1">{{ t('products.form.slugHint') }}</p>
+            <p v-if="form.errors.slug" class="form-error">{{ form.errors.slug }}</p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="form-label text-label">
+                {{ t('products.form.orderingLabel') }} <span class="text-red-500">*</span>
+              </label>
+              <input
+                v-model="form.ordering"
+                type="number"
+                min="0"
+                required
+                class="form-input text-body"
+                :placeholder="t('products.form.orderingPlaceholder')"
+              />
+              <p v-if="form.errors.ordering" class="form-error">{{ form.errors.ordering }}</p>
+            </div>
+
+            <div class="flex items-end pb-2">
+              <label class="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  v-model="form.is_active"
+                  type="checkbox"
+                  class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span class="text-label">{{ t('products.form.activeLabel') }}</span>
+              </label>
+              <p v-if="form.errors.is_active" class="form-error ms-2">{{ form.errors.is_active }}</p>
+            </div>
+          </div>
+
+          <div>
+            <label class="flex items-center gap-2 cursor-pointer select-none">
+              <input
+                v-model="form.show_on_homepage"
+                type="checkbox"
+                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span class="text-label">{{ t('products.form.showOnHomepageLabel') }}</span>
+            </label>
+            <p v-if="form.errors.show_on_homepage" class="form-error">{{ form.errors.show_on_homepage }}</p>
           </div>
         </div>
 
         <div class="space-y-4 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-          <h3 class="text-label font-medium text-gray-900 dark:text-gray-100">{{ t('bilingual.english') }}</h3>
-
-          <div>
-            <label class="form-label text-label">
-              {{ t('products.form.nameEnLabel') }} <span class="text-red-500">*</span>
-            </label>
-            <input
-              v-model="form.name_en"
-              type="text"
-              required
-              class="form-input text-body"
-              :placeholder="t('products.form.nameEnPlaceholder')"
-            />
-            <p v-if="form.errors.name_en" class="form-error">{{ form.errors.name_en }}</p>
+          <div class="flex items-center justify-between gap-3">
+            <h3 class="text-label font-medium text-gray-900 dark:text-gray-100">{{ t('products.form.sizesLabel') }}</h3>
+            <button type="button" class="btn btn-secondary px-3 py-1.5" @click="addSize">
+              {{ t('products.form.addSize') }}
+            </button>
           </div>
-
-          <div>
-            <label class="form-label text-label">{{ t('products.form.descriptionEnLabel') }}</label>
-            <RichTextEditor
-              v-model="form.description_en"
-              :active="isOpen"
-              dir="ltr"
-              :placeholder="t('products.form.descriptionEnPlaceholder')"
-            />
-            <p v-if="form.errors.description_en" class="form-error">{{ form.errors.description_en }}</p>
+          <div v-if="form.sizes.length" class="space-y-2">
+            <div v-for="(size, index) in form.sizes" :key="`size-${index}`" class="grid grid-cols-[1fr_1fr_auto] gap-2 items-center">
+              <input
+                v-model="size.value"
+                type="text"
+                class="form-input text-body"
+                :placeholder="t('products.form.sizeValuePlaceholder')"
+              />
+              <input
+                v-model="size.unit"
+                type="text"
+                dir="ltr"
+                class="form-input text-body"
+                :placeholder="t('products.form.sizeUnitPlaceholder')"
+              />
+              <div class="flex items-center gap-1">
+                <button type="button" class="btn btn-secondary px-2 py-1.5" :disabled="index === 0" @click="moveSize(index, -1)">↑</button>
+                <button type="button" class="btn btn-secondary px-2 py-1.5" :disabled="index === form.sizes.length - 1" @click="moveSize(index, 1)">↓</button>
+                <button type="button" class="btn btn-danger px-2 py-1.5" @click="removeSize(index)">{{ t('products.form.removeItem') }}</button>
+              </div>
+            </div>
           </div>
+          <p v-else class="text-sm text-muted muted-color">{{ t('products.form.sizesEmpty') }}</p>
+          <p v-if="form.errors.sizes" class="form-error">{{ form.errors.sizes }}</p>
         </div>
 
         <div class="space-y-4 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
@@ -255,165 +397,6 @@ const handleClose = () => {
             />
             <p v-if="form.errors.details_en" class="form-error">{{ form.errors.details_en }}</p>
           </div>
-
-          <div>
-            <div class="flex items-center justify-between gap-3 mb-2">
-              <label class="form-label text-label mb-0">{{ t('products.form.sizesLabel') }}</label>
-              <button type="button" class="btn btn-secondary px-3 py-1.5" @click="addSize">
-                {{ t('products.form.addSize') }}
-              </button>
-            </div>
-            <div v-if="form.sizes.length" class="space-y-2">
-              <div v-for="(size, index) in form.sizes" :key="`size-${index}`" class="grid grid-cols-[1fr_1fr_auto] gap-2 items-center">
-                <input
-                  v-model="size.value"
-                  type="text"
-                  class="form-input text-body"
-                  :placeholder="t('products.form.sizeValuePlaceholder')"
-                />
-                <input
-                  v-model="size.unit"
-                  type="text"
-                  dir="ltr"
-                  class="form-input text-body"
-                  :placeholder="t('products.form.sizeUnitPlaceholder')"
-                />
-                <div class="flex items-center gap-1">
-                  <button type="button" class="btn btn-secondary px-2 py-1.5" :disabled="index === 0" @click="moveSize(index, -1)">↑</button>
-                  <button type="button" class="btn btn-secondary px-2 py-1.5" :disabled="index === form.sizes.length - 1" @click="moveSize(index, 1)">↓</button>
-                  <button type="button" class="btn btn-danger px-2 py-1.5" @click="removeSize(index)">{{ t('products.form.removeItem') }}</button>
-                </div>
-              </div>
-            </div>
-            <p v-else class="text-sm text-muted muted-color">{{ t('products.form.sizesEmpty') }}</p>
-            <p v-if="form.errors.sizes" class="form-error">{{ form.errors.sizes }}</p>
-          </div>
-
-          <div>
-            <div class="flex items-center justify-between gap-3 mb-2">
-              <label class="form-label text-label mb-0">{{ t('products.form.specificationsArLabel') }}</label>
-              <button type="button" class="btn btn-secondary px-3 py-1.5" @click="addSpecification('specifications_ar')">
-                {{ t('products.form.addSpecification') }}
-              </button>
-            </div>
-            <div v-if="form.specifications_ar.length" class="space-y-2">
-              <div v-for="(item, index) in form.specifications_ar" :key="`spec-ar-${index}`" class="flex items-center gap-2">
-                <input v-model="form.specifications_ar[index]" type="text" dir="rtl" class="form-input text-body" :placeholder="t('products.form.specificationPlaceholder')" />
-                <button type="button" class="btn btn-secondary px-2 py-1.5" :disabled="index === 0" @click="moveSpecification('specifications_ar', index, -1)">↑</button>
-                <button type="button" class="btn btn-secondary px-2 py-1.5" :disabled="index === form.specifications_ar.length - 1" @click="moveSpecification('specifications_ar', index, 1)">↓</button>
-                <button type="button" class="btn btn-danger px-2 py-1.5" @click="removeSpecification('specifications_ar', index)">{{ t('products.form.removeItem') }}</button>
-              </div>
-            </div>
-            <p v-else class="text-sm text-muted muted-color">{{ t('products.form.specificationsEmpty') }}</p>
-            <p v-if="form.errors.specifications_ar" class="form-error">{{ form.errors.specifications_ar }}</p>
-          </div>
-
-          <div>
-            <div class="flex items-center justify-between gap-3 mb-2">
-              <label class="form-label text-label mb-0">{{ t('products.form.specificationsEnLabel') }}</label>
-              <button type="button" class="btn btn-secondary px-3 py-1.5" @click="addSpecification('specifications_en')">
-                {{ t('products.form.addSpecification') }}
-              </button>
-            </div>
-            <div v-if="form.specifications_en.length" class="space-y-2">
-              <div v-for="(item, index) in form.specifications_en" :key="`spec-en-${index}`" class="flex items-center gap-2">
-                <input v-model="form.specifications_en[index]" type="text" dir="ltr" class="form-input text-body" :placeholder="t('products.form.specificationPlaceholder')" />
-                <button type="button" class="btn btn-secondary px-2 py-1.5" :disabled="index === 0" @click="moveSpecification('specifications_en', index, -1)">↑</button>
-                <button type="button" class="btn btn-secondary px-2 py-1.5" :disabled="index === form.specifications_en.length - 1" @click="moveSpecification('specifications_en', index, 1)">↓</button>
-                <button type="button" class="btn btn-danger px-2 py-1.5" @click="removeSpecification('specifications_en', index)">{{ t('products.form.removeItem') }}</button>
-              </div>
-            </div>
-            <p v-else class="text-sm text-muted muted-color">{{ t('products.form.specificationsEmpty') }}</p>
-            <p v-if="form.errors.specifications_en" class="form-error">{{ form.errors.specifications_en }}</p>
-          </div>
-        </div>
-
-        <div>
-          <label class="form-label text-label">{{ t('products.form.slugLabel') }}</label>
-          <input
-            v-model="form.slug"
-            type="text"
-            class="form-input text-body"
-            :placeholder="t('products.form.slugPlaceholder')"
-          />
-          <p class="text-muted muted-color mt-1">{{ t('products.form.slugHint') }}</p>
-          <p v-if="form.errors.slug" class="form-error">{{ form.errors.slug }}</p>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="form-label text-label">
-              {{ t('products.form.orderingLabel') }} <span class="text-red-500">*</span>
-            </label>
-            <input
-              v-model="form.ordering"
-              type="number"
-              min="0"
-              required
-              class="form-input text-body"
-              :placeholder="t('products.form.orderingPlaceholder')"
-            />
-            <p v-if="form.errors.ordering" class="form-error">{{ form.errors.ordering }}</p>
-          </div>
-
-          <div class="flex items-end pb-2">
-            <label class="flex items-center gap-2 cursor-pointer select-none">
-              <input
-                v-model="form.is_active"
-                type="checkbox"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <span class="text-label">{{ t('products.form.activeLabel') }}</span>
-            </label>
-            <p v-if="form.errors.is_active" class="form-error ms-2">{{ form.errors.is_active }}</p>
-          </div>
-        </div>
-
-        <div>
-          <label class="flex items-center gap-2 cursor-pointer select-none">
-            <input
-              v-model="form.show_on_homepage"
-              type="checkbox"
-              class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span class="text-label">{{ t('products.form.showOnHomepageLabel') }}</span>
-          </label>
-          <p v-if="form.errors.show_on_homepage" class="form-error">{{ form.errors.show_on_homepage }}</p>
-        </div>
-
-        <div>
-          <label class="form-label text-label">
-            {{ t('products.form.imageLabel') }} <span v-if="!product" class="text-red-500">*</span>
-          </label>
-          <div class="flex items-center gap-4">
-            <img
-              v-if="imagePreview"
-              :src="imagePreview"
-              alt="Product image preview"
-              class="h-16 rounded-md border border-gray-200 dark:border-gray-700 object-cover"
-            />
-            <div class="flex flex-col gap-1.5 flex-1">
-              <button
-                type="button"
-                @click="imageInput.click()"
-                class="btn btn-secondary px-4 py-2 w-full cursor-pointer"
-              >
-                {{ t('products.form.chooseFile') }}
-              </button>
-              <span class="text-sm text-muted muted-color truncate text-center">
-                {{ imageFileName || t('products.form.noFileChosen') }}
-              </span>
-              <input
-                ref="imageInput"
-                type="file"
-                accept="image/*"
-                :required="!product"
-                @change="handleImageChange"
-                class="hidden"
-              />
-            </div>
-          </div>
-          <p v-if="form.errors.image" class="form-error">{{ form.errors.image }}</p>
         </div>
 
         <div class="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">

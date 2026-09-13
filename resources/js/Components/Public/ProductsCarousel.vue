@@ -38,12 +38,25 @@ const productExcerpt = (product) =>
   resolveBilingualField(product, 'excerpt', locale.value)
     || t('public.home.products.noDescription')
 
-const openProductDetails = (product) => {
-  if (ignoreClick.value) {
+const openProduct = (product) => {
+  if (!product || ignoreClick.value) {
     return
   }
 
   selectedProduct.value = product
+}
+
+const onCardKeydown = (product, event) => {
+  if (event.target !== event.currentTarget) {
+    return
+  }
+
+  if (event.key !== 'Enter' && event.key !== ' ') {
+    return
+  }
+
+  event.preventDefault()
+  openProduct(product)
 }
 
 const closeProductDetails = () => {
@@ -82,28 +95,31 @@ const closeProductDetails = () => {
           v-for="(product, index) in carouselItems"
           :key="`${product.slug}-${index}`"
           class="px-product-card px-carousel-card"
+          role="button"
+          :tabindex="index >= products.length ? -1 : 0"
           :aria-hidden="index >= products.length ? 'true' : undefined"
+          :aria-label="t('public.home.products.openDetails', { name: productName(product) })"
+          @click.stop="openProduct(product)"
+          @keydown="onCardKeydown(product, $event)"
         >
-          <div
-            class="px-product-media px-product-media-trigger"
-            role="button"
-            tabindex="0"
-            :aria-label="t('public.home.products.openDetails', { name: productName(product) })"
-            @click="openProductDetails(product)"
-            @keydown.enter.prevent="openProductDetails(product)"
-            @keydown.space.prevent="openProductDetails(product)"
-          >
+          <div class="px-product-media" @click.stop="openProduct(product)">
             <img
               v-if="product.image"
               :src="product.image"
               :alt="productName(product)"
+              @click.stop="openProduct(product)"
             />
             <PublicMediaPlaceholder v-else icon="cube" />
           </div>
           <div class="px-product-body" :dir="locale === 'ar' ? 'rtl' : 'ltr'">
             <LocalizedHeading :text="productName(product)" tag="h3" />
             <p>{{ productExcerpt(product) }}</p>
-            <Link :href="route('public.products.show', { slug: product.slug })" class="px-text-link">
+            <Link
+              :href="route('public.products.show', { slug: product.slug })"
+              class="px-text-link"
+              @click.stop
+              @keydown.stop
+            >
               {{ t('public.home.products.details') }}
             </Link>
           </div>

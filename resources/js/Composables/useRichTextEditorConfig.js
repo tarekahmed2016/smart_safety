@@ -17,6 +17,7 @@ import {
   ImageToolbar,
   ImageUpload,
   Indent,
+  IndentBlock,
   Italic,
   Link,
   List,
@@ -66,6 +67,7 @@ export function createRichTextEditorConfig({ placeholder = '' } = {}) {
       Link,
       List,
       Indent,
+      IndentBlock,
       Paragraph,
       BlockQuote,
       HorizontalLine,
@@ -100,7 +102,9 @@ export function createRichTextEditorConfig({ placeholder = '' } = {}) {
         '|',
         'blockQuote', 'horizontalLine', 'specialCharacters',
         '|',
-        'insertTable', 'uploadImage',
+        'insertTable', 'tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties',
+        '|',
+        'uploadImage',
       ],
       shouldNotGroupWhenFull: true,
     },
@@ -163,6 +167,10 @@ export function createRichTextEditorConfig({ placeholder = '' } = {}) {
       ],
       resizeUnit: '%',
     },
+    indentBlock: {
+      offset: 40,
+      unit: 'px',
+    },
     table: {
       contentToolbar: [
         'tableColumn',
@@ -171,6 +179,16 @@ export function createRichTextEditorConfig({ placeholder = '' } = {}) {
         'tableProperties',
         'tableCellProperties',
       ],
+      tableProperties: {
+        defaultProperties: {
+          borderStyle: 'none',
+        },
+      },
+      tableCellProperties: {
+        defaultProperties: {
+          borderStyle: 'none',
+        },
+      },
     },
     simpleUpload: {
       uploadUrl: route('rich-text-images.store'),

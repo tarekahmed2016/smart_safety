@@ -99,7 +99,9 @@ class RichTextSanitizer
             'figcaption',
             'img[src|alt|width|height|class|style]',
             'table[class|style]',
-            'thead,tbody,tr',
+            'caption[style|class]',
+            'colgroup,col[span|style]',
+            'thead,tbody,tfoot,tr',
             'th[colspan|rowspan|style|class]',
             'td[colspan|rowspan|style|class]',
         ]));
@@ -109,16 +111,53 @@ class RichTextSanitizer
         $config->set('URI.DisableExternalResources', false);
         $config->set('CSS.AllowedProperties', [
             'text-align',
+            'text-indent',
+            'vertical-align',
             'color',
             'background-color',
             'font-size',
             'font-family',
             'width',
             'height',
+            'min-width',
+            'max-width',
+            'float',
+            'margin',
+            'margin-top',
+            'margin-right',
+            'margin-bottom',
+            'margin-left',
+            'padding',
+            'padding-top',
+            'padding-right',
+            'padding-bottom',
+            'padding-left',
+            'border',
+            'border-style',
+            'border-width',
+            'border-color',
+            'border-top',
+            'border-right',
+            'border-bottom',
+            'border-left',
+            'border-top-style',
+            'border-right-style',
+            'border-bottom-style',
+            'border-left-style',
+            'border-top-width',
+            'border-right-width',
+            'border-bottom-width',
+            'border-left-width',
+            'border-top-color',
+            'border-right-color',
+            'border-bottom-color',
+            'border-left-color',
+            'border-collapse',
+            'border-spacing',
         ]);
         $config->set('AutoFormat.RemoveEmpty', true);
         $config->set('HTML.DefinitionID', 'company-profile-rich-text');
-        $config->set('HTML.DefinitionRev', 2);
+        $config->set('HTML.DefinitionRev', 3);
 
         if ($def = $config->maybeGetRawHTMLDefinition()) {
             $def->addElement('figure', 'Block', 'Flow', 'Common');

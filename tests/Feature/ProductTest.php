@@ -185,6 +185,76 @@ test('admin can save optional product details sizes and specifications', functio
         ->and($product->specifications_en)->toBe(['Lightweight', 'High flexibility']);
 });
 
+test('product details keep dashed dotted and double table borders and indent after reopen', function () {
+    $details = <<<'HTML'
+<figure class="table">
+<table style="border-style:dashed;border-width:1px;border-color:#000000;">
+<tbody>
+<tr>
+<td style="border-style:dotted;border-width:1px;border-color:#111111;">Dotted</td>
+<td style="border-style:double;border-width:2px;border-color:#222222;">Double</td>
+</tr>
+</tbody>
+</table>
+</figure>
+<p style="margin-left:40px;">Indented</p>
+HTML;
+
+    $this->actingAs($this->admin)
+        ->post(route('products.store'), validProductPayload([
+            'details_en' => $details,
+            'details_ar' => $details,
+        ]))
+        ->assertRedirect();
+
+    $product = Product::where('slug', 'plastic-container')->first();
+
+    expect($product->details_en)
+        ->toContain('border-style:dashed')
+        ->toContain('border-style:dotted')
+        ->toContain('border-style:double')
+        ->toContain('margin-left:40px');
+
+    $this->actingAs($this->admin)
+        ->put(route('products.update', $product), [
+            'name_ar' => $product->name_ar,
+            'name_en' => $product->name_en,
+            'slug' => $product->slug,
+            'description_ar' => $product->description_ar,
+            'description_en' => $product->description_en,
+            'details_ar' => $product->details_ar,
+            'details_en' => $product->details_en,
+            'ordering' => $product->ordering,
+            'is_active' => true,
+        ])
+        ->assertRedirect();
+
+    expect($product->fresh()->details_en)
+        ->toContain('border-style:dashed')
+        ->toContain('border-style:dotted')
+        ->toContain('border-style:double')
+        ->toContain('margin-left:40px');
+});
+
+test('product rich text editor keeps table property tools and block indent', function () {
+    $config = file_get_contents(resource_path('js/Composables/useRichTextEditorConfig.js'));
+    $styles = file_get_contents(resource_path('css/app.css'));
+
+    expect($config)->toContain('IndentBlock')
+        ->and($config)->toContain("'indent'")
+        ->and($config)->toContain("'outdent'")
+        ->and($config)->toContain('indentBlock')
+        ->and($config)->toContain("'tableColumn'")
+        ->and($config)->toContain("'tableRow'")
+        ->and($config)->toContain("'mergeTableCells'")
+        ->and($config)->toContain("'tableProperties'")
+        ->and($config)->toContain("'tableCellProperties'")
+        ->and($config)->toContain("borderStyle: 'none'")
+        ->and($styles)->toContain('.ck-content table.table:not(.layout-table)')
+        ->and($styles)->toContain('border-style: none');
+});
+
+
 test('creating a product does not require details sizes or specifications', function () {
     $this->actingAs($this->admin)
         ->post(route('products.store'), validProductPayload())
@@ -196,6 +266,61 @@ test('creating a product does not require details sizes or specifications', func
         ->and($product->details_ar)->toBeNull()
         ->and($product->sizes)->toBeNull()
         ->and($product->specifications_en)->toBeNull();
+});
+
+test('product form shows the image at the top then sizes before details and hides specifications', function () {
+    $form = file_get_contents(resource_path('js/Components/Features/Products/ProductFormModal.vue'));
+
+    $titlePos = strpos($form, 'product-form-modal-title');
+    $imagesPos = strpos($form, "t('products.form.imagesSectionTitle')");
+    $basicPos = strpos($form, "t('products.form.basicSectionTitle')");
+    $sizesPos = strpos($form, "t('products.form.sizesLabel')");
+    $detailsPos = strpos($form, "t('products.form.detailsSectionTitle')");
+
+    expect($titlePos)->toBeGreaterThan(0)
+        ->and($imagesPos)->toBeGreaterThan($titlePos)
+        ->and($basicPos)->toBeGreaterThan($imagesPos)
+        ->and($sizesPos)->toBeGreaterThan($basicPos)
+        ->and($detailsPos)->toBeGreaterThan($sizesPos)
+        ->and(substr_count($form, "t('products.form.imagesSectionTitle')"))->toBe(1)
+        ->and($form)->toContain('object-contain')
+        ->and($form)->not->toContain('object-cover')
+        ->and($form)->toContain('replaceFile')
+        ->and($form)->toContain('clearSelectedImage')
+        ->and($form)->toContain('addSize')
+        ->and($form)->toContain('removeSize')
+        ->and($form)->toContain('moveSize')
+        ->and($form)->not->toContain('specifications_ar')
+        ->and($form)->not->toContain('specifications_en')
+        ->and($form)->not->toContain('addSpecification')
+        ->and($form)->not->toContain('specificationsArLabel')
+        ->and($form)->not->toContain('specificationsEnLabel');
+});
+
+test('updating a product without specifications keeps stored specification values', function () {
+    $product = Product::factory()->create([
+        'name_en' => 'Stored Specs Product',
+        'slug' => 'stored-specs-product',
+        'ordering' => 0,
+        'is_active' => true,
+        'specifications_ar' => ['وزن خفيف'],
+        'specifications_en' => ['Lightweight'],
+    ]);
+
+    $this->actingAs($this->admin)
+        ->put(route('products.update', $product), [
+            'name_ar' => $product->name_ar,
+            'name_en' => 'Stored Specs Product',
+            'slug' => 'stored-specs-product',
+            'description_ar' => $product->description_ar,
+            'description_en' => $product->description_en,
+            'ordering' => 0,
+            'is_active' => true,
+        ])
+        ->assertRedirect();
+
+    expect($product->fresh()->specifications_ar)->toBe(['وزن خفيف'])
+        ->and($product->fresh()->specifications_en)->toBe(['Lightweight']);
 });
 
 test('admin can delete a product', function () {

@@ -128,14 +128,22 @@ test('public product payloads stay safe when details sizes and specifications ar
             ->where('products.0.specifications_en', []));
 });
 
-test('products carousel opens a details modal from the product image', function () {
+test('products carousel opens a details modal from the product card', function () {
     $carousel = file_get_contents(resource_path('js/Components/Public/ProductsCarousel.vue'));
     $modal = file_get_contents(resource_path('js/Components/Public/ProductDetailsModal.vue'));
+    $styles = file_get_contents(resource_path('css/plastex.css'));
 
-    expect($carousel)->toContain('openProductDetails')
+    expect($carousel)->toContain('openProduct')
         ->and($carousel)->toContain('ProductDetailsModal')
-        ->and($carousel)->toContain('@click="openProductDetails(product)"')
-        ->and($carousel)->toContain('px-product-media-trigger')
+        ->and($carousel)->toContain('@click.stop="openProduct(product)"')
+        ->and($carousel)->toContain('@keydown="onCardKeydown(product, $event)"')
+        ->and($carousel)->toContain('role="button"')
+        ->and($carousel)->toContain("route('public.products.show'")
+        ->and($styles)->toContain('.px-product-carousel .px-product-card')
+        ->and($styles)->toContain('pointer-events: auto')
+        ->and($styles)->toContain('cursor: pointer')
+        ->and($modal)->toContain('<Teleport to="body">')
+        ->and($modal)->toContain('v-show="isOpen"')
         ->and($modal)->toContain('@click.self="close"')
         ->and($modal)->toContain('useDialogAccessibility')
         ->and($modal)->toContain('px-product-modal-close')
@@ -143,9 +151,34 @@ test('products carousel opens a details modal from the product image', function 
         ->and($modal)->toContain('product.image')
         ->and($modal)->toContain('hasDetails')
         ->and($modal)->toContain('px-product-size-pill')
-        ->and($modal)->toContain('specifications')
-        ->and($modal)->toContain("locale.value === 'ar'")
+        ->and($modal)->not->toContain('specifications')
+        ->and($modal)->not->toContain('px-product-modal-specs')
+        ->and($modal)->toContain("locale === 'ar'")
         ->and($modal)->not->toContain('action_text')
         ->and($modal)->not->toContain('action_url')
         ->and($modal)->not->toContain('cta_url');
+
+    $sizesPos = strpos($modal, 'px-product-modal-sizes');
+    $detailsPos = strpos($modal, 'px-product-modal-details');
+    $titlePos = strpos($modal, 'px-product-modal-title');
+    $mediaPos = strpos($modal, 'px-product-modal-media');
+
+    expect($titlePos)->toBeLessThan($mediaPos)
+        ->and($mediaPos)->toBeLessThan($sizesPos)
+        ->and($sizesPos)->toBeLessThan($detailsPos);
+});
+
+test('products carousel opens the details modal directly from the product image click', function () {
+    $carousel = file_get_contents(resource_path('js/Components/Public/ProductsCarousel.vue'));
+    $styles = file_get_contents(resource_path('css/plastex.css'));
+    $composable = file_get_contents(resource_path('js/Composables/useHorizontalCarousel.js'));
+
+    expect($carousel)->toContain('<img')
+        ->and($carousel)->toContain('@click.stop="openProduct(product)"')
+        ->and(substr_count($carousel, '@click.stop="openProduct(product)"'))->toBeGreaterThanOrEqual(2)
+        ->and($carousel)->toContain('selectedProduct.value = product')
+        ->and($styles)->toContain('.px-product-carousel .px-product-media img')
+        ->and($styles)->toContain('pointer-events: auto')
+        ->and($composable)->toContain('dragThreshold')
+        ->and($composable)->toContain('if (dragDistance <= dragThreshold)');
 });

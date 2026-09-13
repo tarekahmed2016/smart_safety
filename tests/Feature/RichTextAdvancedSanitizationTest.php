@@ -148,3 +148,41 @@ test('server adds noopener noreferrer to blank target links in stored rich html'
         ->and($stored)->toMatch('/rel="[^"]*noopener[^"]*"/')
         ->and($stored)->toMatch('/rel="[^"]*noreferrer[^"]*"/');
 });
+
+test('server preserves table border styles indent and cell properties after save and reopen', function () {
+    $html = <<<'HTML'
+<figure class="table">
+<table style="border-style:dashed;border-width:2px;border-color:#111111;width:80%;margin-left:auto;margin-right:auto;">
+<tbody>
+<tr>
+<td style="border-style:dotted;border-width:1px;border-color:#222222;background-color:#eeeeee;width:120px;">Dotted</td>
+<td style="border-style:double;border-width:3px;border-color:#333333;">Double</td>
+</tr>
+</tbody>
+</table>
+</figure>
+<p style="margin-left:40px;text-indent:20px;">Indented paragraph</p>
+HTML;
+
+    $stored = RichTextSanitizer::sanitize($html);
+    $reopened = RichTextSanitizer::sanitize($stored);
+
+    expect($stored)
+        ->toContain('border-style:dashed')
+        ->toContain('border-style:dotted')
+        ->toContain('border-style:double')
+        ->toContain('border-width:2px')
+        ->toContain('border-color:#111111')
+        ->toContain('background-color:#eeeeee')
+        ->toContain('width:80%')
+        ->toContain('margin-left:auto')
+        ->toContain('margin-right:auto')
+        ->toContain('margin-left:40px')
+        ->toContain('text-indent:20px')
+        ->not->toContain('javascript:')
+        ->and($reopened)->toContain('border-style:dashed')
+        ->and($reopened)->toContain('border-style:dotted')
+        ->and($reopened)->toContain('border-style:double')
+        ->and($reopened)->toContain('margin-left:40px')
+        ->and($reopened)->toContain('text-indent:20px');
+});
