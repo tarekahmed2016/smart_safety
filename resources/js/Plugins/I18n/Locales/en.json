@@ -1433,6 +1433,10 @@
         "messageSentSuccess": "Your message has been sent successfully. We will get back to you soon.",
         "required": "Required"
       },
+      "floating": {
+        "socialLabel": "Social media",
+        "backToTop": "Back to top"
+      },
       "footer": {
         "tagline": "Plastic manufacturing solutions built around customer requirements.",
         "navigation": "Navigation",

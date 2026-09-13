@@ -1433,6 +1433,10 @@
         "messageSentSuccess": "تم إرسال رسالتك بنجاح. سنعود إليك قريباً.",
         "required": "مطلوب"
       },
+      "floating": {
+        "socialLabel": "وسائل التواصل",
+        "backToTop": "العودة إلى الأعلى"
+      },
       "footer": {
         "tagline": "حلول تصنيع بلاستيكية وفق متطلبات العملاء.",
         "navigation": "التنقل",

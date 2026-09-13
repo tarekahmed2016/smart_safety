@@ -1,8 +1,12 @@
 <script setup>
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { Link, useForm, usePage } from '@inertiajs/vue3'
 import { useI18n } from 'vue-i18n'
 import { resolveBilingualField } from '../../Composables/useBilingualContent.js'
+import {
+  PUBLIC_CONTACT_OPEN_EVENT,
+  scrollToPublicContact,
+} from '../../Composables/usePublicContactForm.js'
 import { formatHomepageTemplate, resolveHomepageField, resolveHomepageScalar } from '../../Composables/useHomepageContent.js'
 import { useHomepageSections } from '../../Composables/useHomepageSections.js'
 import { plainTextFromHtml } from '../../Composables/useRichText.js'
@@ -373,6 +377,7 @@ const contactForm = useForm({
   message: '',
 })
 const contactFormSuccess = ref(false)
+const inquiredProductName = ref('')
 
 watch(() => page.props.flash, (flash) => {
   if (flash?.success === 'contact_message_sent') {
@@ -392,20 +397,58 @@ const submitContactForm = () => {
   })
 }
 
+const resetContactForm = () => {
+  inquiredProductName.value = ''
+  contactForm.name = ''
+  contactForm.email = ''
+  contactForm.phone = ''
+  contactForm.subject = ''
+  contactForm.message = ''
+  contactForm.reset()
+  contactForm.clearErrors()
+  contactFormSuccess.value = false
+}
+
+const handlePublicContactOpen = (event) => {
+  if (event.detail?.reset !== false) {
+    resetContactForm()
+  }
+
+  nextTick(() => {
+    scrollToPublicContact()
+    const focusId = event.detail?.focusId || 'contact-name'
+    document.getElementById(focusId)?.focus({ preventScroll: true })
+
+    const hash = window.location.hash
+    if (hash !== '#contact' && hash !== '#contact-form') {
+      history.replaceState(null, '', `${window.location.pathname}${window.location.search}#contact`)
+    }
+  })
+}
+
 const inquireAboutProduct = (product) => {
   const name = resolveBilingualField(product || {}, 'name', locale.value)
   if (!name) {
     return
   }
 
+  inquiredProductName.value = name
   contactForm.subject = t('public.home.products.inquireSubject', { name })
   contactForm.message = t('public.home.products.inquireMessage', { name })
 
   nextTick(() => {
-    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    scrollToPublicContact()
     document.getElementById('contact-message')?.focus({ preventScroll: true })
   })
 }
+
+onMounted(() => {
+  window.addEventListener(PUBLIC_CONTACT_OPEN_EVENT, handlePublicContactOpen)
+})
+
+onUnmounted(() => {
+  window.removeEventListener(PUBLIC_CONTACT_OPEN_EVENT, handlePublicContactOpen)
+})
 </script>
 
 <template>

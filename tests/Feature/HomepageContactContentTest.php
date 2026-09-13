@@ -27,3 +27,25 @@ test('homepage contact copy matches the original site wording', function () {
             ->where('companyInfo.contact_section_subtitle_ar', $copy['contact_section_subtitle_ar'])
             ->where('companyInfo.contact_section_subtitle_en', $copy['contact_section_subtitle_en']));
 });
+
+test('contact detail icons have a uniform size scoped to the contact details list', function () {
+    $home = file_get_contents(resource_path('js/Pages/Public/HomePage.vue'));
+    $styles = file_get_contents(resource_path('css/plastex.css'));
+
+    expect($home)->toContain('class="px-contact-details"')
+        ->and($home)->toContain('PlastexLineIcon name="phone"')
+        ->and($home)->toContain('PlastexLineIcon name="envelope"')
+        ->and($home)->toContain('PlastexLineIcon name="location-dot"')
+        ->and($home)->toContain('PlastexLineIcon name="whatsapp"')
+        ->and($styles)->toContain('.px-contact-details .px-contact-icon')
+        ->and($styles)->toContain('flex: 0 0 auto')
+        ->and($styles)->toContain('width: 44px')
+        ->and($styles)->toContain('height: 44px')
+        ->and($styles)->toContain('width: 40px')
+        ->and($styles)->toContain('height: 40px')
+        ->and($styles)->toContain('width: 21px')
+        ->and($styles)->toContain('text-align: start');
+
+    expect($styles)->toContain('.px-floating-action')
+        ->and($styles)->not->toContain('.px-floating-action .px-contact-icon');
+});

@@ -24,6 +24,8 @@ const SOCIAL_FIELDS = [
   { key: 'whatsapp', icon: faWhatsapp },
 ]
 
+const FLOATING_SOCIAL_KEYS = ['whatsapp', 'instagram', 'linkedin', 'facebook', 'tiktok']
+
 const LABEL_KEYS = {
   website: 'public.home.contact.website',
   facebook: 'public.home.contact.facebook',
@@ -57,8 +59,15 @@ export function useSocialLinks(companyInfoSource) {
     socialLinks.value.filter((link) => link.key !== 'website')
   )
 
+  const floatingSocialLinks = computed(() => {
+    const byKey = Object.fromEntries(socialLinks.value.map((link) => [link.key, link]))
+
+    return FLOATING_SOCIAL_KEYS.map((key) => byKey[key]).filter(Boolean)
+  })
+
   return {
     socialLinks,
     socialLinksWithoutWebsite,
+    floatingSocialLinks,
   }
 }

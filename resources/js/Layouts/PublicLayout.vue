@@ -1,10 +1,12 @@
 <script setup>
-import { computed, onMounted, watch } from 'vue'
+import { computed, onMounted, onUnmounted, watch } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import PublicNavbar from '../Components/Public/PublicNavbar.vue'
 import PublicFooter from '../Components/Public/PublicFooter.vue'
 import FlashMessage from '../Components/Common/FlashMessage.vue'
+import { handlePublicContactLinkClick } from '../Composables/usePublicContactForm.js'
 import { publicThemeStyle } from '../Composables/usePublicTheme.js'
+import FloatingContactActions from '../Components/Public/FloatingContactActions.vue'
 
 const page = usePage()
 const themeStyle = computed(() => publicThemeStyle(page.props.companyInfo))
@@ -28,7 +30,15 @@ function injectCustomJs(code) {
   document.body.appendChild(script)
 }
 
-onMounted(() => injectCustomJs(customJs.value))
+onMounted(() => {
+  injectCustomJs(customJs.value)
+  document.addEventListener('click', handlePublicContactLinkClick, true)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handlePublicContactLinkClick, true)
+})
+
 watch(customJs, injectCustomJs)
 </script>
 
@@ -41,5 +51,6 @@ watch(customJs, injectCustomJs)
             <slot />
         </main>
         <PublicFooter />
+        <FloatingContactActions />
     </div>
 </template>
