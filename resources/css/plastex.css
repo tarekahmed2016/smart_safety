@@ -2369,8 +2369,68 @@ html[dir="ltr"] .px-hero-actions .px-btn {
 .px-floating-social .px-floating-action {
     position: relative;
     flex: 0 0 auto;
-    background: #fff;
-    box-shadow: 0 8px 22px rgba(11, 31, 58, 0.14);
+    width: 48px;
+    height: 48px;
+    color: #fff;
+    opacity: 1;
+    filter: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: 0 8px 22px rgba(11, 31, 58, 0.18);
+}
+
+.px-floating-social .px-floating-action svg,
+.px-floating-social .px-floating-action .svg-inline--fa {
+    width: 24px;
+    height: 24px;
+    color: #fff;
+    fill: currentColor;
+    opacity: 1;
+    filter: none;
+}
+
+.px-floating-social .px-floating-action--whatsapp {
+    background: #25D366;
+    color: #fff;
+}
+
+.px-floating-social .px-floating-action--facebook {
+    background: #1877F2;
+    color: #fff;
+}
+
+.px-floating-social .px-floating-action--instagram {
+    background: #E4405F;
+    color: #fff;
+}
+
+.px-floating-social .px-floating-action--linkedin {
+    background: #0A66C2;
+    color: #fff;
+}
+
+.px-floating-social .px-floating-action--tiktok {
+    background: #111111;
+    color: #fff;
+}
+
+.px-floating-social .px-floating-action:hover,
+.px-floating-social .px-floating-action:focus-visible {
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(11, 31, 58, 0.22);
+}
+
+.px-floating-social .px-floating-action--whatsapp:hover,
+.px-floating-social .px-floating-action--whatsapp:focus-visible {
+    background: #25D366;
+    color: #fff;
+}
+
+.px-floating-social .px-floating-action--facebook:hover,
+.px-floating-social .px-floating-action--facebook:focus-visible {
+    background: #1877F2;
+    color: #fff;
 }
 
 .px-back-to-top {
@@ -2386,7 +2446,7 @@ html[dir="ltr"] .px-hero-actions .px-btn {
     height: 1.05rem;
 }
 
-.px-floating-action:hover {
+.px-back-to-top:hover {
     background: var(--px-green);
     color: var(--px-navy-deep);
     transform: translateY(-2px);
@@ -2432,11 +2492,19 @@ html[dir="ltr"] .px-hero-actions .px-btn {
     .px-back-to-top {
         right: 12px;
         bottom: 16px;
-    }
-
-    .px-floating-action {
         width: 2.35rem;
         height: 2.35rem;
+    }
+
+    .px-floating-social .px-floating-action {
+        width: 44px;
+        height: 44px;
+    }
+
+    .px-floating-social .px-floating-action svg,
+    .px-floating-social .px-floating-action .svg-inline--fa {
+        width: 22px;
+        height: 22px;
     }
 
     .px-floating-action::after {

@@ -39,7 +39,18 @@ test('floating social icons render only configured company links and open in a n
         ->and($styles)->toContain('right: 20px')
         ->and($styles)->toContain('gap: 8px')
         ->and($styles)->toContain('flex-direction: column-reverse')
-        ->and($styles)->toContain('background: transparent');
+        ->and($composable)->toContain('faWhatsapp')
+        ->and($composable)->toContain('faFacebookF')
+        ->and($component)->toContain('px-floating-action--${link.key}')
+        ->and($styles)->toContain('background: #25D366')
+        ->and($styles)->toContain('background: #1877F2')
+        ->and($styles)->toContain('width: 48px')
+        ->and($styles)->toContain('height: 48px')
+        ->and($styles)->toContain('width: 24px')
+        ->and($styles)->toContain('width: 44px')
+        ->and($styles)->toContain('width: 22px')
+        ->and($styles)->toContain('.px-floating-social .px-floating-action')
+        ->and($styles)->toContain('.px-contact-details .px-contact-icon');
 });
 
 test('back to top button stays on the physical right and scrolls smoothly', function () {

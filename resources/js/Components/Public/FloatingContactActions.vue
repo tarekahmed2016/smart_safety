@@ -34,7 +34,7 @@ const scrollToTop = () => {
         :title="link.label"
         :data-tooltip="link.label"
       >
-        <font-awesome-icon :icon="link.icon" aria-hidden="true" />
+        <font-awesome-icon :icon="link.icon" aria-hidden="true" class="px-floating-brand-icon" />
       </a>
     </nav>
 
