@@ -22,6 +22,9 @@ const form = useForm({
     headline_en: section.settings?.headline_en || '',
     highlight_ar: section.settings?.highlight_ar || '',
     highlight_en: section.settings?.highlight_en || '',
+    subtitle_ar: section.settings?.subtitle_ar || '',
+    subtitle_en: section.settings?.subtitle_en || '',
+    max_items: section.settings?.max_items ?? '',
     show_in_navigation: Boolean(section.show_in_navigation),
     nav_label_ar: section.nav_label_ar || '',
     nav_label_en: section.nav_label_en || '',
@@ -162,7 +165,7 @@ const submit = () => {
               </div>
 
               <div
-                v-if="['goals', 'vision_mission', 'why_us'].includes(sectionMetaById[section.id]?.type)"
+                v-if="sectionMetaById[section.id]?.shows_headline"
                 class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4"
               >
                 <div>
@@ -176,16 +179,40 @@ const submit = () => {
               </div>
 
               <div
-                v-if="sectionMetaById[section.id]?.type === 'why_us'"
+                v-if="sectionMetaById[section.id]?.shows_highlight"
                 class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4"
               >
                 <div>
-                  <label class="form-label text-label">{{ t('homepagePromos.settingsFields.highlight_ar') }}</label>
+                  <label class="form-label text-label">{{ t('homepageSections.highlightArLabel') }}</label>
                   <input v-model="section.highlight_ar" type="text" class="form-input text-body" />
                 </div>
                 <div>
-                  <label class="form-label text-label">{{ t('homepagePromos.settingsFields.highlight_en') }}</label>
+                  <label class="form-label text-label">{{ t('homepageSections.highlightEnLabel') }}</label>
                   <input v-model="section.highlight_en" type="text" class="form-input text-body" />
+                </div>
+              </div>
+
+              <div
+                v-if="sectionMetaById[section.id]?.shows_subtitle"
+                class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4"
+              >
+                <div>
+                  <label class="form-label text-label">{{ t('homepageSections.subtitleArLabel') }}</label>
+                  <textarea v-model="section.subtitle_ar" rows="2" class="form-input text-body" />
+                </div>
+                <div>
+                  <label class="form-label text-label">{{ t('homepageSections.subtitleEnLabel') }}</label>
+                  <textarea v-model="section.subtitle_en" rows="2" class="form-input text-body" />
+                </div>
+              </div>
+
+              <div
+                v-if="sectionMetaById[section.id]?.shows_max_items"
+                class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4"
+              >
+                <div>
+                  <label class="form-label text-label">{{ t('homepageSections.maxItemsLabel') }}</label>
+                  <input v-model="section.max_items" type="number" min="1" max="50" class="form-input text-body" />
                 </div>
               </div>
 

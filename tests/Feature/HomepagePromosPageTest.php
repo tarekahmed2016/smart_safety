@@ -48,7 +48,7 @@ test('section cards exclude hero and follow homepage section ordering', function
             ->where('sectionCards.13.key', 'contact'));
 });
 
-test('admin can update homepage promo section settings for products without writing a section title', function () {
+test('admin can update homepage promo section settings endpoint without writing section configuration', function () {
     CompanyInfo::query()->create([
         'products_section_title_en' => 'Old title',
         'products_homepage_limit' => 4,
@@ -78,24 +78,41 @@ test('admin can update homepage promo section settings for products without writ
     $productsSection->refresh();
 
     expect($companyInfo->products_section_title_en)->toBe('Old title')
-        ->and($companyInfo->products_homepage_limit)->toBe(6)
+        ->and($companyInfo->products_homepage_limit)->toBe(4)
         ->and($productsSection->title_ar)->toBe('منتجاتنا')
         ->and($productsSection->title_en)->toBe('Our products');
 });
 
-test('admin can update gallery max items through homepage promos section settings', function () {
+test('admin can update gallery max items through homepage sections', function () {
     $gallerySection = HomepageSection::query()->where('key', 'gallery')->firstOrFail();
 
     $this->actingAs($this->admin)
-        ->put(route('homepage-promos.section-settings.update', 'gallery'), [
-            'company' => [
-                'gallery_section_title_en' => 'Gallery',
-            ],
-            'section' => [
-                'max_items' => 12,
-            ],
+        ->put(route('homepage-sections.update'), [
+            'sections' => HomepageSection::query()
+                ->orderBy('ordering')
+                ->get()
+                ->map(fn (HomepageSection $section) => [
+                    'id' => $section->id,
+                    'is_visible' => $section->is_visible,
+                    'ordering' => $section->ordering,
+                    'title_ar' => $section->title_ar,
+                    'title_en' => $section->title_en,
+                    'headline_ar' => $section->settings['headline_ar'] ?? null,
+                    'headline_en' => $section->settings['headline_en'] ?? null,
+                    'highlight_ar' => $section->settings['highlight_ar'] ?? null,
+                    'highlight_en' => $section->settings['highlight_en'] ?? null,
+                    'subtitle_ar' => $section->settings['subtitle_ar'] ?? null,
+                    'subtitle_en' => $section->settings['subtitle_en'] ?? null,
+                    'max_items' => $section->key === 'gallery' ? 12 : ($section->settings['max_items'] ?? null),
+                    'show_in_navigation' => $section->show_in_navigation,
+                    'nav_label_ar' => $section->nav_label_ar,
+                    'nav_label_en' => $section->nav_label_en,
+                    'nav_order' => $section->nav_order,
+                    'anchor_id' => $section->anchor_id,
+                ])
+                ->all(),
         ])
-        ->assertRedirect();
+        ->assertRedirect(route('homepage-sections.index'));
 
     $gallerySection->refresh();
 

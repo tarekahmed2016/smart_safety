@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\CompanyInfo;
+use App\Models\HomepagePromoBlock;
 use App\Models\HomepageSection;
 use App\Models\User;
 use App\Services\HomepageSectionService;
@@ -38,10 +39,13 @@ function homepageSectionsUpdatePayload(array $overridesByKey = []): array
                 'ordering' => $section->ordering,
                 'title_ar' => $overrides['title_ar'] ?? $section->title_ar,
                 'title_en' => $overrides['title_en'] ?? $section->title_en,
-                'headline_ar' => $section->settings['headline_ar'] ?? null,
-                'headline_en' => $section->settings['headline_en'] ?? null,
-                'highlight_ar' => $section->settings['highlight_ar'] ?? null,
-                'highlight_en' => $section->settings['highlight_en'] ?? null,
+                'headline_ar' => $overrides['headline_ar'] ?? $section->settings['headline_ar'] ?? null,
+                'headline_en' => $overrides['headline_en'] ?? $section->settings['headline_en'] ?? null,
+                'highlight_ar' => $overrides['highlight_ar'] ?? $section->settings['highlight_ar'] ?? null,
+                'highlight_en' => $overrides['highlight_en'] ?? $section->settings['highlight_en'] ?? null,
+                'subtitle_ar' => $overrides['subtitle_ar'] ?? $section->settings['subtitle_ar'] ?? null,
+                'subtitle_en' => $overrides['subtitle_en'] ?? $section->settings['subtitle_en'] ?? null,
+                'max_items' => $overrides['max_items'] ?? $section->settings['max_items'] ?? null,
                 'show_in_navigation' => $section->show_in_navigation,
                 'nav_label_ar' => $section->nav_label_ar,
                 'nav_label_en' => $section->nav_label_en,
@@ -65,8 +69,17 @@ test('homepage promo settings do not expose a second writable section title', fu
 
     expect($cardSource)->not->toContain('v-model="settingsForm.section.title_ar"')
         ->and($cardSource)->not->toContain('v-model="settingsForm.section.title_en"')
+        ->and($cardSource)->not->toContain('v-model="settingsForm.section.headline_ar"')
+        ->and($cardSource)->not->toContain('v-model="settingsForm.section.max_items"')
+        ->and($cardSource)->not->toContain('settingsForm.put')
+        ->and($cardSource)->not->toContain('currentTitleAr')
+        ->and($cardSource)->not->toContain('company_settings')
+        ->and($cardSource)->not->toContain('card.section_settings')
+        ->and($cardSource)->not->toContain("t('homepageSections.titleArLabel')")
         ->and($cardSource)->toContain("t('homepagePromos.sectionCard.editSectionSettings')")
-        ->and($cardSource)->toContain('homepage-sections')
+        ->and($cardSource)->toContain('/homepage-sections')
+        ->and($cardSource)->toContain('HomepagePromoItemsList')
+        ->and($cardSource)->toContain('sectionVisible')
         ->and($homeSource)->not->toContain('products_section_title')
         ->and($homeSource)->not->toContain('about_section_title')
         ->and($homeSource)->not->toContain('gallery_section_title')
@@ -110,7 +123,39 @@ test('legacy promo titles are copied into empty homepage sections once', functio
         ->and(Schema::hasColumn('company_info', 'products_section_title_en'))->toBeTrue();
 });
 
-test('public homepage and homepage promos share the homepage section title', function () {
+test('homepage promos hide the section title while keeping promo items visible', function () {
+    HomepageSection::query()->where('key', 'features')->update([
+        'title_ar' => 'عنوان القسم المخفي',
+        'title_en' => 'Hidden section title',
+    ]);
+
+    $block = HomepagePromoBlock::factory()->featureHighlight()->create([
+        'title_ar' => 'جودة عالية',
+        'title_en' => 'High Quality',
+        'description_en' => 'Feature description',
+        'ordering' => 1,
+        'is_active' => true,
+    ]);
+
+    $this->actingAs($this->admin)
+        ->get(route('homepage-promos.index'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('sectionCards', function ($cards) use ($block) {
+                $features = collect($cards)->firstWhere('key', 'features');
+
+                return is_array($features)
+                    && ! array_key_exists('title_ar', $features['section'] ?? [])
+                    && ! array_key_exists('title_en', $features['section'] ?? [])
+                    && ! array_key_exists('title_ar', $features['section_settings'] ?? [])
+                    && ! array_key_exists('title_en', $features['section_settings'] ?? [])
+                    && ($features['items'][0]['id'] ?? null) === $block->id
+                    && ($features['items'][0]['title_en'] ?? null) === 'High Quality'
+                    && ($features['items'][0]['description_en'] ?? null) === 'Feature description';
+            }));
+});
+
+test('public homepage shows the homepage section title once from homepage sections', function () {
     HomepageSection::query()->where('key', 'products')->update([
         'title_ar' => 'منتجات الصفحة',
         'title_en' => 'Homepage products',
@@ -122,34 +167,24 @@ test('public homepage and homepage promos share the homepage section title', fun
         'products_homepage_limit' => 8,
     ]);
 
+    $homeSource = file_get_contents(resource_path('js/Pages/Public/HomePage.vue'));
+
+    expect(substr_count($homeSource, "resolveSectionTitle(section, 'public.home.products.title')"))->toBe(1)
+        ->and($homeSource)->not->toContain('products_section_title');
+
     $this->get(route('home'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->where('homepageSections', function ($sections) {
-                $products = collect($sections)->firstWhere('key', 'products');
+                $products = collect($sections)->where('key', 'products')->values();
 
-                return is_array($products)
-                    && ($products['title_ar'] ?? null) === 'منتجات الصفحة'
-                    && ($products['title_en'] ?? null) === 'Homepage products';
-            }));
-
-    $this->actingAs($this->admin)
-        ->get(route('homepage-promos.index'))
-        ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
-            ->where('sectionCards', function ($cards) {
-                $products = collect($cards)->firstWhere('key', 'products');
-
-                return is_array($products)
-                    && ($products['section']['title_ar'] ?? null) === 'منتجات الصفحة'
-                    && ($products['section']['title_en'] ?? null) === 'Homepage products'
-                    && ! array_key_exists('title_ar', $products['section_settings'] ?? [])
-                    && ! array_key_exists('products_section_title_en', $products['company_settings'] ?? [])
-                    && ($products['edit_section_settings_url'] ?? null) === '/homepage-sections';
+                return $products->count() === 1
+                    && ($products[0]['title_ar'] ?? null) === 'منتجات الصفحة'
+                    && ($products[0]['title_en'] ?? null) === 'Homepage products';
             }));
 });
 
-test('updating a title from homepage sections appears on the public page and homepage promos', function () {
+test('updating a title from homepage sections appears once on the public homepage', function () {
     $this->actingAs($this->admin)
         ->put(route('homepage-sections.update'), [
             'sections' => homepageSectionsUpdatePayload([
@@ -161,17 +196,15 @@ test('updating a title from homepage sections appears on the public page and hom
         ])
         ->assertRedirect(route('homepage-sections.index'));
 
-    expect(HomepageSection::query()->where('key', 'gallery')->value('title_en'))->toBe('Updated gallery');
-
     $this->get(route('home'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->where('homepageSections', function ($sections) {
-                $gallery = collect($sections)->firstWhere('key', 'gallery');
+                $gallery = collect($sections)->where('key', 'gallery')->values();
 
-                return is_array($gallery)
-                    && ($gallery['title_ar'] ?? null) === 'معرض محدث'
-                    && ($gallery['title_en'] ?? null) === 'Updated gallery';
+                return $gallery->count() === 1
+                    && ($gallery[0]['title_ar'] ?? null) === 'معرض محدث'
+                    && ($gallery[0]['title_en'] ?? null) === 'Updated gallery';
             }));
 
     $this->actingAs($this->admin)
@@ -182,8 +215,8 @@ test('updating a title from homepage sections appears on the public page and hom
                 $gallery = collect($cards)->firstWhere('key', 'gallery');
 
                 return is_array($gallery)
-                    && ($gallery['section']['title_ar'] ?? null) === 'معرض محدث'
-                    && ($gallery['section']['title_en'] ?? null) === 'Updated gallery';
+                    && ! array_key_exists('title_ar', $gallery['section'] ?? [])
+                    && ! array_key_exists('title_en', $gallery['section'] ?? []);
             }));
 });
 
@@ -221,5 +254,84 @@ test('saving homepage promo settings cannot create a conflicting section title',
     expect($contact->title_ar)->toBe('تواصل معنا')
         ->and($contact->title_en)->toBe('Contact us')
         ->and($companyInfo->contact_section_title_en)->toBe('Old contact title')
-        ->and($companyInfo->contact_section_subtitle_en)->toBe('Updated subtitle');
+        ->and($companyInfo->contact_section_subtitle_en)->toBe('Reach out');
+});
+
+test('homepage promos keep item content while section visibility stays independent', function () {
+    $features = HomepageSection::query()->where('key', 'features')->firstOrFail();
+    $features->update(['is_visible' => true]);
+
+    $block = HomepagePromoBlock::factory()->featureHighlight()->create([
+        'title_en' => 'High Quality',
+        'is_active' => true,
+        'ordering' => 1,
+    ]);
+
+    $this->actingAs($this->admin)
+        ->put(route('homepage-sections.update'), [
+            'sections' => homepageSectionsUpdatePayload([
+                'features' => [],
+            ]),
+        ]);
+
+    HomepageSection::query()->where('key', 'features')->update(['is_visible' => false]);
+    $block->refresh();
+
+    expect($block->is_active)->toBeTrue()
+        ->and($block->title_en)->toBe('High Quality')
+        ->and(HomepageSection::query()->where('key', 'features')->value('is_visible'))->toBeFalse();
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('homepageSections', fn ($sections) => collect($sections)->where('key', 'features')->isEmpty())
+            ->has('featureHighlights', 1)
+            ->where('featureHighlights.0.title_en', 'High Quality'));
+
+    $block->update(['is_active' => false]);
+    HomepageSection::query()->where('key', 'features')->update(['is_visible' => true]);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('homepageSections', fn ($sections) => collect($sections)->contains('key', 'features'))
+            ->has('featureHighlights', 0));
+});
+
+test('homepage sections remain the only writable source for section-wide settings', function () {
+    expect(HomepagePromoSectionMap::companySettingFields('products'))->toBe([])
+        ->and(HomepagePromoSectionMap::sectionSettingFields('gallery'))->toBe([])
+        ->and(HomepagePromoSectionMap::sectionSettingFields('why_us'))->toBe([])
+        ->and(HomepagePromoSectionMap::sectionSettingFields('services'))->toBe([]);
+
+    $this->actingAs($this->admin)
+        ->put(route('homepage-sections.update'), [
+            'sections' => homepageSectionsUpdatePayload([
+                'why_us' => [
+                    'title_en' => 'Why us updated',
+                    'headline_en' => 'Updated headline',
+                ],
+                'gallery' => [
+                    'max_items' => 7,
+                ],
+                'contact' => [
+                    'subtitle_en' => 'Updated contact subtitle',
+                ],
+            ]),
+        ])
+        ->assertRedirect(route('homepage-sections.index'));
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('homepageSections', function ($sections) {
+                $whyUs = collect($sections)->firstWhere('key', 'why_us');
+                $gallery = collect($sections)->firstWhere('key', 'gallery');
+                $contact = collect($sections)->firstWhere('key', 'contact');
+
+                return ($whyUs['title_en'] ?? null) === 'Why us updated'
+                    && ($whyUs['headline_en'] ?? null) === 'Updated headline'
+                    && (int) ($gallery['settings']['max_items'] ?? 0) === 7
+                    && ($contact['settings']['subtitle_en'] ?? null) === 'Updated contact subtitle';
+            }));
 });

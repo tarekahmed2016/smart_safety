@@ -118,13 +118,12 @@ const aboutMoreLabel = computed(() =>
   resolveHomepageField(companyInfo.value, 'about_cta_text', locale.value, t('public.home.about.more'))
 )
 
-const aboutHighlight = computed(() =>
-  resolveHomepageField(companyInfo.value, 'about_highlight', locale.value, t('public.home.about.highlight'))
-)
+const aboutHighlight = (section) =>
+  resolveBilingualField(section?.settings || {}, 'highlight', locale.value) || t('public.home.about.highlight')
 
 const aboutTitleParts = (section) => highlightTitleParts(
   resolveSectionTitle(section, 'public.home.about.factoryTitle'),
-  aboutHighlight.value,
+  aboutHighlight(section),
 )
 
 const highlightTitleParts = (title, highlight) => {
@@ -148,6 +147,9 @@ const servicesTitleParts = (section) => highlightTitleParts(
 
 const servicesSubtitle = (section) =>
   resolveBilingualField(section?.settings || {}, 'subtitle', locale.value) || t('public.home.services.subtitle')
+
+const contactSubtitle = (section) =>
+  resolveBilingualField(section?.settings || {}, 'subtitle', locale.value) || t('public.home.contact.subtitle')
 
 const serviceIconFor = (item, index) => {
   const english = (item.name_en || '').toLowerCase()
@@ -853,7 +855,7 @@ onUnmounted(() => {
         <div>
           <p class="px-about-eyebrow">{{ t('public.home.contact.eyebrow') }}</p>
           <h2>{{ resolveSectionTitle(section, 'public.home.contact.title') }}</h2>
-          <p>{{ resolveHomepageField(companyInfo, 'contact_section_subtitle', locale, t('public.home.contact.subtitle')) }}</p>
+          <p>{{ contactSubtitle(section) }}</p>
           <ul class="px-contact-details">
             <li v-if="companyInfo.phone">
               <span class="px-contact-icon" aria-hidden="true"><PlastexLineIcon name="phone" /></span>

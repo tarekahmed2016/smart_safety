@@ -24,6 +24,10 @@ class HomepageSectionsUpdateRequest extends FormRequest
                     $section['show_in_navigation'] = filter_var($section['show_in_navigation'], FILTER_VALIDATE_BOOLEAN);
                 }
 
+                if (array_key_exists('max_items', $section) && $section['max_items'] === '') {
+                    $section['max_items'] = null;
+                }
+
                 return $section;
             })
             ->all();
@@ -47,6 +51,9 @@ class HomepageSectionsUpdateRequest extends FormRequest
             'sections.*.headline_en' => ['nullable', 'string', 'max:255'],
             'sections.*.highlight_ar' => ['nullable', 'string', 'max:255'],
             'sections.*.highlight_en' => ['nullable', 'string', 'max:255'],
+            'sections.*.subtitle_ar' => ['nullable', 'string', 'max:1000'],
+            'sections.*.subtitle_en' => ['nullable', 'string', 'max:1000'],
+            'sections.*.max_items' => ['nullable', 'integer', 'min:1', 'max:50'],
             'sections.*.show_in_navigation' => ['sometimes', 'boolean'],
             'sections.*.nav_label_ar' => ['nullable', 'string', 'max:255'],
             'sections.*.nav_label_en' => ['nullable', 'string', 'max:255'],

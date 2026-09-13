@@ -56,49 +56,23 @@ class HomepagePromoSectionMap
     }
 
     /**
+     * Promo cards do not own section-wide settings; those live on Homepage Sections.
+     *
      * @return list<string>
      */
     public static function companySettingFields(string $key): array
     {
-        return match ($key) {
-            'products' => [
-                'products_homepage_limit',
-            ],
-            'about' => [
-                'about_highlight_ar',
-                'about_highlight_en',
-                'about_cta_text_ar',
-                'about_cta_text_en',
-                'about_cta_url',
-            ],
-            'contact' => [
-                'contact_section_subtitle_ar',
-                'contact_section_subtitle_en',
-            ],
-            default => [],
-        };
+        return [];
     }
 
     /**
+     * Promo cards do not own section-wide settings; those live on Homepage Sections.
+     *
      * @return list<string>
      */
     public static function sectionSettingFields(string $key): array
     {
-        return match ($key) {
-            'services' => [
-                'subtitle_ar',
-                'subtitle_en',
-            ],
-            'vision_mission', 'goals', 'why_us' => [
-                'headline_ar',
-                'headline_en',
-                ...($key === 'why_us' ? ['highlight_ar', 'highlight_en'] : []),
-            ],
-            'gallery' => [
-                'max_items',
-            ],
-            default => [],
-        };
+        return [];
     }
 
     public static function manageRouteName(string $key): ?string

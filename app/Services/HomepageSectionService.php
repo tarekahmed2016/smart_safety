@@ -67,13 +67,17 @@ class HomepageSectionService
                     'title_en' => $sectionData['title_en'] ?? null,
                 ];
 
-                $settingsKeys = ['headline_ar', 'headline_en', 'highlight_ar', 'highlight_en'];
+                $settingsKeys = ['headline_ar', 'headline_en', 'highlight_ar', 'highlight_en', 'subtitle_ar', 'subtitle_en', 'max_items'];
                 if (collect($settingsKeys)->contains(fn (string $key) => array_key_exists($key, $sectionData))) {
                     $settings = $section->settings ?? [];
                     foreach ($settingsKeys as $key) {
-                        if (array_key_exists($key, $sectionData)) {
-                            $settings[$key] = $sectionData[$key];
+                        if (! array_key_exists($key, $sectionData)) {
+                            continue;
                         }
+
+                        $settings[$key] = $key === 'max_items' && $sectionData[$key] !== null && $sectionData[$key] !== ''
+                            ? (int) $sectionData[$key]
+                            : $sectionData[$key];
                     }
                     $payload['settings'] = $settings;
                 }

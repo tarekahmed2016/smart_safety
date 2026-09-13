@@ -80,6 +80,57 @@ class HomepageSectionTitleSource
                 $section->update($payload);
             }
         }
+
+        self::copyLegacyCompanyFieldsIntoSectionSettings();
+    }
+
+    public static function copyLegacyCompanyFieldsIntoSectionSettings(): void
+    {
+        $companyInfo = CompanyInfo::query()->first();
+
+        if (! $companyInfo) {
+            return;
+        }
+
+        $contact = HomepageSection::query()->where('key', 'contact')->first();
+        if ($contact) {
+            $settings = $contact->settings ?? [];
+            $payload = [];
+
+            if (self::isBlank($settings['subtitle_ar'] ?? null) && ! self::isBlank($companyInfo->contact_section_subtitle_ar)) {
+                $settings['subtitle_ar'] = $companyInfo->contact_section_subtitle_ar;
+                $payload['settings'] = $settings;
+            }
+
+            if (self::isBlank($settings['subtitle_en'] ?? null) && ! self::isBlank($companyInfo->contact_section_subtitle_en)) {
+                $settings['subtitle_en'] = $companyInfo->contact_section_subtitle_en;
+                $payload['settings'] = $settings;
+            }
+
+            if ($payload !== []) {
+                $contact->update($payload);
+            }
+        }
+
+        $about = HomepageSection::query()->where('key', 'about')->first();
+        if ($about) {
+            $settings = $about->settings ?? [];
+            $payload = [];
+
+            if (self::isBlank($settings['highlight_ar'] ?? null) && ! self::isBlank($companyInfo->about_highlight_ar)) {
+                $settings['highlight_ar'] = $companyInfo->about_highlight_ar;
+                $payload['settings'] = $settings;
+            }
+
+            if (self::isBlank($settings['highlight_en'] ?? null) && ! self::isBlank($companyInfo->about_highlight_en)) {
+                $settings['highlight_en'] = $companyInfo->about_highlight_en;
+                $payload['settings'] = $settings;
+            }
+
+            if ($payload !== []) {
+                $about->update($payload);
+            }
+        }
     }
 
     private static function isBlank(mixed $value): bool

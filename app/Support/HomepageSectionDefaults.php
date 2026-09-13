@@ -44,7 +44,10 @@ class HomepageSectionDefaults
                 'is_visible' => true,
                 'title_ar' => $homepageCopy['about_section_title_ar'],
                 'title_en' => $homepageCopy['about_section_title_en'],
-                'settings' => null,
+                'settings' => [
+                    'highlight_ar' => $homepageCopy['about_highlight_ar'],
+                    'highlight_en' => $homepageCopy['about_highlight_en'],
+                ],
             ],
             [
                 'key' => 'why_us',
@@ -180,7 +183,10 @@ class HomepageSectionDefaults
                 'is_visible' => true,
                 'title_ar' => $homepageCopy['contact_section_title_ar'],
                 'title_en' => $homepageCopy['contact_section_title_en'],
-                'settings' => null,
+                'settings' => [
+                    'subtitle_ar' => $homepageCopy['contact_section_subtitle_ar'],
+                    'subtitle_en' => $homepageCopy['contact_section_subtitle_en'],
+                ],
             ],
         ];
     }
@@ -188,5 +194,25 @@ class HomepageSectionDefaults
     public static function usesStandaloneSectionTitle(string $key): bool
     {
         return ! ($key === 'hero' || $key === 'features');
+    }
+
+    public static function usesHeadline(string $key): bool
+    {
+        return in_array($key, ['goals', 'vision_mission', 'why_us'], true);
+    }
+
+    public static function usesHighlight(string $key): bool
+    {
+        return in_array($key, ['why_us', 'services', 'about'], true);
+    }
+
+    public static function usesSubtitle(string $key): bool
+    {
+        return in_array($key, ['services', 'contact'], true);
+    }
+
+    public static function usesMaxItems(string $key): bool
+    {
+        return $key === 'gallery';
     }
 }

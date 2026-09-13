@@ -5,11 +5,8 @@ namespace App\Services;
 use App\Enums\HomepagePromoLayout;
 use App\Enums\HomepagePromoType;
 use App\Enums\HomepageSectionType;
-use App\Models\CompanyInfo;
 use App\Models\HomepagePromoBlock;
 use App\Support\HomepagePromoSectionMap;
-use App\Support\HomepageSectionDefaults;
-use App\Support\HomepageSectionTitleSource;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\UploadedFile;
@@ -40,7 +37,6 @@ class HomepagePromoBlockService
     public function __construct(
         public ActivityLogService $activityLogService,
         public HomepageSectionService $homepageSectionService,
-        public CompanyInfoService $companyInfoService,
     ) {}
 
     /**
@@ -60,43 +56,16 @@ class HomepagePromoBlockService
                 ? $block->type->value
                 : (string) $block->type);
 
-        $companyInfo = $this->companyInfoService->getCompanyInfo();
-
         return $sections
             ->filter(fn ($section) => in_array($section->key, HomepagePromoSectionMap::sectionKeys(), true))
             ->sortBy('ordering')
             ->values()
-            ->map(function ($section) use ($blocksByType, $companyInfo) {
+            ->map(function ($section) use ($blocksByType) {
                 $key = $section->key;
                 $items = collect();
 
                 foreach (HomepagePromoSectionMap::promoTypesForSection($key) as $type) {
                     $items = $items->merge($blocksByType->get($type->value, collect()));
-                }
-
-                $companySettings = [];
-                foreach (HomepagePromoSectionMap::companySettingFields($key) as $field) {
-                    $companySettings[$field] = $companyInfo->{$field};
-                }
-
-                $sectionSettings = [];
-                if (in_array('max_items', HomepagePromoSectionMap::sectionSettingFields($key), true)) {
-                    $sectionSettings['max_items'] = (int) (($section->settings ?? [])['max_items'] ?? 8);
-                }
-
-                if (in_array('headline_ar', HomepagePromoSectionMap::sectionSettingFields($key), true)) {
-                    $sectionSettings['headline_ar'] = (string) (($section->settings ?? [])['headline_ar'] ?? '');
-                    $sectionSettings['headline_en'] = (string) (($section->settings ?? [])['headline_en'] ?? '');
-                }
-
-                if (in_array('subtitle_ar', HomepagePromoSectionMap::sectionSettingFields($key), true)) {
-                    $sectionSettings['subtitle_ar'] = (string) (($section->settings ?? [])['subtitle_ar'] ?? '');
-                    $sectionSettings['subtitle_en'] = (string) (($section->settings ?? [])['subtitle_en'] ?? '');
-                }
-
-                if (in_array('highlight_ar', HomepagePromoSectionMap::sectionSettingFields($key), true)) {
-                    $sectionSettings['highlight_ar'] = (string) (($section->settings ?? [])['highlight_ar'] ?? '');
-                    $sectionSettings['highlight_en'] = (string) (($section->settings ?? [])['highlight_en'] ?? '');
                 }
 
                 return [
@@ -110,21 +79,15 @@ class HomepagePromoBlockService
                             : (string) $section->type,
                         'ordering' => $section->ordering,
                         'is_visible' => (bool) $section->is_visible,
-                        'title_ar' => $section->title_ar,
-                        'title_en' => $section->title_en,
-                        'settings' => $section->settings ?? [],
                     ],
                     'items' => $items
                         ->sortBy('ordering')
                         ->values()
                         ->map(fn (HomepagePromoBlock $block) => $this->mapBlockForAdmin($block))
                         ->all(),
-                    'company_settings' => $companySettings,
-                    'section_settings' => $sectionSettings,
                     'manage_route' => HomepagePromoSectionMap::manageRouteName($key),
                     'default_promo_type' => HomepagePromoSectionMap::defaultPromoType($key)?->value,
                     'can_add_promo' => HomepagePromoSectionMap::canManagePromos($key),
-                    'shows_section_title' => HomepageSectionDefaults::usesStandaloneSectionTitle($key),
                     'edit_section_settings_url' => '/homepage-sections',
                 ];
             })
@@ -133,33 +96,15 @@ class HomepagePromoBlockService
     }
 
     /**
+     * Homepage Promos does not persist section-wide settings.
+     *
      * @param  array<string, mixed>  $companyData
      * @param  array<string, mixed>  $sectionData
      */
     public function updateSectionSettings(string $sectionKey, array $companyData, array $sectionData): void
     {
-        foreach (HomepageSectionTitleSource::allLegacyCompanyTitleFields() as $field) {
-            unset($companyData[$field]);
-        }
-
-        unset($sectionData['title_ar'], $sectionData['title_en']);
-
-        if ($companyData !== []) {
-            $companyInfo = CompanyInfo::query()->first();
-
-            if ($companyInfo) {
-                $this->companyInfoService->update(
-                    companyInfo: $companyInfo,
-                    data: $companyData,
-                    logo: null,
-                    aboutImage: null,
-                );
-            }
-        }
-
-        if ($sectionData !== []) {
-            $this->homepageSectionService->updateSectionContent($sectionKey, $sectionData);
-        }
+        // Section visibility, order, titles, headlines, and other section-wide
+        // settings are owned exclusively by Homepage Sections.
     }
 
     public function getPaginatedPromoBlocks(
