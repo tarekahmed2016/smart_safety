@@ -37,11 +37,6 @@ class HomepagePromoSectionSettingsRequest extends FormRequest
             };
         }
 
-        if (in_array('title_ar', $sectionFields, true)) {
-            $rules['section.title_ar'] = ['nullable', 'string', 'max:255'];
-            $rules['section.title_en'] = ['nullable', 'string', 'max:255'];
-        }
-
         if (in_array('max_items', $sectionFields, true)) {
             $rules['section.max_items'] = ['nullable', 'integer', 'min:1', 'max:50'];
         }

@@ -123,7 +123,7 @@ const aboutHighlight = computed(() =>
 )
 
 const aboutTitleParts = (section) => highlightTitleParts(
-  resolveSectionTitle(section, 'about_section_title', 'public.home.about.factoryTitle'),
+  resolveSectionTitle(section, 'public.home.about.factoryTitle'),
   aboutHighlight.value,
 )
 
@@ -142,7 +142,7 @@ const highlightTitleParts = (title, highlight) => {
 }
 
 const servicesTitleParts = (section) => highlightTitleParts(
-  resolveSectionTitle(section, null, 'public.home.services.manufacturingTitle'),
+  resolveSectionTitle(section, 'public.home.services.manufacturingTitle'),
   resolveBilingualField(section?.settings || {}, 'highlight', locale.value) || t('public.home.services.highlight'),
 )
 
@@ -290,14 +290,10 @@ const resolveVisionMissionCard = (type) => {
 const visionCard = computed(() => resolveVisionMissionCard('vision'))
 const missionCard = computed(() => resolveVisionMissionCard('mission'))
 
-const resolveSectionTitle = (section, companyField, fallbackKey) => {
+const resolveSectionTitle = (section, fallbackKey) => {
   const fromSection = resolveBilingualField(section, 'title', locale.value)
   if (fromSection) {
     return fromSection
-  }
-
-  if (companyField) {
-    return resolveHomepageField(companyInfo.value, companyField, locale.value, t(fallbackKey))
   }
 
   return t(fallbackKey)
@@ -525,7 +521,7 @@ onUnmounted(() => {
     >
       <div class="px-container">
         <div class="px-section-header">
-          <p class="px-about-eyebrow">{{ resolveSectionTitle(section, null, 'public.home.whyUs.title') }}</p>
+          <p class="px-about-eyebrow">{{ resolveSectionTitle(section, 'public.home.whyUs.title') }}</p>
           <h2>
             <span
               v-for="(part, index) in whyUsTitleParts(section)"
@@ -551,7 +547,7 @@ onUnmounted(() => {
     <section v-else-if="section.type === 'products'" id="products" class="px-products">
       <div class="px-container">
         <div class="px-section-header">
-          <h2>{{ resolveSectionTitle(section, 'products_section_title', 'public.home.products.title') }}</h2>
+          <h2>{{ resolveSectionTitle(section, 'public.home.products.title') }}</h2>
         </div>
 
         <ProductsCarousel v-if="products.length" :products="products" @inquire="inquireAboutProduct" />
@@ -637,7 +633,7 @@ onUnmounted(() => {
         :style="industriesBackground ? { backgroundImage: `url('${industriesBackground}')` } : undefined"
       >
         <div v-if="displayIndustries.length" class="px-split-industries-inner">
-          <h2>{{ resolveSectionTitle(section.industries, 'industries_section_title', 'public.home.industries.title') }}</h2>
+          <h2>{{ resolveSectionTitle(section.industries, 'public.home.industries.title') }}</h2>
           <ul class="px-industry-grid">
             <li v-for="industry in displayIndustries" :key="industry.title">
               <span class="px-industry-icon" aria-hidden="true">
@@ -683,7 +679,7 @@ onUnmounted(() => {
       :style="industriesBackground ? { backgroundImage: `url('${industriesBackground}')` } : undefined"
     >
       <div v-if="displayIndustries.length" class="px-split-industries-inner px-container">
-        <h2>{{ resolveSectionTitle(section, 'industries_section_title', 'public.home.industries.title') }}</h2>
+        <h2>{{ resolveSectionTitle(section, 'public.home.industries.title') }}</h2>
         <ul class="px-industry-grid">
           <li v-for="industry in displayIndustries" :key="industry.title">
             <span class="px-industry-icon" aria-hidden="true">
@@ -699,7 +695,7 @@ onUnmounted(() => {
     <section v-else-if="section.type === 'vision_mission'" id="vision-mission" class="px-vision-mission">
       <div class="px-container">
         <div class="px-goals-header">
-          <p class="px-goals-eyebrow">{{ resolveSectionTitle(section, null, 'public.home.visionMission.title') }}</p>
+          <p class="px-goals-eyebrow">{{ resolveSectionTitle(section, 'public.home.visionMission.title') }}</p>
           <h2 class="px-goals-headline">{{ resolveSectionHeadline(section, 'public.home.visionMission.headline') }}</h2>
         </div>
 
@@ -740,7 +736,7 @@ onUnmounted(() => {
     <section v-else-if="section.type === 'goals'" id="goals" class="px-goals">
       <div class="px-container">
         <div class="px-goals-header">
-          <p class="px-goals-eyebrow">{{ resolveSectionTitle(section, null, 'public.home.goals.title') }}</p>
+          <p class="px-goals-eyebrow">{{ resolveSectionTitle(section, 'public.home.goals.title') }}</p>
           <h2 class="px-goals-headline">{{ resolveSectionHeadline(section) }}</h2>
         </div>
 
@@ -806,7 +802,7 @@ onUnmounted(() => {
     <section v-else-if="section.type === 'team_members'" id="team" class="px-team">
       <div class="px-container">
         <div class="px-section-header">
-          <h2>{{ resolveSectionTitle(section, null, 'public.home.team.title') }}</h2>
+          <h2>{{ resolveSectionTitle(section, 'public.home.team.title') }}</h2>
         </div>
 
         <TeamMembersCarousel v-if="teamMembers.length" :members="teamMembers" />
@@ -817,7 +813,7 @@ onUnmounted(() => {
     <section v-else-if="section.type === 'clients_partners'" id="clients-partners" class="px-clients-partners">
       <div class="px-container">
         <div class="px-section-header">
-          <h2>{{ resolveSectionTitle(section, null, 'public.home.clientsPartners.title') }}</h2>
+          <h2>{{ resolveSectionTitle(section, 'public.home.clientsPartners.title') }}</h2>
         </div>
 
         <ClientsPartnersCarousel v-if="clientsPartners.length" :items="clientsPartners" />
@@ -828,7 +824,7 @@ onUnmounted(() => {
     <section v-else-if="section.type === 'gallery'" id="gallery" class="px-gallery">
       <div class="px-container">
         <div class="px-section-header">
-          <h2>{{ resolveSectionTitle(section, 'gallery_section_title', 'public.home.gallery.title') }}</h2>
+          <h2>{{ resolveSectionTitle(section, 'public.home.gallery.title') }}</h2>
         </div>
         <div v-if="galleryItemsForSection(section).length" class="px-gallery-grid">
           <figure v-for="item in galleryItemsForSection(section)" :key="item.src">
@@ -856,7 +852,7 @@ onUnmounted(() => {
       <div class="px-container px-contact-grid">
         <div>
           <p class="px-about-eyebrow">{{ t('public.home.contact.eyebrow') }}</p>
-          <h2>{{ resolveSectionTitle(section, 'contact_section_title', 'public.home.contact.title') }}</h2>
+          <h2>{{ resolveSectionTitle(section, 'public.home.contact.title') }}</h2>
           <p>{{ resolveHomepageField(companyInfo, 'contact_section_subtitle', locale, t('public.home.contact.subtitle')) }}</p>
           <ul class="px-contact-details">
             <li v-if="companyInfo.phone">

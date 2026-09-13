@@ -62,30 +62,16 @@ class HomepagePromoSectionMap
     {
         return match ($key) {
             'products' => [
-                'products_section_title_ar',
-                'products_section_title_en',
                 'products_homepage_limit',
             ],
-            'industries' => [
-                'industries_section_title_ar',
-                'industries_section_title_en',
-            ],
             'about' => [
-                'about_section_title_ar',
-                'about_section_title_en',
                 'about_highlight_ar',
                 'about_highlight_en',
                 'about_cta_text_ar',
                 'about_cta_text_en',
                 'about_cta_url',
             ],
-            'gallery' => [
-                'gallery_section_title_ar',
-                'gallery_section_title_en',
-            ],
             'contact' => [
-                'contact_section_title_ar',
-                'contact_section_title_en',
                 'contact_section_subtitle_ar',
                 'contact_section_subtitle_en',
             ],
@@ -100,15 +86,12 @@ class HomepagePromoSectionMap
     {
         return match ($key) {
             'services' => [
-                'title_ar',
-                'title_en',
                 'subtitle_ar',
                 'subtitle_en',
             ],
-            'vision_mission', 'goals', 'why_us', 'team_members', 'clients_partners' => [
-                'title_ar',
-                'title_en',
-                ...($key === 'goals' || $key === 'vision_mission' || $key === 'why_us' ? ['headline_ar', 'headline_en'] : []),
+            'vision_mission', 'goals', 'why_us' => [
+                'headline_ar',
+                'headline_en',
                 ...($key === 'why_us' ? ['highlight_ar', 'highlight_en'] : []),
             ],
             'gallery' => [

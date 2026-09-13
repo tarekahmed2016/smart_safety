@@ -13,6 +13,7 @@ class HomepageSectionDefaults
     {
         $services = HomepageServicesContentDefaults::section();
         $whyUs = HomepageWhyUsContentDefaults::section();
+        $homepageCopy = HomepageContentDefaults::companyInfoFields();
 
         return [
             [
@@ -41,8 +42,8 @@ class HomepageSectionDefaults
                 'type' => HomepageSectionType::About,
                 'ordering' => 3,
                 'is_visible' => true,
-                'title_ar' => null,
-                'title_en' => null,
+                'title_ar' => $homepageCopy['about_section_title_ar'],
+                'title_en' => $homepageCopy['about_section_title_en'],
                 'settings' => null,
             ],
             [
@@ -81,8 +82,8 @@ class HomepageSectionDefaults
                 'type' => HomepageSectionType::Products,
                 'ordering' => 6,
                 'is_visible' => true,
-                'title_ar' => null,
-                'title_en' => null,
+                'title_ar' => $homepageCopy['products_section_title_ar'],
+                'title_en' => $homepageCopy['products_section_title_en'],
                 'settings' => null,
             ],
             [
@@ -137,8 +138,8 @@ class HomepageSectionDefaults
                 'type' => HomepageSectionType::Gallery,
                 'ordering' => 11,
                 'is_visible' => true,
-                'title_ar' => null,
-                'title_en' => null,
+                'title_ar' => $homepageCopy['gallery_section_title_ar'],
+                'title_en' => $homepageCopy['gallery_section_title_en'],
                 'settings' => ['max_items' => 8],
             ],
             [
@@ -157,8 +158,8 @@ class HomepageSectionDefaults
                 'type' => HomepageSectionType::Industries,
                 'ordering' => 13,
                 'is_visible' => true,
-                'title_ar' => null,
-                'title_en' => null,
+                'title_ar' => $homepageCopy['industries_section_title_ar'],
+                'title_en' => $homepageCopy['industries_section_title_en'],
                 'settings' => null,
             ],
             [
@@ -177,8 +178,8 @@ class HomepageSectionDefaults
                 'type' => HomepageSectionType::ContactForm,
                 'ordering' => 15,
                 'is_visible' => true,
-                'title_ar' => null,
-                'title_en' => null,
+                'title_ar' => $homepageCopy['contact_section_title_ar'],
+                'title_en' => $homepageCopy['contact_section_title_en'],
                 'settings' => null,
             ],
         ];

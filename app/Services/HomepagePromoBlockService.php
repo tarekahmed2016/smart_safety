@@ -4,9 +4,12 @@ namespace App\Services;
 
 use App\Enums\HomepagePromoLayout;
 use App\Enums\HomepagePromoType;
+use App\Enums\HomepageSectionType;
 use App\Models\CompanyInfo;
 use App\Models\HomepagePromoBlock;
 use App\Support\HomepagePromoSectionMap;
+use App\Support\HomepageSectionDefaults;
+use App\Support\HomepageSectionTitleSource;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\UploadedFile;
@@ -77,11 +80,6 @@ class HomepagePromoBlockService
                 }
 
                 $sectionSettings = [];
-                if (in_array('title_ar', HomepagePromoSectionMap::sectionSettingFields($key), true)) {
-                    $sectionSettings['title_ar'] = $section->title_ar;
-                    $sectionSettings['title_en'] = $section->title_en;
-                }
-
                 if (in_array('max_items', HomepagePromoSectionMap::sectionSettingFields($key), true)) {
                     $sectionSettings['max_items'] = (int) (($section->settings ?? [])['max_items'] ?? 8);
                 }
@@ -107,7 +105,7 @@ class HomepagePromoBlockService
                         'id' => $section->id,
                         'key' => $section->key,
                         'name' => $section->name,
-                        'type' => $section->type instanceof \App\Enums\HomepageSectionType
+                        'type' => $section->type instanceof HomepageSectionType
                             ? $section->type->value
                             : (string) $section->type,
                         'ordering' => $section->ordering,
@@ -126,6 +124,8 @@ class HomepagePromoBlockService
                     'manage_route' => HomepagePromoSectionMap::manageRouteName($key),
                     'default_promo_type' => HomepagePromoSectionMap::defaultPromoType($key)?->value,
                     'can_add_promo' => HomepagePromoSectionMap::canManagePromos($key),
+                    'shows_section_title' => HomepageSectionDefaults::usesStandaloneSectionTitle($key),
+                    'edit_section_settings_url' => '/homepage-sections',
                 ];
             })
             ->values()
@@ -138,6 +138,12 @@ class HomepagePromoBlockService
      */
     public function updateSectionSettings(string $sectionKey, array $companyData, array $sectionData): void
     {
+        foreach (HomepageSectionTitleSource::allLegacyCompanyTitleFields() as $field) {
+            unset($companyData[$field]);
+        }
+
+        unset($sectionData['title_ar'], $sectionData['title_en']);
+
         if ($companyData !== []) {
             $companyInfo = CompanyInfo::query()->first();
 

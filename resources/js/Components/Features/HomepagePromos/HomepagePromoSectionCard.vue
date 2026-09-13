@@ -23,9 +23,12 @@ const visibilityLabel = computed(() =>
     : t('homepagePromos.sectionCard.hidden'),
 )
 
+const showsSectionTitle = computed(() => Boolean(props.card.shows_section_title))
 const hasCompanySettings = computed(() => Object.keys(props.card.company_settings || {}).length > 0)
 const hasSectionSettings = computed(() => Object.keys(props.card.section_settings || {}).length > 0)
 const hasSettings = computed(() => hasCompanySettings.value || hasSectionSettings.value)
+const currentTitleAr = computed(() => props.card.section?.title_ar || '')
+const currentTitleEn = computed(() => props.card.section?.title_en || '')
 
 const settingsForm = useForm({
   company: { ...(props.card.company_settings || {}) },
@@ -71,7 +74,7 @@ const settingsFieldLabel = (field) => t(`homepagePromos.settingsFields.${field}`
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
-        <Link :href="route('homepage-sections.index')" class="btn btn-secondary px-3 py-1.5">
+        <Link :href="card.edit_section_settings_url || route('homepage-sections.index')" class="btn btn-secondary px-3 py-1.5">
           {{ t('homepagePromos.sectionCard.editSectionSettings') }}
         </Link>
         <Link
@@ -92,6 +95,26 @@ const settingsFieldLabel = (field) => t(`homepagePromos.settingsFields.${field}`
       </div>
     </div>
 
+    <div v-if="showsSectionTitle" class="mt-5 space-y-3">
+      <h3 class="text-label font-medium text-gray-900 dark:text-gray-100">
+        {{ t('homepagePromos.sectionCard.sectionTitle') }}
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="form-label text-label">{{ t('homepageSections.titleArLabel') }}</label>
+          <p class="form-input text-body bg-gray-100 dark:bg-gray-800 cursor-default">
+            {{ currentTitleAr || t('homepagePromos.sectionCard.emptyTitle') }}
+          </p>
+        </div>
+        <div>
+          <label class="form-label text-label">{{ t('homepageSections.titleEnLabel') }}</label>
+          <p class="form-input text-body bg-gray-100 dark:bg-gray-800 cursor-default">
+            {{ currentTitleEn || t('homepagePromos.sectionCard.emptyTitle') }}
+          </p>
+        </div>
+      </div>
+    </div>
+
     <form v-if="hasSettings" class="mt-5 space-y-4" @submit.prevent="saveSettings">
       <h3 class="text-label font-medium text-gray-900 dark:text-gray-100">
         {{ t('homepagePromos.sectionCard.contentSettings') }}
@@ -99,7 +122,7 @@ const settingsFieldLabel = (field) => t(`homepagePromos.settingsFields.${field}`
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <template v-for="(value, field) in card.company_settings" :key="field">
-          <div :class="field === 'products_homepage_limit' ? '' : ''">
+          <div v-if="!String(field).includes('section_title')">
             <label class="form-label text-label">{{ settingsFieldLabel(field) }}</label>
             <textarea
               v-if="String(field).includes('subtitle')"
@@ -125,14 +148,6 @@ const settingsFieldLabel = (field) => t(`homepagePromos.settingsFields.${field}`
         </template>
 
         <template v-if="hasSectionSettings">
-          <div v-if="card.section_settings.title_ar !== undefined && card.key !== 'hero' && card.key !== 'features'">
-            <label class="form-label text-label">{{ t('homepageSections.titleArLabel') }}</label>
-            <input v-model="settingsForm.section.title_ar" type="text" class="form-input text-body" />
-          </div>
-          <div v-if="card.section_settings.title_en !== undefined && card.key !== 'hero' && card.key !== 'features'">
-            <label class="form-label text-label">{{ t('homepageSections.titleEnLabel') }}</label>
-            <input v-model="settingsForm.section.title_en" type="text" class="form-input text-body" />
-          </div>
           <div v-if="card.section_settings.max_items !== undefined">
             <label class="form-label text-label">{{ t('homepagePromos.settingsFields.max_items') }}</label>
             <input

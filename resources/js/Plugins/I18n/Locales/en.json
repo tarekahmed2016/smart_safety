@@ -814,6 +814,8 @@
       "visible": "Visible",
       "hidden": "Hidden",
       "editSectionSettings": "Edit section settings",
+      "sectionTitle": "Section title",
+      "emptyTitle": "Not set",
       "addContent": "Add content",
       "contentSettings": "Section content settings",
       "sectionItems": "Section items",

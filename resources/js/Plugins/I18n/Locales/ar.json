@@ -814,6 +814,8 @@
       "visible": "ظاهر",
       "hidden": "مخفي",
       "editSectionSettings": "تعديل إعدادات القسم",
+      "sectionTitle": "عنوان القسم",
+      "emptyTitle": "غير محدد",
       "addContent": "إضافة محتوى",
       "contentSettings": "إعدادات محتوى القسم",
       "sectionItems": "عناصر القسم",

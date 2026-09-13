@@ -48,27 +48,39 @@ test('section cards exclude hero and follow homepage section ordering', function
             ->where('sectionCards.13.key', 'contact'));
 });
 
-test('admin can update homepage promo section settings for products', function () {
+test('admin can update homepage promo section settings for products without writing a section title', function () {
     CompanyInfo::query()->create([
         'products_section_title_en' => 'Old title',
         'products_homepage_limit' => 4,
     ]);
 
+    $productsSection = HomepageSection::query()->where('key', 'products')->firstOrFail();
+    $productsSection->update([
+        'title_ar' => 'منتجاتنا',
+        'title_en' => 'Our products',
+    ]);
+
     $this->actingAs($this->admin)
         ->put(route('homepage-promos.section-settings.update', 'products'), [
             'company' => [
-                'products_section_title_ar' => 'منتجاتنا',
-                'products_section_title_en' => 'Our Products',
+                'products_section_title_ar' => 'عنوان العروض',
+                'products_section_title_en' => 'Promo title',
                 'products_homepage_limit' => 6,
+            ],
+            'section' => [
+                'title_ar' => 'عنوان مستقل',
+                'title_en' => 'Independent title',
             ],
         ])
         ->assertRedirect();
 
     $companyInfo = CompanyInfo::first();
+    $productsSection->refresh();
 
-    expect($companyInfo->products_section_title_ar)->toBe('منتجاتنا')
-        ->and($companyInfo->products_section_title_en)->toBe('Our Products')
-        ->and($companyInfo->products_homepage_limit)->toBe(6);
+    expect($companyInfo->products_section_title_en)->toBe('Old title')
+        ->and($companyInfo->products_homepage_limit)->toBe(6)
+        ->and($productsSection->title_ar)->toBe('منتجاتنا')
+        ->and($productsSection->title_en)->toBe('Our products');
 });
 
 test('admin can update gallery max items through homepage promos section settings', function () {
