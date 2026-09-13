@@ -22,6 +22,7 @@ const isOpen = computed(() => Boolean(props.product))
 
 useDialogAccessibility(isOpen, () => emit('close'))
 
+const contentDir = computed(() => (locale.value === 'ar' ? 'rtl' : 'ltr'))
 const productName = computed(() => resolveBilingualField(props.product || {}, 'name', locale.value))
 const productDetails = computed(() => resolveBilingualField(props.product || {}, 'details', locale.value))
 const hasDetails = computed(() => Boolean(plainTextFromHtml(productDetails.value).trim()))
@@ -43,7 +44,7 @@ const close = () => emit('close')
       aria-labelledby="public-product-details-title"
       @click.self="close"
     >
-      <div v-if="product" class="px-product-modal" :dir="locale === 'ar' ? 'rtl' : 'ltr'">
+      <div v-if="product" class="px-product-modal">
         <button
           type="button"
           class="px-product-modal-close"
@@ -56,34 +57,38 @@ const close = () => emit('close')
         </button>
 
         <div class="px-product-modal-scroll">
-          <LocalizedHeading
-            id="public-product-details-title"
-            class="px-product-modal-title"
-            :text="productName"
-            tag="h2"
-          />
+          <div class="px-product-modal-layout">
+            <div class="px-product-modal-copy" :dir="contentDir">
+              <LocalizedHeading
+                id="public-product-details-title"
+                class="px-product-modal-title"
+                :text="productName"
+                tag="h2"
+              />
 
-          <div class="px-product-modal-media">
-            <img
-              v-if="product.image"
-              :src="product.image"
-              :alt="productName"
-            />
-            <PublicMediaPlaceholder v-else icon="cube" />
+              <div v-if="sizes.length" class="px-product-modal-sizes">
+                <span v-for="(size, index) in sizes" :key="`${size.value}-${index}`" class="px-product-size-pill">
+                  {{ sizeLabel(size) }}
+                </span>
+              </div>
+
+              <RichTextContent
+                v-if="hasDetails"
+                :content="productDetails"
+                tag="div"
+                class="px-product-modal-details"
+              />
+            </div>
+
+            <div class="px-product-modal-media">
+              <img
+                v-if="product.image"
+                :src="product.image"
+                :alt="productName"
+              />
+              <PublicMediaPlaceholder v-else icon="cube" />
+            </div>
           </div>
-
-          <div v-if="sizes.length" class="px-product-modal-sizes">
-            <span v-for="(size, index) in sizes" :key="`${size.value}-${index}`" class="px-product-size-pill">
-              {{ sizeLabel(size) }}
-            </span>
-          </div>
-
-          <RichTextContent
-            v-if="hasDetails"
-            :content="productDetails"
-            tag="div"
-            class="px-product-modal-details"
-          />
         </div>
       </div>
     </div>

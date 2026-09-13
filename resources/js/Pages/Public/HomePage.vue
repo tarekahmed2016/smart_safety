@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { Link, useForm, usePage } from '@inertiajs/vue3'
 import { useI18n } from 'vue-i18n'
 import { resolveBilingualField } from '../../Composables/useBilingualContent.js'
@@ -391,6 +391,21 @@ const submitContactForm = () => {
     },
   })
 }
+
+const inquireAboutProduct = (product) => {
+  const name = resolveBilingualField(product || {}, 'name', locale.value)
+  if (!name) {
+    return
+  }
+
+  contactForm.subject = t('public.home.products.inquireSubject', { name })
+  contactForm.message = t('public.home.products.inquireMessage', { name })
+
+  nextTick(() => {
+    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    document.getElementById('contact-message')?.focus({ preventScroll: true })
+  })
+}
 </script>
 
 <template>
@@ -496,7 +511,7 @@ const submitContactForm = () => {
           <h2>{{ resolveSectionTitle(section, 'products_section_title', 'public.home.products.title') }}</h2>
         </div>
 
-        <ProductsCarousel v-if="products.length" :products="products" />
+        <ProductsCarousel v-if="products.length" :products="products" @inquire="inquireAboutProduct" />
         <p v-else class="px-empty">{{ t('public.home.products.empty') }}</p>
 
         <div class="px-section-footer">

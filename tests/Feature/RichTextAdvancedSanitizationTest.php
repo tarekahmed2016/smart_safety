@@ -186,3 +186,79 @@ HTML;
         ->and($reopened)->toContain('margin-left:40px')
         ->and($reopened)->toContain('text-indent:20px');
 });
+
+test('server preserves nested bulleted and numbered lists and their list styles after reopen', function () {
+    $html = <<<'HTML'
+<ul style="list-style-type:disc;">
+<li>Bullet
+<ul style="list-style-type:circle;">
+<li>Nested circle</li>
+</ul>
+</li>
+<li style="list-style-type:square;">Square item</li>
+</ul>
+<ol style="list-style-type:decimal;">
+<li>One
+<ol style="list-style-type:lower-alpha;">
+<li>Nested alpha</li>
+</ol>
+</li>
+<li>Two</li>
+</ol>
+HTML;
+
+    $stored = RichTextSanitizer::sanitize($html);
+    $reopened = RichTextSanitizer::sanitize($stored);
+
+    expect($stored)->toContain('<ul')
+        ->and($stored)->toContain('<ol')
+        ->and($stored)->toContain('<li>Bullet')
+        ->and($stored)->toContain('Nested circle')
+        ->and($stored)->toContain('list-style-type:disc')
+        ->and($stored)->toContain('list-style-type:circle')
+        ->and($stored)->toContain('list-style-type:decimal')
+        ->and($stored)->toContain('list-style-type:lower-alpha')
+        ->and($reopened)->toContain('<ul')
+        ->and($reopened)->toContain('<ol')
+        ->and($reopened)->toContain('Nested circle')
+        ->and($reopened)->toContain('list-style-type:disc')
+        ->and($reopened)->toContain('list-style-type:lower-alpha');
+});
+
+test('server preserves rtl and ltr direction with indent in paragraphs lists and tables after reopen', function () {
+    $html = <<<'HTML'
+<p dir="rtl" style="margin-right:40px;">فقرة عربية</p>
+<p dir="ltr" style="margin-left:40px;">English paragraph</p>
+<ul dir="rtl"><li>عنصر</li></ul>
+<table dir="ltr"><tbody><tr><td dir="rtl" style="margin-left:40px;"><p dir="rtl" style="margin-right:80px;">خلية</p></td></tr></tbody></table>
+HTML;
+
+    $stored = RichTextSanitizer::sanitize($html);
+    $reopened = RichTextSanitizer::sanitize($stored);
+
+    expect($stored)->toContain('dir="rtl"')
+        ->and($stored)->toContain('dir="ltr"')
+        ->and($stored)->toContain('margin-right:40px')
+        ->and($stored)->toContain('margin-left:40px')
+        ->and($stored)->toContain('margin-right:80px')
+        ->and($stored)->toContain('<ul')
+        ->and($stored)->toContain('<td')
+        ->and($reopened)->toContain('dir="rtl"')
+        ->and($reopened)->toContain('dir="ltr"')
+        ->and($reopened)->toContain('margin-right:40px')
+        ->and($reopened)->toContain('margin-left:40px')
+        ->and($reopened)->toContain('فقرة عربية')
+        ->and($reopened)->toContain('English paragraph');
+});
+
+test('server does not inject direction or indent into legacy rich html', function () {
+    $html = '<p>Legacy details</p>';
+
+    $stored = RichTextSanitizer::sanitize($html);
+
+    expect($stored)->toContain('Legacy details')
+        ->and($stored)->not->toContain('dir=')
+        ->and($stored)->not->toContain('margin-left')
+        ->and($stored)->not->toContain('margin-right');
+});
+

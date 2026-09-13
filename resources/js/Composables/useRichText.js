@@ -9,7 +9,7 @@ const ALLOWED_TAGS = [
 const ALLOWED_ATTR = [
   'href', 'target', 'rel', 'title',
   'src', 'alt', 'width', 'height',
-  'class', 'style', 'colspan', 'rowspan',
+  'class', 'style', 'colspan', 'rowspan', 'dir',
 ]
 
 export function sanitizeRichText(html) {

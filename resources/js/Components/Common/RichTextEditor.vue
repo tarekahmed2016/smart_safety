@@ -50,9 +50,20 @@ const content = computed({
 
 const editorConfig = computed(() => createRichTextEditorConfig({
   placeholder: props.placeholder,
+  contentLanguage: textDirection.value === 'rtl' ? 'ar' : 'en',
 }))
 
+let editorInstance = null
+
+const flushEditorData = () => {
+  if (editorInstance) {
+    emit('update:modelValue', editorInstance.getData())
+  }
+}
+
 const onReady = (editor) => {
+  editorInstance = editor
+
   editor.editing.view.change((writer) => {
     writer.setAttribute('dir', textDirection.value, editor.editing.view.document.getRoot())
   })
@@ -61,7 +72,24 @@ const onReady = (editor) => {
   if (editable) {
     editable.style.minHeight = props.minHeight
   }
+
+  editor.model.document.on('change:data', flushEditorData)
+
+  const formEl = editable?.closest('form')
+  const onSubmit = () => flushEditorData()
+  formEl?.addEventListener('submit', onSubmit, true)
+  editor.on('destroy', () => {
+    formEl?.removeEventListener('submit', onSubmit, true)
+    if (editorInstance === editor) {
+      editorInstance = null
+    }
+  })
 }
+
+defineExpose({
+  flush: flushEditorData,
+  getData: () => editorInstance?.getData() ?? props.modelValue,
+})
 </script>
 
 <template>

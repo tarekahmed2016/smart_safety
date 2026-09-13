@@ -2143,7 +2143,7 @@
 }
 
 .rich-text-content :is(p, ul, ol, blockquote, h2, h3, h4) {
-    margin: 0 0 0.75rem;
+    margin-block: 0 0.75rem;
 }
 
 .public-rich-content :is(h2, h3, h4) {
@@ -2243,9 +2243,74 @@
     margin-bottom: 0;
 }
 
+.ck-content :is(ul, ol),
+.rich-text-editor .ck-content :is(ul, ol),
+.rich-text-content :is(ul, ol),
+.public-rich-content :is(ul, ol),
+.px-product-modal-details :is(ul, ol) {
+    list-style-position: outside;
+    padding-inline-start: 1.75rem;
+    margin-block: 0 0.75rem;
+}
+
+.ck-content ul,
+.rich-text-editor .ck-content ul,
 .rich-text-content ul,
-.rich-text-content ol {
-    padding-inline-start: 1.25rem;
+.public-rich-content ul,
+.px-product-modal-details ul {
+    list-style-type: disc;
+}
+
+.ck-content ol,
+.rich-text-editor .ck-content ol,
+.rich-text-content ol,
+.public-rich-content ol,
+.px-product-modal-details ol {
+    list-style-type: decimal;
+}
+
+.ck-content :is(ul, ol) :is(ul, ol),
+.rich-text-editor .ck-content :is(ul, ol) :is(ul, ol),
+.rich-text-content :is(ul, ol) :is(ul, ol),
+.public-rich-content :is(ul, ol) :is(ul, ol),
+.px-product-modal-details :is(ul, ol) :is(ul, ol) {
+    margin-bottom: 0;
+}
+
+.ck-content li,
+.rich-text-editor .ck-content li,
+.rich-text-content li,
+.public-rich-content li,
+.px-product-modal-details li {
+    display: list-item;
+}
+
+.ck-content :is(ul, ol) ::marker,
+.rich-text-editor .ck-content :is(ul, ol) ::marker,
+.rich-text-content :is(ul, ol) ::marker,
+.public-rich-content :is(ul, ol) ::marker,
+.px-product-modal-details :is(ul, ol) ::marker {
+    display: revert;
+    content: revert;
+    color: inherit;
+}
+
+.ck-content [dir="rtl"],
+.rich-text-editor .ck-content [dir="rtl"],
+.rich-text-content [dir="rtl"],
+.public-rich-content [dir="rtl"],
+.px-product-modal-details [dir="rtl"] {
+    direction: rtl;
+    unicode-bidi: isolate;
+}
+
+.ck-content [dir="ltr"],
+.rich-text-editor .ck-content [dir="ltr"],
+.rich-text-content [dir="ltr"],
+.public-rich-content [dir="ltr"],
+.px-product-modal-details [dir="ltr"] {
+    direction: ltr;
+    unicode-bidi: isolate;
 }
 
 .rich-text-content a {

@@ -138,7 +138,10 @@ test('products carousel opens a details modal from the product card', function (
         ->and($carousel)->toContain('@click.stop="openProduct(product)"')
         ->and($carousel)->toContain('@keydown="onCardKeydown(product, $event)"')
         ->and($carousel)->toContain('role="button"')
-        ->and($carousel)->toContain("route('public.products.show'")
+        ->and($carousel)->not->toContain("route('public.products.show'")
+        ->and($carousel)->not->toContain("t('public.home.products.details')")
+        ->and($carousel)->toContain('inquireAboutProduct')
+        ->and($carousel)->toContain('@click.stop="inquireAboutProduct(product)"')
         ->and($styles)->toContain('.px-product-carousel .px-product-card')
         ->and($styles)->toContain('pointer-events: auto')
         ->and($styles)->toContain('cursor: pointer')
@@ -150,22 +153,50 @@ test('products carousel opens a details modal from the product card', function (
         ->and($modal)->toContain('productName')
         ->and($modal)->toContain('product.image')
         ->and($modal)->toContain('hasDetails')
+        ->and($modal)->toContain('px-product-modal-layout')
+        ->and($modal)->toContain('px-product-modal-copy')
+        ->and($modal)->toContain('px-product-modal-media')
         ->and($modal)->toContain('px-product-size-pill')
         ->and($modal)->not->toContain('specifications')
         ->and($modal)->not->toContain('px-product-modal-specs')
-        ->and($modal)->toContain("locale === 'ar'")
+        ->and($modal)->toContain("locale.value === 'ar'")
         ->and($modal)->not->toContain('action_text')
         ->and($modal)->not->toContain('action_url')
         ->and($modal)->not->toContain('cta_url');
 
+    $copyPos = strpos($modal, 'px-product-modal-copy');
+    $titlePos = strpos($modal, 'px-product-modal-title');
     $sizesPos = strpos($modal, 'px-product-modal-sizes');
     $detailsPos = strpos($modal, 'px-product-modal-details');
-    $titlePos = strpos($modal, 'px-product-modal-title');
-    $mediaPos = strpos($modal, 'px-product-modal-media');
+    $mediaPos = strpos($modal, 'class="px-product-modal-media"');
 
-    expect($titlePos)->toBeLessThan($mediaPos)
-        ->and($mediaPos)->toBeLessThan($sizesPos)
-        ->and($sizesPos)->toBeLessThan($detailsPos);
+    expect($copyPos)->toBeLessThan($titlePos)
+        ->and($titlePos)->toBeLessThan($sizesPos)
+        ->and($sizesPos)->toBeLessThan($detailsPos)
+        ->and($detailsPos)->toBeLessThan($mediaPos);
+});
+
+test('product details modal keeps image on the right and lists formatted on desktop', function () {
+    $modal = file_get_contents(resource_path('js/Components/Public/ProductDetailsModal.vue'));
+    $styles = file_get_contents(resource_path('css/plastex.css'));
+
+    expect($modal)->toContain('px-product-modal-layout')
+        ->and($modal)->toContain('px-product-modal-copy')
+        ->and($modal)->toContain('px-product-modal-media')
+        ->and($modal)->toContain('px-product-modal-details')
+        ->and($modal)->toContain('v-if="sizes.length"')
+        ->and($modal)->not->toContain('specificationsTitle')
+        ->and($styles)->toContain('grid-template-areas: "copy media"')
+        ->and($styles)->toContain('grid-area: copy')
+        ->and($styles)->toContain('grid-area: media')
+        ->and($styles)->toContain('direction: ltr')
+        ->and($styles)->toContain('object-fit: contain')
+        ->and($styles)->toContain('list-style-type: disc')
+        ->and($styles)->toContain('list-style-type: decimal')
+        ->and($styles)->toContain('backdrop-filter: blur')
+        ->and($styles)->toContain('grid-template-columns: 1fr')
+        ->and($styles)->toContain('"media"')
+        ->and($styles)->toContain('"copy"');
 });
 
 test('products carousel opens the details modal directly from the product image click', function () {
@@ -181,4 +212,31 @@ test('products carousel opens the details modal directly from the product image 
         ->and($styles)->toContain('pointer-events: auto')
         ->and($composable)->toContain('dragThreshold')
         ->and($composable)->toContain('if (dragDistance <= dragThreshold)');
+});
+
+test('product inquire button scrolls to the contact form with the product name and does not open details', function () {
+    $carousel = file_get_contents(resource_path('js/Components/Public/ProductsCarousel.vue'));
+    $home = file_get_contents(resource_path('js/Pages/Public/HomePage.vue'));
+    $ar = file_get_contents(resource_path('js/Plugins/I18n/Locales/ar.json'));
+    $en = file_get_contents(resource_path('js/Plugins/I18n/Locales/en.json'));
+
+    expect($carousel)->not->toContain("t('public.home.products.details')")
+        ->and($carousel)->not->toContain("route('public.products.show'")
+        ->and($carousel)->toContain("t('public.home.products.inquire')")
+        ->and($carousel)->toContain('@click.stop="inquireAboutProduct(product)"')
+        ->and($home)->toContain('@inquire="inquireAboutProduct"')
+        ->and($home)->toContain("contactForm.message = t('public.home.products.inquireMessage'")
+        ->and($home)->toContain("getElementById('contact')")
+        ->and($home)->toContain("scrollIntoView({ behavior: 'smooth'")
+        ->and($ar)->toContain('"inquire": "استفسر عن المنتج"')
+        ->and($ar)->toContain('أرغب في الاستفسار عن المنتج: {name}')
+        ->and($en)->toContain('"inquire": "Inquire about this product"')
+        ->and($en)->toContain('I would like to inquire about this product: {name}');
+
+    $inquireClick = strpos($carousel, '@click.stop="inquireAboutProduct(product)"');
+    $openClick = strpos($carousel, '@click.stop="openProduct(product)"');
+
+    expect($inquireClick)->toBeGreaterThan(0)
+        ->and($openClick)->toBeGreaterThan(0)
+        ->and($inquireClick)->not->toBe($openClick);
 });

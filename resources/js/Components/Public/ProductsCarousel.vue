@@ -1,6 +1,5 @@
 <script setup>
 import { ref, toRef } from 'vue'
-import { Link } from '@inertiajs/vue3'
 import { useI18n } from 'vue-i18n'
 import { resolveBilingualField } from '../../Composables/useBilingualContent.js'
 import { useHorizontalCarousel } from '../../Composables/useHorizontalCarousel.js'
@@ -17,6 +16,7 @@ const props = defineProps({
 
 const { t, locale } = useI18n()
 const selectedProduct = ref(null)
+const emit = defineEmits(['inquire'])
 
 const {
   trackRef,
@@ -61,6 +61,14 @@ const onCardKeydown = (product, event) => {
 
 const closeProductDetails = () => {
   selectedProduct.value = null
+}
+
+const inquireAboutProduct = (product) => {
+  if (!product) {
+    return
+  }
+
+  emit('inquire', product)
 }
 </script>
 
@@ -114,14 +122,14 @@ const closeProductDetails = () => {
           <div class="px-product-body" :dir="locale === 'ar' ? 'rtl' : 'ltr'">
             <LocalizedHeading :text="productName(product)" tag="h3" />
             <p>{{ productExcerpt(product) }}</p>
-            <Link
-              :href="route('public.products.show', { slug: product.slug })"
-              class="px-text-link"
-              @click.stop
+            <button
+              type="button"
+              class="px-btn px-btn-green px-product-inquire"
+              @click.stop="inquireAboutProduct(product)"
               @keydown.stop
             >
-              {{ t('public.home.products.details') }}
-            </Link>
+              {{ t('public.home.products.inquire') }}
+            </button>
           </div>
         </article>
       </div>

@@ -1298,10 +1298,12 @@
     unicode-bidi: isolate;
 }
 
-.px-product-body .px-text-link {
+.px-product-body .px-product-inquire {
     margin-top: auto;
-    align-self: flex-start;
-    text-align: start;
+    align-self: stretch;
+    width: 100%;
+    white-space: normal;
+    text-align: center;
 }
 
 .px-client-card .px-client-body .px-text-link {
@@ -1973,8 +1975,9 @@
     align-items: center;
     justify-content: center;
     padding: 1.25rem;
-    background: rgba(11, 31, 58, 0.42);
-    backdrop-filter: blur(6px);
+    background: rgba(11, 31, 58, 0.48);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     pointer-events: auto;
 }
 
@@ -1985,7 +1988,7 @@
 
 .px-product-modal {
     position: relative;
-    width: min(64rem, 100%);
+    width: min(72rem, 100%);
     max-height: min(90vh, 52rem);
     overflow: hidden;
     background: #fff;
@@ -1996,7 +1999,7 @@
 .px-product-modal-close {
     position: absolute;
     top: 0.85rem;
-    inset-inline-end: 0.85rem;
+    left: 0.85rem;
     z-index: 2;
     display: inline-flex;
     align-items: center;
@@ -2028,28 +2031,42 @@
     padding: 2.25rem 2.5rem 2rem;
 }
 
+.px-product-modal-layout {
+    direction: ltr;
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(16rem, 0.9fr);
+    grid-template-areas: "copy media";
+    align-items: start;
+    gap: 1.75rem 2.25rem;
+}
+
+.px-product-modal-copy {
+    grid-area: copy;
+    min-width: 0;
+}
+
+.px-product-modal-media {
+    grid-area: media;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 12rem;
+    padding: 0.5rem;
+    background: #fff;
+}
+
 .px-product-modal-title {
     margin: 0 0 1rem;
-    text-align: center;
+    text-align: start;
     color: var(--px-navy);
     font-size: 1.45rem;
     font-weight: 800;
 }
 
-.px-product-modal-media {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 12rem;
-    margin-bottom: 1.25rem;
-    padding: 0.75rem;
-    background: #fff;
-}
-
 .px-product-modal-media img {
     width: 100%;
-    max-width: 22rem;
-    max-height: 18rem;
+    max-width: 24rem;
+    max-height: 22rem;
     object-fit: contain;
     display: block;
 }
@@ -2057,7 +2074,7 @@
 .px-product-modal-sizes {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 0.5rem;
     margin: 0 0 1.25rem;
 }
@@ -2081,5 +2098,58 @@
 }
 
 .px-product-modal-details p {
-    margin: 0 0 0.9rem;
+    margin-block: 0 0.9rem;
+}
+
+.px-product-modal-details :is(ul, ol) {
+    list-style-position: outside;
+    padding-inline-start: 1.75rem;
+    margin-block: 0 0.9rem;
+}
+
+.px-product-modal-details ul {
+    list-style-type: disc;
+}
+
+.px-product-modal-details ol {
+    list-style-type: decimal;
+}
+
+.px-product-modal-details li {
+    display: list-item;
+}
+
+.px-product-modal-details :is(ul, ol) ::marker {
+    display: revert;
+    content: revert;
+    color: inherit;
+}
+
+.px-product-modal-details [dir="rtl"] {
+    direction: rtl;
+    unicode-bidi: isolate;
+}
+
+.px-product-modal-details [dir="ltr"] {
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+
+@media (max-width: 767px) {
+    .px-product-modal-layout {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "media"
+            "copy";
+        gap: 1.25rem;
+    }
+
+    .px-product-modal-scroll {
+        padding: 2.75rem 1.25rem 1.5rem;
+    }
+
+    .px-product-modal-media img {
+        max-width: 100%;
+        max-height: 16rem;
+    }
 }

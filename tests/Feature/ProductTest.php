@@ -250,9 +250,155 @@ test('product rich text editor keeps table property tools and block indent', fun
         ->and($config)->toContain("'tableProperties'")
         ->and($config)->toContain("'tableCellProperties'")
         ->and($config)->toContain("borderStyle: 'none'")
+        ->and($config)->toContain('ListProperties')
+        ->and($config)->toContain("'bulletedList'")
+        ->and($config)->toContain("'numberedList'")
+        ->and($config)->toContain('TextDirection')
+        ->and($config)->toContain("'textDirection'")
+        ->and($config)->toContain("'ltr'")
+        ->and($config)->toContain("'rtl'")
+        ->and($config)->toContain('IndentDirection')
+        ->and($config)->toContain('offset: 40')
         ->and($styles)->toContain('.ck-content table.table:not(.layout-table)')
-        ->and($styles)->toContain('border-style: none');
+        ->and($styles)->toContain('border-style: none')
+        ->and($styles)->toContain('list-style-type: disc')
+        ->and($styles)->toContain('list-style-type: decimal')
+        ->and($styles)->toContain('padding-inline-start: 1.75rem');
 });
+
+test('product details keep bulleted and numbered lists after save and reopen', function () {
+    $details = <<<'HTML'
+<ul style="list-style-type:disc;"><li>First bullet<ul style="list-style-type:circle;"><li>Nested</li></ul></li></ul>
+<ol style="list-style-type:decimal;"><li>First number</li><li>Second number</li></ol>
+HTML;
+
+    $this->actingAs($this->admin)
+        ->post(route('products.store'), validProductPayload([
+            'details_en' => $details,
+            'details_ar' => $details,
+        ]))
+        ->assertRedirect();
+
+    $product = Product::where('slug', 'plastic-container')->first();
+
+    expect($product->details_en)
+        ->toContain('<ul')
+        ->toContain('<ol')
+        ->toContain('<li>First bullet')
+        ->toContain('Nested')
+        ->toContain('list-style-type:disc')
+        ->toContain('list-style-type:decimal');
+
+    $this->actingAs($this->admin)
+        ->put(route('products.update', $product), [
+            'name_ar' => $product->name_ar,
+            'name_en' => $product->name_en,
+            'slug' => $product->slug,
+            'description_ar' => $product->description_ar,
+            'description_en' => $product->description_en,
+            'details_ar' => $product->details_ar,
+            'details_en' => $product->details_en,
+            'ordering' => $product->ordering,
+            'is_active' => true,
+        ])
+        ->assertRedirect();
+
+    $reloaded = $product->fresh()->details_en;
+
+    expect($reloaded)
+        ->toContain('<ul')
+        ->toContain('<ol')
+        ->toContain('<li>First bullet')
+        ->toContain('Nested')
+        ->toContain('list-style-type:disc')
+        ->toContain('list-style-type:decimal');
+});
+
+test('product details keep rtl ltr direction and indent in paragraphs lists and tables after reopen', function () {
+    $details = <<<'HTML'
+<p dir="rtl" style="margin-right:40px;">فقرة يمين</p>
+<p dir="ltr" style="margin-left:40px;">Left paragraph</p>
+<ul dir="rtl"><li>عنصر قائمة</li></ul>
+<table><tbody><tr><td dir="ltr"><p dir="ltr" style="margin-left:40px;">Cell indent</p></td></tr></tbody></table>
+HTML;
+
+    $this->actingAs($this->admin)
+        ->post(route('products.store'), validProductPayload([
+            'slug' => 'direction-indent-product',
+            'details_en' => $details,
+            'details_ar' => $details,
+        ]))
+        ->assertRedirect();
+
+    $product = Product::where('slug', 'direction-indent-product')->first();
+
+    expect($product->details_en)
+        ->toContain('dir="rtl"')
+        ->toContain('dir="ltr"')
+        ->toContain('margin-right:40px')
+        ->toContain('margin-left:40px')
+        ->toContain('<ul')
+        ->toContain('<td');
+
+    $this->actingAs($this->admin)
+        ->put(route('products.update', $product), [
+            'name_ar' => $product->name_ar,
+            'name_en' => $product->name_en,
+            'slug' => $product->slug,
+            'description_ar' => $product->description_ar,
+            'description_en' => $product->description_en,
+            'details_ar' => $product->details_ar,
+            'details_en' => $product->details_en,
+            'ordering' => $product->ordering,
+            'is_active' => true,
+        ])
+        ->assertRedirect();
+
+    $reloaded = $product->fresh();
+
+    expect($reloaded->details_en)
+        ->toContain('dir="rtl"')
+        ->toContain('dir="ltr"')
+        ->toContain('margin-right:40px')
+        ->toContain('margin-left:40px')
+        ->toContain('Cell indent')
+        ->toContain('عنصر قائمة')
+        ->and($reloaded->details_ar)->toContain('dir="rtl"');
+});
+
+test('updating a legacy product without direction markup leaves stored details unchanged', function () {
+    $product = Product::factory()->create([
+        'name_en' => 'Legacy Direction Product',
+        'slug' => 'legacy-direction-product',
+        'details_en' => '<p>Old details</p>',
+        'details_ar' => '<p>تفاصيل قديمة</p>',
+        'ordering' => 0,
+        'is_active' => true,
+    ]);
+
+    $this->actingAs($this->admin)
+        ->put(route('products.update', $product), [
+            'name_ar' => $product->name_ar,
+            'name_en' => 'Legacy Direction Product',
+            'slug' => 'legacy-direction-product',
+            'description_ar' => $product->description_ar,
+            'description_en' => $product->description_en,
+            'details_ar' => $product->details_ar,
+            'details_en' => $product->details_en,
+            'ordering' => 0,
+            'is_active' => true,
+        ])
+        ->assertRedirect();
+
+    $reloaded = $product->fresh();
+
+    expect($reloaded->details_en)->toContain('Old details')
+        ->and($reloaded->details_en)->not->toContain('dir=')
+        ->and($reloaded->details_ar)->toContain('تفاصيل قديمة')
+        ->and($reloaded->details_ar)->not->toContain('dir=');
+});
+
+
 
 
 test('creating a product does not require details sizes or specifications', function () {

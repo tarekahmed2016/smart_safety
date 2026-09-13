@@ -21,6 +21,7 @@ import {
   Italic,
   Link,
   List,
+  ListProperties,
   Paragraph,
   RemoveFormat,
   SimpleUploadAdapter,
@@ -36,6 +37,7 @@ import {
   Undo,
 } from 'ckeditor5'
 import { csrfToken } from './useRichText.js'
+import { IndentDirection, TextDirection } from './ckeditorTextDirection.js'
 
 const FONT_COLOR_PALETTE = [
   { color: '#0B1F3A', label: 'Navy' },
@@ -46,10 +48,14 @@ const FONT_COLOR_PALETTE = [
   { color: '#DC2626', label: 'Red' },
 ]
 
-export function createRichTextEditorConfig({ placeholder = '' } = {}) {
+export function createRichTextEditorConfig({ placeholder = '', contentLanguage = 'en' } = {}) {
   return {
     licenseKey: 'GPL',
     placeholder,
+    language: {
+      ui: 'en',
+      content: contentLanguage,
+    },
     plugins: [
       Essentials,
       Undo,
@@ -64,10 +70,13 @@ export function createRichTextEditorConfig({ placeholder = '' } = {}) {
       FontColor,
       FontBackgroundColor,
       Alignment,
+      TextDirection,
       Link,
       List,
+      ListProperties,
       Indent,
       IndentBlock,
+      IndentDirection,
       Paragraph,
       BlockQuote,
       HorizontalLine,
@@ -96,7 +105,7 @@ export function createRichTextEditorConfig({ placeholder = '' } = {}) {
         '|',
         'bold', 'italic', 'underline', 'strikethrough', 'removeFormat',
         '|',
-        'alignment',
+        'alignment', 'textDirection', 'ltr', 'rtl',
         '|',
         'link', 'bulletedList', 'numberedList', 'outdent', 'indent',
         '|',
@@ -170,6 +179,18 @@ export function createRichTextEditorConfig({ placeholder = '' } = {}) {
     indentBlock: {
       offset: 40,
       unit: 'px',
+    },
+    list: {
+      properties: {
+        styles: {
+          listStyleTypes: {
+            bulleted: ['disc', 'circle', 'square'],
+            numbered: ['decimal', 'lower-alpha'],
+          },
+        },
+        startIndex: true,
+        reversed: true,
+      },
     },
     table: {
       contentToolbar: [

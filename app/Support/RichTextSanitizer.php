@@ -84,26 +84,28 @@ class RichTextSanitizer
 
         $config = HTMLPurifier_Config::createDefault();
         $config->set('HTML.Allowed', implode(',', [
-            'p[style|class]',
+            'p[style|class|dir]',
             'br',
-            'h2[style|class]',
-            'h3[style|class]',
-            'h4[style|class]',
+            'h2[style|class|dir]',
+            'h3[style|class|dir]',
+            'h4[style|class|dir]',
             'strong,b,em,i,u,s,strike,del',
-            'span[style|class]',
-            'ul,ol,li[style|class]',
-            'blockquote[style|class]',
+            'span[style|class|dir]',
+            'ul[style|class|type|dir]',
+            'ol[style|class|type|start|dir]',
+            'li[style|class|dir]',
+            'blockquote[style|class|dir]',
             'a[href|target|rel|title]',
             'hr',
             'figure[style|class]',
             'figcaption',
             'img[src|alt|width|height|class|style]',
-            'table[class|style]',
-            'caption[style|class]',
+            'table[class|style|dir]',
+            'caption[style|class|dir]',
             'colgroup,col[span|style]',
             'thead,tbody,tfoot,tr',
-            'th[colspan|rowspan|style|class]',
-            'td[colspan|rowspan|style|class]',
+            'th[colspan|rowspan|style|class|dir]',
+            'td[colspan|rowspan|style|class|dir]',
         ]));
         $config->set('HTML.ForbiddenElements', ['script', 'style', 'iframe', 'object', 'embed', 'svg', 'form', 'input', 'button']);
         $config->set('Attr.AllowedFrameTargets', ['_blank']);
@@ -111,7 +113,11 @@ class RichTextSanitizer
         $config->set('URI.DisableExternalResources', false);
         $config->set('CSS.AllowedProperties', [
             'text-align',
+            'direction',
             'text-indent',
+            'list-style',
+            'list-style-type',
+            'list-style-position',
             'vertical-align',
             'color',
             'background-color',
@@ -157,7 +163,7 @@ class RichTextSanitizer
         ]);
         $config->set('AutoFormat.RemoveEmpty', true);
         $config->set('HTML.DefinitionID', 'company-profile-rich-text');
-        $config->set('HTML.DefinitionRev', 3);
+        $config->set('HTML.DefinitionRev', 6);
 
         if ($def = $config->maybeGetRawHTMLDefinition()) {
             $def->addElement('figure', 'Block', 'Flow', 'Common');
