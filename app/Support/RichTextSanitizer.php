@@ -29,6 +29,8 @@ class RichTextSanitizer
     public const DESCRIPTION_FIELDS = [
         'description_ar',
         'description_en',
+        'details_ar',
+        'details_en',
     ];
 
     /**

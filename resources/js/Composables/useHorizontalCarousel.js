@@ -26,6 +26,8 @@ export function useHorizontalCarousel(itemsRef, options = {}) {
   let resizeObserver = null
   let dragStartX = 0
   let dragStartOffset = 0
+  let dragDistance = 0
+  const ignoreClick = ref(false)
 
   const carouselItems = computed(() => {
     const items = itemsRef.value || []
@@ -137,6 +139,8 @@ export function useHorizontalCarousel(itemsRef, options = {}) {
 
     isDragging.value = true
     isManualPaused.value = true
+    ignoreClick.value = false
+    dragDistance = 0
     dragStartX = event.clientX
     dragStartOffset = offset.value
     event.currentTarget.setPointerCapture(event.pointerId)
@@ -148,6 +152,10 @@ export function useHorizontalCarousel(itemsRef, options = {}) {
     }
 
     const delta = (dragStartX - event.clientX) * scrollDirection.value
+    dragDistance = Math.max(dragDistance, Math.abs(event.clientX - dragStartX))
+    if (dragDistance > 8) {
+      ignoreClick.value = true
+    }
     offset.value = dragStartOffset + delta
     normalizeOffset()
     applyTransform()
@@ -231,5 +239,6 @@ export function useHorizontalCarousel(itemsRef, options = {}) {
     onPointerDown,
     onPointerMove,
     onPointerUp,
+    ignoreClick,
   }
 }

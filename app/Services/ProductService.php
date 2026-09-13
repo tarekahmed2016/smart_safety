@@ -21,6 +21,11 @@ class ProductService
         'slug',
         'description_ar',
         'description_en',
+        'details_ar',
+        'details_en',
+        'sizes',
+        'specifications_ar',
+        'specifications_en',
         'ordering',
         'is_active',
         'show_on_homepage',
@@ -72,6 +77,8 @@ class ProductService
                 source: (string) ($data['slug'] ?? $data['name_en'] ?? $data['name_ar'] ?? 'product'),
             );
 
+            $data = $this->normalizeDetailFields($data);
+
             $product = Product::create($data);
             $this->storeImage(product: $product, image: $image);
 
@@ -106,6 +113,7 @@ class ProductService
 
             $slugSource = (string) ($data['slug'] ?? $product->slug ?? $data['name_en'] ?? $data['name_ar'] ?? 'product');
             $data['slug'] = $this->uniqueSlug(source: $slugSource, ignoreId: $product->id);
+            $data = $this->normalizeDetailFields($data);
 
             $product->update($data);
 
@@ -153,10 +161,96 @@ class ProductService
             'name_en' => $product->name_en,
             'description_ar' => $product->description_ar,
             'description_en' => $product->description_en,
+            'details_ar' => $product->details_ar ?: null,
+            'details_en' => $product->details_en ?: null,
             'excerpt_ar' => $this->excerpt($product->description_ar),
             'excerpt_en' => $this->excerpt($product->description_en),
+            'sizes' => $this->publicSizes($product->sizes),
+            'specifications_ar' => $this->publicSpecifications($product->specifications_ar),
+            'specifications_en' => $this->publicSpecifications($product->specifications_en),
             'image' => $product->attachment?->asset_path,
         ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private function normalizeDetailFields(array $data): array
+    {
+        if (array_key_exists('sizes', $data)) {
+            $data['sizes'] = $this->publicSizes($data['sizes']);
+        }
+
+        if (array_key_exists('specifications_ar', $data)) {
+            $data['specifications_ar'] = $this->publicSpecifications($data['specifications_ar']);
+        }
+
+        if (array_key_exists('specifications_en', $data)) {
+            $data['specifications_en'] = $this->publicSpecifications($data['specifications_en']);
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param  mixed  $sizes
+     * @return list<array{value: string, unit: string}>
+     */
+    private function publicSizes(mixed $sizes): array
+    {
+        if (! is_array($sizes)) {
+            return [];
+        }
+
+        $normalized = [];
+
+        foreach ($sizes as $size) {
+            if (! is_array($size)) {
+                continue;
+            }
+
+            $value = trim((string) ($size['value'] ?? ''));
+            $unit = trim((string) ($size['unit'] ?? ''));
+
+            if ($value === '') {
+                continue;
+            }
+
+            $normalized[] = [
+                'value' => $value,
+                'unit' => $unit,
+            ];
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * @param  mixed  $items
+     * @return list<string>
+     */
+    private function publicSpecifications(mixed $items): array
+    {
+        if (! is_array($items)) {
+            return [];
+        }
+
+        $normalized = [];
+
+        foreach ($items as $item) {
+            $text = is_array($item)
+                ? trim((string) ($item['text'] ?? $item['value'] ?? ''))
+                : trim((string) $item);
+
+            if ($text === '') {
+                continue;
+            }
+
+            $normalized[] = $text;
+        }
+
+        return $normalized;
     }
 
     private function uniqueSlug(string $source, ?int $ignoreId = null): string

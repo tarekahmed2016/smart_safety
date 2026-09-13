@@ -1,11 +1,12 @@
 <script setup>
-import { toRef } from 'vue'
+import { ref, toRef } from 'vue'
 import { Link } from '@inertiajs/vue3'
 import { useI18n } from 'vue-i18n'
 import { resolveBilingualField } from '../../Composables/useBilingualContent.js'
 import { useHorizontalCarousel } from '../../Composables/useHorizontalCarousel.js'
 import LocalizedHeading from './LocalizedHeading.vue'
 import PublicMediaPlaceholder from './PublicMediaPlaceholder.vue'
+import ProductDetailsModal from './ProductDetailsModal.vue'
 
 const props = defineProps({
   products: {
@@ -15,17 +16,18 @@ const props = defineProps({
 })
 
 const { t, locale } = useI18n()
+const selectedProduct = ref(null)
 
 const {
   trackRef,
   carouselItems,
-  isHovered,
   setHovered,
   scrollPrevious,
   scrollNext,
   onPointerDown,
   onPointerMove,
   onPointerUp,
+  ignoreClick,
 } = useHorizontalCarousel(toRef(props, 'products'), {
   cardSelector: '.px-product-card',
 })
@@ -35,6 +37,18 @@ const productName = (product) => resolveBilingualField(product, 'name', locale.v
 const productExcerpt = (product) =>
   resolveBilingualField(product, 'excerpt', locale.value)
     || t('public.home.products.noDescription')
+
+const openProductDetails = (product) => {
+  if (ignoreClick.value) {
+    return
+  }
+
+  selectedProduct.value = product
+}
+
+const closeProductDetails = () => {
+  selectedProduct.value = null
+}
 </script>
 
 <template>
@@ -70,7 +84,15 @@ const productExcerpt = (product) =>
           class="px-product-card px-carousel-card"
           :aria-hidden="index >= products.length ? 'true' : undefined"
         >
-          <div class="px-product-media">
+          <div
+            class="px-product-media px-product-media-trigger"
+            role="button"
+            tabindex="0"
+            :aria-label="t('public.home.products.openDetails', { name: productName(product) })"
+            @click="openProductDetails(product)"
+            @keydown.enter.prevent="openProductDetails(product)"
+            @keydown.space.prevent="openProductDetails(product)"
+          >
             <img
               v-if="product.image"
               :src="product.image"
@@ -100,4 +122,6 @@ const productExcerpt = (product) =>
       </svg>
     </button>
   </div>
+
+  <ProductDetailsModal :product="selectedProduct" @close="closeProductDetails" />
 </template>

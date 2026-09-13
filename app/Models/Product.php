@@ -10,7 +10,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
-#[Fillable(['name_ar', 'name_en', 'slug', 'description_ar', 'description_en', 'ordering', 'is_active', 'show_on_homepage'])]
+#[Fillable([
+    'name_ar',
+    'name_en',
+    'slug',
+    'description_ar',
+    'description_en',
+    'details_ar',
+    'details_en',
+    'sizes',
+    'specifications_ar',
+    'specifications_en',
+    'ordering',
+    'is_active',
+    'show_on_homepage',
+])]
 class Product extends Model
 {
     /** @use HasFactory<ProductFactory> */
@@ -30,6 +44,9 @@ class Product extends Model
             'is_active' => 'boolean',
             'show_on_homepage' => 'boolean',
             'ordering' => 'integer',
+            'sizes' => 'array',
+            'specifications_ar' => 'array',
+            'specifications_en' => 'array',
         ];
     }
 

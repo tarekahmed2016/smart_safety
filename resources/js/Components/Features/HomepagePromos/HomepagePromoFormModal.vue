@@ -78,6 +78,16 @@ const imageRequired = computed(() => {
 const showMainImage = computed(() => ['feature_band', 'promo_strip', 'custom_manufacturing', 'industry'].includes(form.type))
 const showBadgeImage = computed(() => form.type === 'feature_band')
 const showIconField = computed(() => ['feature_highlight', 'industry', 'about_highlight', 'why_us_highlight'].includes(form.type))
+const typesWithAction = ['feature_band', 'promo_strip', 'business_cta', 'custom_manufacturing']
+const showActionFields = computed(() => {
+  const currentType = props.promoTypes.find((promoType) => promoType.value === form.type)
+
+  if (typeof currentType?.supports_action === 'boolean') {
+    return currentType.supports_action
+  }
+
+  return typesWithAction.includes(form.type)
+})
 const iconOptions = ['handshake', 'experience', 'flexible', 'quality', 'food', 'agri', 'industry', 'packing', 'home', 'medical', 'shield', 'globe', 'trophy', 'flag', 'bolt', 'sprout', 'vision', 'mission']
 
 const typeLabel = (promoType) => locale.value === 'ar' ? promoType.label : promoType.name
@@ -248,7 +258,7 @@ const handleClose = () => {
             <p v-if="form.errors.description_ar" class="form-error">{{ form.errors.description_ar }}</p>
           </div>
 
-          <div>
+          <div v-if="showActionFields">
             <label class="form-label text-label">{{ t('homepagePromos.form.ctaTextArLabel') }}</label>
             <input
               v-model="form.cta_text_ar"
@@ -285,7 +295,7 @@ const handleClose = () => {
             <p v-if="form.errors.description_en" class="form-error">{{ form.errors.description_en }}</p>
           </div>
 
-          <div>
+          <div v-if="showActionFields">
             <label class="form-label text-label">{{ t('homepagePromos.form.ctaTextEnLabel') }}</label>
             <input
               v-model="form.cta_text_en"
@@ -297,7 +307,7 @@ const handleClose = () => {
           </div>
         </div>
 
-        <div>
+        <div v-if="showActionFields">
           <label class="form-label text-label">{{ t('homepagePromos.form.ctaUrlLabel') }}</label>
           <input
             v-model="form.cta_url"

@@ -135,6 +135,69 @@ test('admin can update a product', function () {
         ->and($product->fresh()->is_active)->toBeFalse();
 });
 
+test('updating a product without details keeps existing catalog fields', function () {
+    $product = Product::factory()->create([
+        'name_en' => 'Legacy Product',
+        'slug' => 'legacy-product',
+        'ordering' => 0,
+        'is_active' => true,
+    ]);
+
+    $this->actingAs($this->admin)
+        ->put(route('products.update', $product), [
+            'name_ar' => $product->name_ar,
+            'name_en' => 'Legacy Product',
+            'slug' => 'legacy-product',
+            'description_ar' => $product->description_ar,
+            'description_en' => $product->description_en,
+            'ordering' => 0,
+            'is_active' => true,
+        ])
+        ->assertRedirect();
+
+    expect($product->fresh()->details_ar)->toBeNull()
+        ->and($product->fresh()->sizes)->toBeNull();
+});
+
+test('admin can save optional product details sizes and specifications', function () {
+    $this->actingAs($this->admin)
+        ->post(route('products.store'), validProductPayload([
+            'details_ar' => '<p>تفاصيل عربية</p>',
+            'details_en' => '<p>English details</p>',
+            'sizes' => [
+                ['value' => '5', 'unit' => 'mm'],
+                ['value' => '9', 'unit' => 'mm'],
+            ],
+            'specifications_ar' => ['خفيف الوزن', 'مرونة عالية'],
+            'specifications_en' => ['Lightweight', 'High flexibility'],
+        ]))
+        ->assertRedirect();
+
+    $product = Product::where('slug', 'plastic-container')->first();
+
+    expect($product->details_en)->toBe('<p>English details</p>')
+        ->and($product->details_ar)->toBe('<p>تفاصيل عربية</p>')
+        ->and($product->sizes)->toBe([
+            ['value' => '5', 'unit' => 'mm'],
+            ['value' => '9', 'unit' => 'mm'],
+        ])
+        ->and($product->specifications_ar)->toBe(['خفيف الوزن', 'مرونة عالية'])
+        ->and($product->specifications_en)->toBe(['Lightweight', 'High flexibility']);
+});
+
+test('creating a product does not require details sizes or specifications', function () {
+    $this->actingAs($this->admin)
+        ->post(route('products.store'), validProductPayload())
+        ->assertRedirect();
+
+    $product = Product::where('slug', 'plastic-container')->first();
+
+    expect($product)->not->toBeNull()
+        ->and($product->details_ar)->toBeNull()
+        ->and($product->sizes)->toBeNull()
+        ->and($product->specifications_en)->toBeNull();
+});
+
 test('admin can delete a product', function () {
     $product = Product::factory()->create();
 

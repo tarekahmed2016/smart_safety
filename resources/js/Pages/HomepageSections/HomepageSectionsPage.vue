@@ -13,6 +13,7 @@ const sections = computed(() => page.props.homepageSections || [])
 const form = useForm({
   sections: sections.value.map((section) => ({
     id: section.id,
+    section_key: section.key,
     is_visible: Boolean(section.is_visible),
     ordering: section.ordering,
     title_ar: section.title_ar || '',
@@ -32,6 +33,16 @@ const form = useForm({
 const draggedIndex = ref(null)
 
 const sectionTypeLabel = (type) => t(`homepageSections.types.${type}`, type)
+
+const showsSectionTitleFields = (section) => {
+  const section_key = section.section_key || sectionMetaById.value[section.id]?.key
+
+  if (section_key === 'hero' || section_key === 'features') {
+    return false
+  }
+
+  return true
+}
 
 const sortedSections = computed(() =>
   [...form.sections].sort((left, right) => left.ordering - right.ordering),
@@ -136,7 +147,10 @@ const submit = () => {
                 </div>
               </div>
 
-              <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div
+                v-if="showsSectionTitleFields(section)"
+                class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4"
+              >
                 <div>
                   <label class="form-label text-label">{{ t('homepageSections.titleArLabel') }}</label>
                   <input v-model="section.title_ar" type="text" class="form-input text-body" :placeholder="t('homepageSections.titleArPlaceholder')" />

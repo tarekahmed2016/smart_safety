@@ -30,6 +30,11 @@ const form = useForm({
   slug: '',
   description_ar: '',
   description_en: '',
+  details_ar: '',
+  details_en: '',
+  sizes: [],
+  specifications_ar: [],
+  specifications_en: [],
   ordering: '',
   is_active: true,
   show_on_homepage: true,
@@ -39,6 +44,47 @@ const form = useForm({
 const imagePreview = ref(null)
 const imageInput = ref(null)
 const imageFileName = ref(null)
+
+const cloneSizes = (sizes) => (Array.isArray(sizes) ? sizes.map((size) => ({
+  value: size?.value || '',
+  unit: size?.unit || '',
+})) : [])
+
+const cloneSpecs = (items) => (Array.isArray(items) ? items.map((item) => String(item || '')) : [])
+
+const addSize = () => {
+  form.sizes.push({ value: '', unit: 'mm' })
+}
+
+const removeSize = (index) => {
+  form.sizes.splice(index, 1)
+}
+
+const moveSize = (index, direction) => {
+  const target = index + direction
+  if (target < 0 || target >= form.sizes.length) return
+  const items = [...form.sizes]
+  const [moved] = items.splice(index, 1)
+  items.splice(target, 0, moved)
+  form.sizes = items
+}
+
+const addSpecification = (field) => {
+  form[field].push('')
+}
+
+const removeSpecification = (field, index) => {
+  form[field].splice(index, 1)
+}
+
+const moveSpecification = (field, index, direction) => {
+  const target = index + direction
+  if (target < 0 || target >= form[field].length) return
+  const items = [...form[field]]
+  const [moved] = items.splice(index, 1)
+  items.splice(target, 0, moved)
+  form[field] = items
+}
 
 const handleImageChange = (event) => {
   const file = event.target.files[0] || null
@@ -56,6 +102,11 @@ watch(() => props.isOpen, (isOpen) => {
     form.slug = props.product.slug || ''
     form.description_ar = props.product.description_ar || ''
     form.description_en = props.product.description_en || ''
+    form.details_ar = props.product.details_ar || ''
+    form.details_en = props.product.details_en || ''
+    form.sizes = cloneSizes(props.product.sizes)
+    form.specifications_ar = cloneSpecs(props.product.specifications_ar)
+    form.specifications_en = cloneSpecs(props.product.specifications_en)
     form.ordering = props.product.ordering ?? ''
     form.is_active = Boolean(props.product.is_active)
     form.show_on_homepage = Boolean(props.product.show_on_homepage)
@@ -177,6 +228,103 @@ const handleClose = () => {
               :placeholder="t('products.form.descriptionEnPlaceholder')"
             />
             <p v-if="form.errors.description_en" class="form-error">{{ form.errors.description_en }}</p>
+          </div>
+        </div>
+
+        <div class="space-y-4 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+          <h3 class="text-label font-medium text-gray-900 dark:text-gray-100">{{ t('products.form.detailsSectionTitle') }}</h3>
+
+          <div>
+            <label class="form-label text-label">{{ t('products.form.detailsArLabel') }}</label>
+            <RichTextEditor
+              v-model="form.details_ar"
+              :active="isOpen"
+              dir="rtl"
+              :placeholder="t('products.form.detailsArPlaceholder')"
+            />
+            <p v-if="form.errors.details_ar" class="form-error">{{ form.errors.details_ar }}</p>
+          </div>
+
+          <div>
+            <label class="form-label text-label">{{ t('products.form.detailsEnLabel') }}</label>
+            <RichTextEditor
+              v-model="form.details_en"
+              :active="isOpen"
+              dir="ltr"
+              :placeholder="t('products.form.detailsEnPlaceholder')"
+            />
+            <p v-if="form.errors.details_en" class="form-error">{{ form.errors.details_en }}</p>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between gap-3 mb-2">
+              <label class="form-label text-label mb-0">{{ t('products.form.sizesLabel') }}</label>
+              <button type="button" class="btn btn-secondary px-3 py-1.5" @click="addSize">
+                {{ t('products.form.addSize') }}
+              </button>
+            </div>
+            <div v-if="form.sizes.length" class="space-y-2">
+              <div v-for="(size, index) in form.sizes" :key="`size-${index}`" class="grid grid-cols-[1fr_1fr_auto] gap-2 items-center">
+                <input
+                  v-model="size.value"
+                  type="text"
+                  class="form-input text-body"
+                  :placeholder="t('products.form.sizeValuePlaceholder')"
+                />
+                <input
+                  v-model="size.unit"
+                  type="text"
+                  dir="ltr"
+                  class="form-input text-body"
+                  :placeholder="t('products.form.sizeUnitPlaceholder')"
+                />
+                <div class="flex items-center gap-1">
+                  <button type="button" class="btn btn-secondary px-2 py-1.5" :disabled="index === 0" @click="moveSize(index, -1)">↑</button>
+                  <button type="button" class="btn btn-secondary px-2 py-1.5" :disabled="index === form.sizes.length - 1" @click="moveSize(index, 1)">↓</button>
+                  <button type="button" class="btn btn-danger px-2 py-1.5" @click="removeSize(index)">{{ t('products.form.removeItem') }}</button>
+                </div>
+              </div>
+            </div>
+            <p v-else class="text-sm text-muted muted-color">{{ t('products.form.sizesEmpty') }}</p>
+            <p v-if="form.errors.sizes" class="form-error">{{ form.errors.sizes }}</p>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between gap-3 mb-2">
+              <label class="form-label text-label mb-0">{{ t('products.form.specificationsArLabel') }}</label>
+              <button type="button" class="btn btn-secondary px-3 py-1.5" @click="addSpecification('specifications_ar')">
+                {{ t('products.form.addSpecification') }}
+              </button>
+            </div>
+            <div v-if="form.specifications_ar.length" class="space-y-2">
+              <div v-for="(item, index) in form.specifications_ar" :key="`spec-ar-${index}`" class="flex items-center gap-2">
+                <input v-model="form.specifications_ar[index]" type="text" dir="rtl" class="form-input text-body" :placeholder="t('products.form.specificationPlaceholder')" />
+                <button type="button" class="btn btn-secondary px-2 py-1.5" :disabled="index === 0" @click="moveSpecification('specifications_ar', index, -1)">↑</button>
+                <button type="button" class="btn btn-secondary px-2 py-1.5" :disabled="index === form.specifications_ar.length - 1" @click="moveSpecification('specifications_ar', index, 1)">↓</button>
+                <button type="button" class="btn btn-danger px-2 py-1.5" @click="removeSpecification('specifications_ar', index)">{{ t('products.form.removeItem') }}</button>
+              </div>
+            </div>
+            <p v-else class="text-sm text-muted muted-color">{{ t('products.form.specificationsEmpty') }}</p>
+            <p v-if="form.errors.specifications_ar" class="form-error">{{ form.errors.specifications_ar }}</p>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between gap-3 mb-2">
+              <label class="form-label text-label mb-0">{{ t('products.form.specificationsEnLabel') }}</label>
+              <button type="button" class="btn btn-secondary px-3 py-1.5" @click="addSpecification('specifications_en')">
+                {{ t('products.form.addSpecification') }}
+              </button>
+            </div>
+            <div v-if="form.specifications_en.length" class="space-y-2">
+              <div v-for="(item, index) in form.specifications_en" :key="`spec-en-${index}`" class="flex items-center gap-2">
+                <input v-model="form.specifications_en[index]" type="text" dir="ltr" class="form-input text-body" :placeholder="t('products.form.specificationPlaceholder')" />
+                <button type="button" class="btn btn-secondary px-2 py-1.5" :disabled="index === 0" @click="moveSpecification('specifications_en', index, -1)">↑</button>
+                <button type="button" class="btn btn-secondary px-2 py-1.5" :disabled="index === form.specifications_en.length - 1" @click="moveSpecification('specifications_en', index, 1)">↓</button>
+                <button type="button" class="btn btn-danger px-2 py-1.5" @click="removeSpecification('specifications_en', index)">{{ t('products.form.removeItem') }}</button>
+              </div>
+            </div>
+            <p v-else class="text-sm text-muted muted-color">{{ t('products.form.specificationsEmpty') }}</p>
+            <p v-if="form.errors.specifications_en" class="form-error">{{ form.errors.specifications_en }}</p>
           </div>
         </div>
 

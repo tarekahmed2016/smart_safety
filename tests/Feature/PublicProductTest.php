@@ -66,3 +66,86 @@ test('inactive products are not publicly reachable', function () {
     $this->get(route('public.products.show', 'secret-product'))
         ->assertNotFound();
 });
+
+test('public homepage products include bilingual details sizes and specifications', function () {
+    $product = Product::factory()->create([
+        'name_ar' => 'شريط PP',
+        'name_en' => 'PP Strap',
+        'slug' => 'pp-strap',
+        'details_ar' => '<p>تفاصيل الشريط</p>',
+        'details_en' => '<p>Strap details</p>',
+        'sizes' => [
+            ['value' => '5', 'unit' => 'mm'],
+            ['value' => '12', 'unit' => 'mm'],
+        ],
+        'specifications_ar' => ['خفيف الوزن'],
+        'specifications_en' => ['Lightweight'],
+        'is_active' => true,
+        'show_on_homepage' => true,
+        'ordering' => 1,
+    ]);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Public/HomePage', false)
+            ->has('products', 1)
+            ->where('products.0.slug', 'pp-strap')
+            ->where('products.0.name_ar', 'شريط PP')
+            ->where('products.0.name_en', 'PP Strap')
+            ->where('products.0.details_ar', '<p>تفاصيل الشريط</p>')
+            ->where('products.0.details_en', '<p>Strap details</p>')
+            ->where('products.0.sizes.0.value', '5')
+            ->where('products.0.sizes.0.unit', 'mm')
+            ->where('products.0.sizes.1.value', '12')
+            ->where('products.0.specifications_ar.0', 'خفيف الوزن')
+            ->where('products.0.specifications_en.0', 'Lightweight'));
+
+    expect($product->name_en)->toBe('PP Strap');
+});
+
+test('public product payloads stay safe when details sizes and specifications are missing', function () {
+    Product::factory()->create([
+        'name_en' => 'Legacy Pack',
+        'slug' => 'legacy-pack',
+        'details_ar' => null,
+        'details_en' => null,
+        'sizes' => null,
+        'specifications_ar' => null,
+        'specifications_en' => null,
+        'is_active' => true,
+        'show_on_homepage' => true,
+    ]);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('products.0.slug', 'legacy-pack')
+            ->where('products.0.details_ar', null)
+            ->where('products.0.details_en', null)
+            ->where('products.0.sizes', [])
+            ->where('products.0.specifications_ar', [])
+            ->where('products.0.specifications_en', []));
+});
+
+test('products carousel opens a details modal from the product image', function () {
+    $carousel = file_get_contents(resource_path('js/Components/Public/ProductsCarousel.vue'));
+    $modal = file_get_contents(resource_path('js/Components/Public/ProductDetailsModal.vue'));
+
+    expect($carousel)->toContain('openProductDetails')
+        ->and($carousel)->toContain('ProductDetailsModal')
+        ->and($carousel)->toContain('@click="openProductDetails(product)"')
+        ->and($carousel)->toContain('px-product-media-trigger')
+        ->and($modal)->toContain('@click.self="close"')
+        ->and($modal)->toContain('useDialogAccessibility')
+        ->and($modal)->toContain('px-product-modal-close')
+        ->and($modal)->toContain('productName')
+        ->and($modal)->toContain('product.image')
+        ->and($modal)->toContain('hasDetails')
+        ->and($modal)->toContain('px-product-size-pill')
+        ->and($modal)->toContain('specifications')
+        ->and($modal)->toContain("locale.value === 'ar'")
+        ->and($modal)->not->toContain('action_text')
+        ->and($modal)->not->toContain('action_url')
+        ->and($modal)->not->toContain('cta_url');
+});

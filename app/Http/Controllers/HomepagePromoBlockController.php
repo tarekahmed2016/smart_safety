@@ -23,6 +23,7 @@ class HomepagePromoBlockController extends Controller
                 'value' => $type->value,
                 'label' => $type->label(),
                 'name' => $type->labelEn(),
+                'supports_action' => $type->supportsAction(),
             ])->values(),
         ]);
     }

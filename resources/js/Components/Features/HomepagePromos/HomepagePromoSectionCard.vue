@@ -125,11 +125,11 @@ const settingsFieldLabel = (field) => t(`homepagePromos.settingsFields.${field}`
         </template>
 
         <template v-if="hasSectionSettings">
-          <div v-if="card.section_settings.title_ar !== undefined">
+          <div v-if="card.section_settings.title_ar !== undefined && card.key !== 'hero' && card.key !== 'features'">
             <label class="form-label text-label">{{ t('homepageSections.titleArLabel') }}</label>
             <input v-model="settingsForm.section.title_ar" type="text" class="form-input text-body" />
           </div>
-          <div v-if="card.section_settings.title_en !== undefined">
+          <div v-if="card.section_settings.title_en !== undefined && card.key !== 'hero' && card.key !== 'features'">
             <label class="form-label text-label">{{ t('homepageSections.titleEnLabel') }}</label>
             <input v-model="settingsForm.section.title_en" type="text" class="form-input text-body" />
           </div>

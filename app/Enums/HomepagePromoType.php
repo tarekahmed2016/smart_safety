@@ -44,6 +44,21 @@ enum HomepagePromoType: string
         };
     }
 
+    public function supportsAction(): bool
+    {
+        return match ($this) {
+            self::FeatureBand,
+            self::PromoStrip,
+            self::BusinessCta,
+            self::CustomManufacturing => true,
+            self::FeatureHighlight,
+            self::Industry,
+            self::Stat,
+            self::AboutHighlight,
+            self::WhyUsHighlight => false,
+        };
+    }
+
     /**
      * @return list<string>
      */

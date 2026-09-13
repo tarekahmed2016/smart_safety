@@ -183,4 +183,9 @@ class HomepageSectionDefaults
             ],
         ];
     }
+
+    public static function usesStandaloneSectionTitle(string $key): bool
+    {
+        return ! ($key === 'hero' || $key === 'features');
+    }
 }

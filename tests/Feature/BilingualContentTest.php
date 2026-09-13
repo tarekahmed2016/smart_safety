@@ -13,7 +13,18 @@ test('services table uses bilingual content columns', function () {
 });
 
 test('products table uses bilingual content columns', function () {
-    expect(Schema::hasColumns('products', ['name_ar', 'name_en', 'slug', 'description_ar', 'description_en']))->toBeTrue();
+    expect(Schema::hasColumns('products', [
+        'name_ar',
+        'name_en',
+        'slug',
+        'description_ar',
+        'description_en',
+        'details_ar',
+        'details_en',
+        'sizes',
+        'specifications_ar',
+        'specifications_en',
+    ]))->toBeTrue();
 });
 
 test('company info table uses bilingual name columns', function () {

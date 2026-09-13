@@ -172,10 +172,11 @@ const manufacturingDescription = computed(() =>
 )
 const manufacturingCta = computed(() =>
   customManufacturing.value
-    ? resolveBilingualField(customManufacturing.value, 'cta_text', locale.value) || t('public.home.manufacturing.cta')
-    : t('public.home.manufacturing.cta')
+    ? resolveBilingualField(customManufacturing.value, 'cta_text', locale.value)
+    : ''
 )
-const manufacturingUrl = computed(() => customManufacturing.value?.cta_url || '#contact')
+const manufacturingUrl = computed(() => customManufacturing.value?.cta_url || '')
+const hasManufacturingAction = computed(() => Boolean(manufacturingCta.value && manufacturingUrl.value))
 const manufacturingImage = computed(() => customManufacturing.value?.image || null)
 
 const displayFeatures = computed(() => featureHighlights.value.map((item) => ({
@@ -350,15 +351,17 @@ const contactCtaText = computed(() =>
 )
 const contactCtaLabel = computed(() =>
   businessCta.value
-    ? resolveBilingualField(businessCta.value, 'cta_text', locale.value) || t('public.home.contactCta.button')
+    ? resolveBilingualField(businessCta.value, 'cta_text', locale.value)
     : t('public.home.contactCta.button')
 )
 const whatsappUrl = computed(() => companyInfo.value.whatsapp || null)
 const contactCtaUrl = computed(() => {
   if (businessCta.value?.cta_url) return businessCta.value.cta_url
+  if (businessCta.value) return ''
   if (whatsappUrl.value) return whatsappUrl.value
   return '#contact-form'
 })
+const hasContactCtaAction = computed(() => Boolean(contactCtaLabel.value && contactCtaUrl.value))
 const contactCtaBackground = computed(() => businessCta.value?.image || heroBackground.value)
 const industriesBackground = computed(() => heroBackground.value || null)
 
@@ -567,7 +570,7 @@ const submitContactForm = () => {
             tag="div"
           />
           <p v-else>{{ manufacturingDescription }}</p>
-          <a :href="manufacturingUrl" class="px-btn px-btn-green">{{ manufacturingCta }}</a>
+          <a v-if="hasManufacturingAction" :href="manufacturingUrl" class="px-btn px-btn-green">{{ manufacturingCta }}</a>
         </div>
       </div>
       <div
@@ -609,7 +612,7 @@ const submitContactForm = () => {
             tag="div"
           />
           <p v-else>{{ manufacturingDescription }}</p>
-          <a :href="manufacturingUrl" class="px-btn px-btn-green">{{ manufacturingCta }}</a>
+          <a v-if="hasManufacturingAction" :href="manufacturingUrl" class="px-btn px-btn-green">{{ manufacturingCta }}</a>
         </div>
       </div>
     </section>
@@ -787,7 +790,7 @@ const submitContactForm = () => {
       <div class="px-container px-contact-cta-inner">
         <h2>{{ contactCtaTitle }}</h2>
         <p>{{ contactCtaText }}</p>
-        <a :href="contactCtaUrl" class="px-btn px-btn-green">{{ contactCtaLabel }}</a>
+        <a v-if="hasContactCtaAction" :href="contactCtaUrl" class="px-btn px-btn-green">{{ contactCtaLabel }}</a>
       </div>
     </section>
 

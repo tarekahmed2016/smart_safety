@@ -375,6 +375,7 @@ class HomepagePromoBlockService
             'cta_text_ar' => $block->cta_text_ar,
             'cta_text_en' => $block->cta_text_en,
             'cta_url' => $block->cta_url,
+            'supports_action' => $this->blockType($block)->supportsAction(),
             'layout_variant' => $block->layout_formatted,
             'icon' => $block->icon,
             'ordering' => $block->ordering,
@@ -403,6 +404,7 @@ class HomepagePromoBlockService
             'cta_text_ar' => $block->cta_text_ar,
             'cta_text_en' => $block->cta_text_en,
             'cta_url' => $block->cta_url,
+            'supports_action' => $this->blockType($block)->supportsAction(),
             'layout_variant' => $block->layout_variant instanceof HomepagePromoLayout
                 ? $block->layout_variant->value
                 : (string) ($block->layout_variant ?? 'content_left'),
@@ -410,6 +412,13 @@ class HomepagePromoBlockService
             'image' => $block->attachment?->asset_path,
             'badge_image' => $block->badgeAttachment?->asset_path,
         ];
+    }
+
+    private function blockType(HomepagePromoBlock $block): HomepagePromoType
+    {
+        return $block->type instanceof HomepagePromoType
+            ? $block->type
+            : HomepagePromoType::from((string) $block->type);
     }
 
     private function subjectLabel(HomepagePromoBlock $block): string

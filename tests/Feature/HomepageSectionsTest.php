@@ -4,6 +4,7 @@ use App\Models\HomepageSection;
 use App\Models\Product;
 use App\Models\Service;
 use App\Models\User;
+use App\Support\HomepageSectionDefaults;
 use Database\Seeders\HomepageSectionSeeder;
 use Illuminate\Support\Facades\Schema;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -204,4 +205,58 @@ test('homepage visible sections follow the main navigation order', function () {
 
                 return $keys->all() === $expected;
             }));
+});
+
+test('hero and features do not use standalone section titles', function () {
+    expect(HomepageSectionDefaults::usesStandaloneSectionTitle('hero'))->toBeFalse()
+        ->and(HomepageSectionDefaults::usesStandaloneSectionTitle('features'))->toBeFalse()
+        ->and(HomepageSectionDefaults::usesStandaloneSectionTitle('about'))->toBeTrue()
+        ->and(HomepageSectionDefaults::usesStandaloneSectionTitle('products'))->toBeTrue();
+});
+
+test('homepage sections page hides section title fields on hero and features cards', function () {
+    $source = file_get_contents(resource_path('js/Pages/HomepageSections/HomepageSectionsPage.vue'));
+
+    expect($source)->toContain("section_key === 'hero'")
+        ->and($source)->toContain("section_key === 'features'")
+        ->and($source)->toContain('showsSectionTitleFields')
+        ->and($source)->toContain('titleArLabel')
+        ->and($source)->toContain('titleEnLabel')
+        ->and($source)->toContain('visibleLabel')
+        ->and($source)->toContain('navLabelAr')
+        ->and($source)->toContain('navOrderLabel');
+});
+
+test('saving homepage sections keeps existing hero and features titles in the database', function () {
+    $hero = HomepageSection::query()->where('key', 'hero')->firstOrFail();
+    $features = HomepageSection::query()->where('key', 'features')->firstOrFail();
+
+    $hero->update(['title_ar' => 'عنوان هيرو قديم', 'title_en' => 'Legacy hero title']);
+    $features->update(['title_ar' => 'عنوان مميزات قديم', 'title_en' => 'Legacy features title']);
+
+    $this->actingAs($this->admin)
+        ->put(route('homepage-sections.update'), [
+            'sections' => HomepageSection::query()
+                ->orderBy('ordering')
+                ->get()
+                ->map(fn (HomepageSection $section) => [
+                    'id' => $section->id,
+                    'is_visible' => $section->is_visible,
+                    'ordering' => $section->ordering,
+                    'title_ar' => $section->fresh()->title_ar,
+                    'title_en' => $section->fresh()->title_en,
+                    'show_in_navigation' => $section->show_in_navigation,
+                    'nav_label_ar' => $section->nav_label_ar,
+                    'nav_label_en' => $section->nav_label_en,
+                    'nav_order' => $section->nav_order,
+                    'anchor_id' => $section->anchor_id,
+                ])
+                ->all(),
+        ])
+        ->assertRedirect(route('homepage-sections.index'));
+
+    expect($hero->fresh()->title_ar)->toBe('عنوان هيرو قديم')
+        ->and($hero->fresh()->title_en)->toBe('Legacy hero title')
+        ->and($features->fresh()->title_ar)->toBe('عنوان مميزات قديم')
+        ->and($features->fresh()->title_en)->toBe('Legacy features title');
 });

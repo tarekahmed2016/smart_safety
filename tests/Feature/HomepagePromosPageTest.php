@@ -97,3 +97,67 @@ test('invalid homepage promo section settings key returns not found', function (
         ])
         ->assertNotFound();
 });
+
+test('admin homepage promo types mark feature highlight as having no action fields', function () {
+    $this->actingAs($this->admin)
+        ->get(route('homepage-promos.index'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('promoTypes.2.value', 'business_cta')
+            ->where('promoTypes.2.supports_action', true)
+            ->where('promoTypes.3.value', 'feature_highlight')
+            ->where('promoTypes.3.supports_action', false)
+            ->where('promoTypes.5.value', 'custom_manufacturing')
+            ->where('promoTypes.5.supports_action', true));
+});
+
+test('public homepage feature highlights expose icon title and description without an action', function () {
+    HomepagePromoBlock::factory()->featureHighlight()->create([
+        'title_ar' => 'جودة عالية',
+        'title_en' => 'High Quality',
+        'description_ar' => 'وصف الميزة',
+        'description_en' => 'Feature description',
+        'icon' => 'quality',
+        'cta_text_ar' => 'اطلب الآن',
+        'cta_text_en' => 'Order now',
+        'cta_url' => 'https://example.com/should-not-render',
+        'is_active' => true,
+        'ordering' => 1,
+    ]);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Public/HomePage', false)
+            ->has('featureHighlights', 1)
+            ->where('featureHighlights.0.title_ar', 'جودة عالية')
+            ->where('featureHighlights.0.title_en', 'High Quality')
+            ->where('featureHighlights.0.description_ar', 'وصف الميزة')
+            ->where('featureHighlights.0.description_en', 'Feature description')
+            ->where('featureHighlights.0.icon', 'quality')
+            ->where('featureHighlights.0.supports_action', false));
+});
+
+test('homepage promo form hides action fields unless the type supports a button', function () {
+    $formSource = file_get_contents(resource_path('js/Components/Features/HomepagePromos/HomepagePromoFormModal.vue'));
+
+    expect(substr_count($formSource, 'v-if="showActionFields"'))->toBe(3)
+        ->and($formSource)->toContain('ctaTextArLabel')
+        ->and($formSource)->toContain('ctaTextEnLabel')
+        ->and($formSource)->toContain('ctaUrlLabel')
+        ->and($formSource)->toContain('showIconField');
+});
+
+test('public features section template renders icon title and description without a button', function () {
+    $homeSource = file_get_contents(resource_path('js/Pages/Public/HomePage.vue'));
+
+    preg_match("/section\\.type === 'features'.*?<\\/section>/s", $homeSource, $matches);
+
+    expect($matches[0] ?? '')->not->toBe('')
+        ->and($matches[0])->toContain('feature.icon')
+        ->and($matches[0])->toContain('feature.title')
+        ->and($matches[0])->toContain('feature.text')
+        ->and($matches[0])->not->toContain('href')
+        ->and($matches[0])->not->toContain('px-btn')
+        ->and($matches[0])->not->toContain('cta_');
+});
