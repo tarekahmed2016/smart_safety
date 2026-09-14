@@ -15,7 +15,7 @@ test('english public header and hero layout rules are scoped to ltr only', funct
         ->and($styles)->toContain('clamp(1.55rem, 1.1rem + 1.6vw, 2.55rem)')
         ->and($styles)->toContain('html[dir="ltr"] .px-hero-actions')
         ->and($styles)->toContain('flex-wrap: wrap')
-        ->and($styles)->toContain('html[dir="ltr"] .plastex-site')
+        ->and($styles)->toContain('html[dir="ltr"] .plastex-site > main')
         ->and($styles)->toContain('overflow-x: clip');
 
     expect($styles)->toContain('[dir="rtl"] .px-hero-content')

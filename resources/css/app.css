@@ -647,7 +647,11 @@
     font-family: 'Lato', Arial, Helvetica, sans-serif;
     color: var(--sf-text-body);
     scroll-behavior: smooth;
-    overflow-x: hidden;
+}
+
+.public-layout > main {
+    overflow-x: clip;
+    max-width: 100%;
 }
 
 .public-layout section[id] {

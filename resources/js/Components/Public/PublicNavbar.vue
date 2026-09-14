@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { usePage } from '@inertiajs/vue3'
 import { resolveBilingualField } from '../../Composables/useBilingualContent.js'
@@ -33,6 +33,20 @@ const quoteUrl = computed(() => {
 })
 
 const isMenuOpen = ref(false)
+const isScrolled = ref(false)
+
+const updateScrolledState = () => {
+  isScrolled.value = window.scrollY > 4
+}
+
+onMounted(() => {
+  updateScrolledState()
+  window.addEventListener('scroll', updateScrolledState, { passive: true })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', updateScrolledState)
+})
 
 watch(() => page.url, () => {
   isMenuOpen.value = false
@@ -61,7 +75,7 @@ const otherLocaleCode = computed(() => (locale.value === 'ar' ? 'en' : 'ar'))
 </script>
 
 <template>
-  <header class="px-header">
+  <header class="px-header" :class="{ 'px-header--scrolled': isScrolled }">
     <nav class="px-nav" :aria-label="t('public.home.nav.main')">
       <div class="px-nav-inner">
         <div class="px-nav-bar">
