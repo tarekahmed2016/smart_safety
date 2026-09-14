@@ -26,7 +26,27 @@
           </div>
           <div>
             <p class="text-label text-muted muted-color">{{ t('contactMessages.detail.status') }}</p>
-            <p class="text-body text-gray-900 dark:text-gray-100">{{ statusLabel }}</p>
+            <p class="text-body text-gray-900 dark:text-gray-100">{{ readStatusLabel }}</p>
+          </div>
+          <div class="sm:col-span-2">
+            <label class="text-label text-muted muted-color" for="contact-request-status">
+              {{ t('contactMessages.detail.requestStatus') }}
+            </label>
+            <select
+              id="contact-request-status"
+              class="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-body text-gray-900 dark:text-gray-100 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              :value="selectedRequestStatus"
+              :disabled="requestStatusLoading"
+              @change="$emit('update-request-status', contactMessage, $event.target.value)"
+            >
+              <option
+                v-for="status in requestStatuses"
+                :key="status.value"
+                :value="status.value"
+              >
+                {{ requestStatusOptionLabel(status) }}
+              </option>
+            </select>
           </div>
           <div>
             <p class="text-label text-muted muted-color">{{ t('contactMessages.detail.email') }}</p>
@@ -103,12 +123,20 @@ const props = defineProps({
   unreadLoading: {
     type: Boolean,
     default: false
+  },
+  requestStatusLoading: {
+    type: Boolean,
+    default: false
+  },
+  requestStatuses: {
+    type: Array,
+    default: () => []
   }
 })
 
-const emit = defineEmits(['close', 'mark-read', 'mark-unread'])
+const emit = defineEmits(['close', 'mark-read', 'mark-unread', 'update-request-status'])
 
-const statusLabel = computed(() => {
+const readStatusLabel = computed(() => {
   if (!props.contactMessage) return '—'
 
   if (locale.value === 'ar') {
@@ -117,6 +145,24 @@ const statusLabel = computed(() => {
 
   return props.contactMessage.is_read_formatted?.name || (props.contactMessage.is_read ? 'Read' : 'Unread')
 })
+
+const selectedRequestStatus = computed(() => (
+  props.contactMessage?.request_status_formatted?.value
+    || props.contactMessage?.request_status
+    || 'new'
+))
+
+const requestStatusOptionLabel = (status) => {
+  const translated = t(`contactMessages.requestStatuses.${status.value}`)
+  const ar = status.label_ar || translated
+  const en = status.label_en || translated
+
+  if (locale.value === 'ar') {
+    return `${ar} / ${en}`
+  }
+
+  return `${en} / ${ar}`
+}
 
 const formattedReceivedAt = computed(() => {
   if (!props.contactMessage?.created_at) return '—'

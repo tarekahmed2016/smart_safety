@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\ActivityLogs\Event;
+use App\Enums\ContactMessages\RequestStatus;
 use App\Models\ActivityLog;
 use App\Models\ContactMessage;
 use App\Models\User;
@@ -169,6 +170,36 @@ test('mass assignment attack fields are ignored on submission', function () {
         ->and($message->created_at->isToday())->toBeTrue();
 });
 
+test('guest contact message defaults to new request status', function () {
+    $this->post(route('contact.store'), validContactPayload())->assertRedirect();
+
+    $message = ContactMessage::first();
+
+    expect($message->request_status)->toBe(RequestStatus::New)
+        ->and($message->is_read)->toBeFalse();
+});
+
+test('public cannot set request status on submission', function () {
+    $this->post(route('contact.store'), validContactPayload([
+        'request_status' => RequestStatus::Completed->value,
+    ]))->assertRedirect();
+
+    expect(ContactMessage::first()->request_status)->toBe(RequestStatus::New);
+});
+
+test('non admin cannot update contact request status', function () {
+    $message = ContactMessage::factory()->create();
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->put(route('contact-messages.request-status', $message), [
+            'request_status' => RequestStatus::Agreed->value,
+        ])
+        ->assertRedirect(route('login'));
+
+    expect($message->fresh()->request_status)->toBe(RequestStatus::New);
+});
+
 test('guest cannot view admin contact messages', function () {
     ContactMessage::factory()->create();
 
@@ -229,7 +260,9 @@ test('admin can view contact messages index', function () {
             ->component('ContactMessages/ContactMessagesPage', false)
             ->has('contactMessages.data', 1)
             ->where('contactMessages.data.0.name', 'Admin Listed Visitor')
-            ->where('contactMessages.data.0.message', 'Please call me back.'));
+            ->where('contactMessages.data.0.message', 'Please call me back.')
+            ->where('contactMessages.data.0.request_status', RequestStatus::New->value)
+            ->has('requestStatuses'));
 });
 
 test('admin can mark contact message as read', function () {
@@ -382,6 +415,115 @@ test('contact messages index ignores invalid status filter', function () {
         ->assertInertia(fn (Assert $page) => $page
             ->has('contactMessages.data', 2)
             ->where('filters.status', 'all'));
+});
+
+test('admin can update contact request status', function () {
+    $message = ContactMessage::factory()->unread()->create(['name' => 'Status Visitor']);
+
+    $this->actingAs($this->admin)
+        ->from(route('contact-messages.index'))
+        ->put(route('contact-messages.request-status', $message), [
+            'request_status' => RequestStatus::QuoteSent->value,
+        ])
+        ->assertRedirect();
+
+    $message->refresh();
+
+    expect($message->request_status)->toBe(RequestStatus::QuoteSent)
+        ->and($message->is_read)->toBeFalse();
+});
+
+test('updated request status is persisted after reopening the list', function () {
+    $message = ContactMessage::factory()->create(['name' => 'Persist Status']);
+
+    $this->actingAs($this->admin)
+        ->put(route('contact-messages.request-status', $message), [
+            'request_status' => RequestStatus::Contacted->value,
+        ])
+        ->assertRedirect();
+
+    $this->actingAs($this->admin)
+        ->get(route('contact-messages.index'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('contactMessages.data.0.id', $message->id)
+            ->where('contactMessages.data.0.request_status', RequestStatus::Contacted->value)
+            ->where('contactMessages.data.0.request_status_formatted.value', RequestStatus::Contacted->value)
+            ->where('contactMessages.data.0.request_status_formatted.label', 'تم التواصل مع العميل')
+            ->where('contactMessages.data.0.request_status_formatted.label_en', 'Customer contacted'));
+});
+
+test('contact messages index filters by request status', function () {
+    ContactMessage::factory()->create(['name' => 'New Visitor']);
+    ContactMessage::factory()->requestStatus(RequestStatus::Agreed)->create(['name' => 'Agreed Visitor']);
+
+    $this->actingAs($this->admin)
+        ->get(route('contact-messages.index', ['request_status' => RequestStatus::Agreed->value]))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('contactMessages.data', 1)
+            ->where('contactMessages.data.0.name', 'Agreed Visitor')
+            ->where('filters.request_status', RequestStatus::Agreed->value));
+});
+
+test('request status filter can be combined with unread filter', function () {
+    ContactMessage::factory()->unread()->requestStatus(RequestStatus::UnderReview)->create(['name' => 'Unread Review']);
+    ContactMessage::factory()->read()->requestStatus(RequestStatus::UnderReview)->create(['name' => 'Read Review']);
+    ContactMessage::factory()->unread()->create(['name' => 'Unread New']);
+
+    $this->actingAs($this->admin)
+        ->get(route('contact-messages.index', [
+            'status' => 'unread',
+            'request_status' => RequestStatus::UnderReview->value,
+        ]))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('contactMessages.data', 1)
+            ->where('contactMessages.data.0.name', 'Unread Review')
+            ->where('filters.status', 'unread')
+            ->where('filters.request_status', RequestStatus::UnderReview->value));
+});
+
+test('changing request status does not change read state', function () {
+    $message = ContactMessage::factory()->read()->create();
+
+    $this->actingAs($this->admin)
+        ->put(route('contact-messages.request-status', $message), [
+            'request_status' => RequestStatus::Rejected->value,
+        ])
+        ->assertRedirect();
+
+    $message->refresh();
+
+    expect($message->request_status)->toBe(RequestStatus::Rejected)
+        ->and($message->is_read)->toBeTrue()
+        ->and($message->read_at)->not->toBeNull();
+});
+
+test('existing contact messages keep their data and default to new request status', function () {
+    $message = ContactMessage::factory()->read()->create([
+        'name' => 'Legacy Visitor',
+        'email' => 'legacy@example.com',
+        'phone' => '123456',
+        'subject' => 'Legacy subject',
+        'message' => 'Legacy body',
+    ]);
+
+    expect($message->fresh()->request_status)->toBe(RequestStatus::New)
+        ->and($message->fresh()->name)->toBe('Legacy Visitor')
+        ->and($message->fresh()->email)->toBe('legacy@example.com')
+        ->and($message->fresh()->phone)->toBe('123456')
+        ->and($message->fresh()->subject)->toBe('Legacy subject')
+        ->and($message->fresh()->message)->toBe('Legacy body')
+        ->and($message->fresh()->is_read)->toBeTrue();
+
+    $this->actingAs($this->admin)
+        ->get(route('contact-messages.index'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('contactMessages.data', 1)
+            ->where('contactMessages.data.0.name', 'Legacy Visitor')
+            ->where('contactMessages.data.0.request_status', RequestStatus::New->value));
 });
 
 test('contact messages pagination works', function () {

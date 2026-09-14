@@ -23,8 +23,13 @@
                         {{ record.subject || '—' }}
                     </td>
                     <td class="table-cell table-cell-secondary text-body">
-                        <span :class="statusBadgeClass(record.is_read)">
-                            {{ statusLabel(record) }}
+                        <span :class="requestStatusBadgeClass(record.request_status)">
+                            {{ requestStatusLabel(record) }}
+                        </span>
+                    </td>
+                    <td class="table-cell table-cell-secondary text-body">
+                        <span :class="readStatusBadgeClass(record.is_read)">
+                            {{ readStatusLabel(record) }}
                         </span>
                     </td>
                     <td class="table-cell table-cell-secondary text-body whitespace-nowrap">
@@ -80,6 +85,7 @@ const columns = computed(() => [
     { key: 'name', label: t('contactMessages.table.name') },
     { key: 'contact', label: t('contactMessages.table.contact') },
     { key: 'subject', label: t('contactMessages.table.subject') },
+    { key: 'requestStatus', label: t('contactMessages.table.requestStatus') },
     { key: 'status', label: t('contactMessages.table.status') },
     { key: 'received_at', label: t('contactMessages.table.receivedAt') },
 ])
@@ -95,7 +101,7 @@ const formatDateTime = (value) => {
     return new Date(value).toLocaleString(locale.value === 'ar' ? 'ar' : 'en')
 }
 
-const statusLabel = (record) => {
+const readStatusLabel = (record) => {
     if (locale.value === 'ar') {
         return record.is_read_formatted?.label || (record.is_read ? 'مقروء' : 'غير مقروء')
     }
@@ -103,10 +109,35 @@ const statusLabel = (record) => {
     return record.is_read_formatted?.name || (record.is_read ? 'Read' : 'Unread')
 }
 
-const statusBadgeClass = (isRead) => [
+const requestStatusLabel = (record) => {
+    const value = record.request_status_formatted?.value || record.request_status || 'new'
+
+    return t(`contactMessages.requestStatuses.${value}`)
+}
+
+const readStatusBadgeClass = (isRead) => [
     'inline-flex items-center px-3.5 py-0.5 rounded-full text-xs font-medium',
     isRead
         ? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
         : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
 ]
+
+const requestStatusBadgeClass = (status) => {
+    const value = typeof status === 'object' ? status?.value : status
+
+    const colors = {
+        new: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+        under_review: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+        contacted: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
+        quote_sent: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
+        agreed: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+        rejected: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+        completed: 'bg-emerald-200 text-emerald-900 dark:bg-emerald-900/40 dark:text-emerald-200',
+    }
+
+    return [
+        'inline-flex items-center px-3.5 py-0.5 rounded-full text-xs font-medium',
+        colors[value] || colors.new,
+    ]
+}
 </script>

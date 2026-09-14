@@ -726,13 +726,25 @@
     "filters": {
       "all": "All",
       "unread": "Unread",
-      "read": "Read"
+      "read": "Read",
+      "requestStatus": "Request status",
+      "readStatus": "Read status"
+    },
+    "requestStatuses": {
+      "new": "New request",
+      "under_review": "Under review",
+      "contacted": "Customer contacted",
+      "quote_sent": "Quote sent",
+      "agreed": "Agreed",
+      "rejected": "Rejected",
+      "completed": "Completed"
     },
     "table": {
       "name": "Name",
       "contact": "Email / Phone",
       "subject": "Subject",
-      "status": "Status",
+      "status": "Read status",
+      "requestStatus": "Request status",
       "receivedAt": "Received At",
       "actions": "Actions",
       "view": "View",
@@ -747,9 +759,11 @@
       "phone": "Phone",
       "subject": "Subject",
       "message": "Message",
-      "status": "Status",
+      "status": "Read status",
+      "requestStatus": "Request status",
       "receivedAt": "Received At",
-      "close": "Close"
+      "close": "Close",
+      "updateStatus": "Update status"
     },
     "deleteModal": {
       "title": "Delete Message",

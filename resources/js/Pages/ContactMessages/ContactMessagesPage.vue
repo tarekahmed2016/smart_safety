@@ -18,12 +18,15 @@ const contactMessages = computed(() => paginationData.value.data || [])
 
 const searchQuery = ref(page.props.filters?.search || '')
 const statusFilter = ref(page.props.filters?.status || 'all')
+const requestStatusFilter = ref(page.props.filters?.request_status || 'all')
+const requestStatuses = computed(() => page.props.requestStatuses || [])
 const isPaginating = ref(false)
 
 const applyFilters = () => {
     router.get(route('contact-messages.index'), {
         search: searchQuery.value || undefined,
         status: statusFilter.value === 'all' ? undefined : statusFilter.value,
+        request_status: requestStatusFilter.value === 'all' ? undefined : requestStatusFilter.value,
     }, {
         preserveState: true,
         preserveScroll: true,
@@ -44,13 +47,16 @@ watch(searchQuery, () => {
 })
 
 watch(statusFilter, applyFilters)
+watch(requestStatusFilter, applyFilters)
 
 const {
     deleteForm,
     readForm,
     unreadForm,
+    requestStatusForm,
     markAsRead,
     markAsUnread,
+    updateRequestStatus,
     deleteContactMessage,
 } = useContactMessages()
 
@@ -66,6 +72,27 @@ const handleMarkRead = (record) => {
 const handleMarkUnread = (record) => {
     markAsUnread(record.id, {
         onSuccess: () => detailModal.close()
+    })
+}
+
+const handleUpdateRequestStatus = (record, requestStatus) => {
+    if (!record?.id || !requestStatus || requestStatus === (record.request_status_formatted?.value || record.request_status)) {
+        return
+    }
+
+    updateRequestStatus(record.id, requestStatus, {
+        onSuccess: () => {
+            if (detailModal.selectedItem.value?.id === record.id) {
+                detailModal.selectedItem.value = {
+                    ...detailModal.selectedItem.value,
+                    request_status: requestStatus,
+                    request_status_formatted: {
+                        ...(detailModal.selectedItem.value.request_status_formatted || {}),
+                        value: requestStatus,
+                    },
+                }
+            }
+        },
     })
 }
 
@@ -89,6 +116,14 @@ const statusOptions = [
     { value: 'unread', labelKey: 'contactMessages.filters.unread' },
     { value: 'read', labelKey: 'contactMessages.filters.read' },
 ]
+
+const requestStatusFilterOptions = computed(() => [
+    { value: 'all', label: t('contactMessages.filters.all') },
+    ...requestStatuses.value.map((status) => ({
+        value: status.value,
+        label: t(`contactMessages.requestStatuses.${status.value}`),
+    })),
+])
 </script>
 
 <template>
@@ -100,7 +135,9 @@ const statusOptions = [
             </div>
 
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-4 md:mb-6 p-3 md:p-4 space-y-4">
-                <div class="flex flex-wrap gap-2">
+                <div>
+                    <p class="text-label text-muted muted-color mb-2">{{ t('contactMessages.filters.readStatus') }}</p>
+                    <div class="flex flex-wrap gap-2">
                     <button
                         v-for="option in statusOptions"
                         :key="option.value"
@@ -115,6 +152,27 @@ const statusOptions = [
                     >
                         {{ t(option.labelKey) }}
                     </button>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="text-label text-muted muted-color mb-2">{{ t('contactMessages.filters.requestStatus') }}</p>
+                    <div class="flex flex-wrap gap-2">
+                        <button
+                            v-for="option in requestStatusFilterOptions"
+                            :key="option.value"
+                            type="button"
+                            @click="requestStatusFilter = option.value"
+                            :class="[
+                                'px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer',
+                                requestStatusFilter === option.value
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
+                            ]"
+                        >
+                            {{ option.label }}
+                        </button>
+                    </div>
                 </div>
 
                 <div class="w-full sm:w-96">
@@ -149,6 +207,11 @@ const statusOptions = [
                 <Pagination
                     :paginationData="paginationData"
                     routeName="contact-messages.index"
+                    :routeParams="{
+                        search: searchQuery || undefined,
+                        status: statusFilter === 'all' ? undefined : statusFilter,
+                        request_status: requestStatusFilter === 'all' ? undefined : requestStatusFilter,
+                    }"
                     @paginating="handlePaginating"
                 />
             </div>
@@ -159,9 +222,12 @@ const statusOptions = [
             :contactMessage="detailModal.selectedItem.value"
             :readLoading="readForm.processing"
             :unreadLoading="unreadForm.processing"
+            :requestStatusLoading="requestStatusForm.processing"
+            :requestStatuses="requestStatuses"
             @close="detailModal.close"
             @mark-read="handleMarkRead"
             @mark-unread="handleMarkUnread"
+            @update-request-status="handleUpdateRequestStatus"
         />
 
         <ContactMessageDeleteModal

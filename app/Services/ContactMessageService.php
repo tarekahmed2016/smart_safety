@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\ContactMessages\RequestStatus;
 use App\Models\ContactMessage;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -12,7 +13,7 @@ class ContactMessageService
     /**
      * @var list<string>
      */
-    private const ACTIVITY_FIELDS = ['is_read'];
+    private const ACTIVITY_FIELDS = ['is_read', 'request_status'];
 
     public function __construct(public ActivityLogService $activityLogService) {}
 
@@ -29,17 +30,23 @@ class ContactMessageService
             'message' => $data['message'],
             'is_read' => false,
             'read_at' => null,
+            'request_status' => RequestStatus::New,
         ]);
     }
 
     public function getPaginatedContactMessages(
         string $search = '',
         string $statusFilter = 'all',
+        string $requestStatusFilter = 'all',
         int $perPage = 15
     ): LengthAwarePaginator {
         return ContactMessage::query()
             ->when($statusFilter === 'read', fn ($q) => $q->where('is_read', true))
             ->when($statusFilter === 'unread', fn ($q) => $q->where('is_read', false))
+            ->when(
+                $requestStatusFilter !== 'all',
+                fn ($q) => $q->where('request_status', $requestStatusFilter)
+            )
             ->when($search, fn ($q) => $q->where(function ($query) use ($search) {
                 $query->where('name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
@@ -91,6 +98,31 @@ class ContactMessageService
                 allowedFields: self::ACTIVITY_FIELDS,
                 subjectLabel: $this->subjectLabel($contactMessage),
                 metadata: ['action' => 'unread'],
+                actor: $actor,
+            );
+
+            return $contactMessage->fresh();
+        });
+    }
+
+    public function updateRequestStatus(
+        ContactMessage $contactMessage,
+        RequestStatus $requestStatus,
+        ?User $actor = null
+    ): ContactMessage {
+        return DB::transaction(function () use ($contactMessage, $requestStatus, $actor) {
+            $originalValues = $contactMessage->only(['request_status']);
+
+            $contactMessage->update([
+                'request_status' => $requestStatus,
+            ]);
+
+            $this->activityLogService->recordChanges(
+                subject: $contactMessage,
+                originalValues: $originalValues,
+                allowedFields: ['request_status'],
+                subjectLabel: $this->subjectLabel($contactMessage),
+                metadata: ['action' => 'request_status'],
                 actor: $actor,
             );
 

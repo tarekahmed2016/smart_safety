@@ -57,6 +57,7 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
     Route::put('/contact-messages/{contactMessage}/read', [ContactMessageController::class, 'markAsRead'])->name('contact-messages.read');
     Route::put('/contact-messages/{contactMessage}/unread', [ContactMessageController::class, 'markAsUnread'])->name('contact-messages.unread');
+    Route::put('/contact-messages/{contactMessage}/request-status', [ContactMessageController::class, 'updateRequestStatus'])->name('contact-messages.request-status');
     Route::delete('/contact-messages/{contactMessage}', [ContactMessageController::class, 'destroy'])->name('contact-messages.destroy');
     Route::resource('/hero-slides', HeroSlideController::class)->except(['show', 'create', 'edit']);
     Route::get('/hero-slides-next-ordering', [HeroSlideController::class, 'getNextOrdering'])->name('hero-slides.next-ordering');

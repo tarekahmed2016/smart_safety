@@ -726,13 +726,25 @@
     "filters": {
       "all": "الكل",
       "unread": "غير مقروء",
-      "read": "مقروء"
+      "read": "مقروء",
+      "requestStatus": "حالة الطلب",
+      "readStatus": "حالة القراءة"
+    },
+    "requestStatuses": {
+      "new": "طلب جديد",
+      "under_review": "قيد المراجعة",
+      "contacted": "تم التواصل مع العميل",
+      "quote_sent": "تم إرسال عرض سعر",
+      "agreed": "تم الاتفاق",
+      "rejected": "مرفوض",
+      "completed": "مكتمل"
     },
     "table": {
       "name": "الاسم",
       "contact": "البريد / الهاتف",
       "subject": "الموضوع",
-      "status": "الحالة",
+      "status": "حالة القراءة",
+      "requestStatus": "حالة الطلب",
       "receivedAt": "تاريخ الاستلام",
       "actions": "الإجراءات",
       "view": "عرض",
@@ -747,9 +759,11 @@
       "phone": "الهاتف",
       "subject": "الموضوع",
       "message": "الرسالة",
-      "status": "الحالة",
+      "status": "حالة القراءة",
+      "requestStatus": "حالة الطلب",
       "receivedAt": "تاريخ الاستلام",
-      "close": "إغلاق"
+      "close": "إغلاق",
+      "updateStatus": "تحديث الحالة"
     },
     "deleteModal": {
       "title": "حذف الرسالة",

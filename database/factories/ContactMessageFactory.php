@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\ContactMessages\RequestStatus;
 use App\Models\ContactMessage;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -25,7 +26,15 @@ class ContactMessageFactory extends Factory
             'message' => fake()->paragraph(),
             'is_read' => false,
             'read_at' => null,
+            'request_status' => RequestStatus::New,
         ];
+    }
+
+    public function requestStatus(RequestStatus $status): static
+    {
+        return $this->state(fn () => [
+            'request_status' => $status,
+        ]);
     }
 
     public function read(): static

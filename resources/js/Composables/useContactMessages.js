@@ -4,6 +4,18 @@ export function useContactMessages() {
   const deleteForm = useForm({})
   const readForm = useForm({})
   const unreadForm = useForm({})
+  const requestStatusForm = useForm({
+    request_status: '',
+  })
+
+  const updateRequestStatus = (id, requestStatus, callbacks = {}) => {
+    requestStatusForm.request_status = requestStatus
+
+    return requestStatusForm.put(route('contact-messages.request-status', id), {
+      preserveScroll: true,
+      ...callbacks,
+    })
+  }
 
   const markAsRead = (id, callbacks = {}) => {
     return readForm.put(route('contact-messages.read', id), {
@@ -38,8 +50,10 @@ export function useContactMessages() {
     deleteForm,
     readForm,
     unreadForm,
+    requestStatusForm,
     markAsRead,
     markAsUnread,
+    updateRequestStatus,
     deleteContactMessage,
     refreshList,
   }
