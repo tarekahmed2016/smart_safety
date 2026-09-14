@@ -14,18 +14,30 @@ export function useDialogAccessibility(isOpen, onClose) {
     }
   }
 
+  const lockBackgroundScroll = () => {
+    document.documentElement.style.overflow = 'hidden'
+    document.body.style.overflow = 'hidden'
+    document.body.style.overscrollBehavior = 'none'
+  }
+
+  const unlockBackgroundScroll = () => {
+    document.documentElement.style.overflow = ''
+    document.body.style.overflow = ''
+    document.body.style.overscrollBehavior = ''
+  }
+
   watch(isOpen, (open) => {
     if (open) {
-      document.body.style.overflow = 'hidden'
+      lockBackgroundScroll()
       document.addEventListener('keydown', handleEscape)
     } else {
-      document.body.style.overflow = ''
+      unlockBackgroundScroll()
       document.removeEventListener('keydown', handleEscape)
     }
   }, { immediate: true })
 
   onUnmounted(() => {
-    document.body.style.overflow = ''
+    unlockBackgroundScroll()
     document.removeEventListener('keydown', handleEscape)
   })
 }

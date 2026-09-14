@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { resolveBilingualField } from '../../Composables/useBilingualContent.js'
 import { useDialogAccessibility } from '../../Composables/General/useDialogAccessibility.js'
@@ -21,6 +21,36 @@ const { t, locale } = useI18n()
 const isOpen = computed(() => Boolean(props.product))
 
 useDialogAccessibility(isOpen, () => emit('close'))
+
+const preventBackgroundScroll = (event) => {
+  if (!isOpen.value) {
+    return
+  }
+
+  const rawTarget = event.target
+  const target = rawTarget instanceof Element ? rawTarget : rawTarget?.parentElement
+  if (target?.closest('.px-product-modal-copy')) {
+    return
+  }
+
+  event.preventDefault()
+}
+
+watch(isOpen, (open) => {
+  if (open) {
+    document.addEventListener('wheel', preventBackgroundScroll, { passive: false })
+    document.addEventListener('touchmove', preventBackgroundScroll, { passive: false })
+    return
+  }
+
+  document.removeEventListener('wheel', preventBackgroundScroll)
+  document.removeEventListener('touchmove', preventBackgroundScroll)
+}, { immediate: true })
+
+onUnmounted(() => {
+  document.removeEventListener('wheel', preventBackgroundScroll)
+  document.removeEventListener('touchmove', preventBackgroundScroll)
+})
 
 const contentDir = computed(() => (locale.value === 'ar' ? 'rtl' : 'ltr'))
 const productName = computed(() => resolveBilingualField(props.product || {}, 'name', locale.value))

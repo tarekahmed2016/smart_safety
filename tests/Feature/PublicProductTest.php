@@ -248,12 +248,17 @@ test('product details modal keeps the image fixed while only the copy column scr
         ->and($modalBlock[0] ?? '')->toContain('overflow: hidden')
         ->and($modalBlock[0] ?? '')->not->toContain('overflow-y: auto')
         ->and($copyBlock[0] ?? '')->toContain('overflow-y: auto')
+        ->and($copyBlock[0] ?? '')->toContain('overflow-x: hidden')
+        ->and($copyBlock[0] ?? '')->toContain('overscroll-behavior: contain')
+        ->and($copyBlock[0] ?? '')->toContain('max-height: calc(100vh - 48px)')
+        ->and($copyBlock[0] ?? '')->not->toContain('overflow: hidden')
         ->and($mediaBlock[0] ?? '')->toContain('position: sticky')
         ->and($mediaBlock[0] ?? '')->toContain('overflow: hidden')
         ->and($mediaBlock[0] ?? '')->not->toContain('overflow-y: auto')
         ->and($layoutBlock[0] ?? '')->toContain('grid-template-areas: "copy media"')
         ->and($layoutBlock[0] ?? '')->toContain('overflow: hidden')
         ->and($layoutBlock[0] ?? '')->not->toContain('overflow-y: auto')
+        ->and($modal)->toContain('preventBackgroundScroll')
         ->and($modal)->not->toContain('px-product-modal-scroll');
 });
 
