@@ -150,7 +150,8 @@ test('products carousel opens a details modal from the product card', function (
         ->and($styles)->toContain('pointer-events: auto')
         ->and($styles)->toContain('cursor: pointer')
         ->and($modal)->toContain('<Teleport to="body">')
-        ->and($modal)->toContain('v-show="isOpen"')
+        ->and($modal)->toContain('<Transition name="px-product-modal-overlay">')
+        ->and($modal)->toContain('v-if="isOpen"')
         ->and($modal)->toContain('@click.self="close"')
         ->and($modal)->toContain('useDialogAccessibility')
         ->and($modal)->toContain('px-product-modal-close')
@@ -163,6 +164,7 @@ test('products carousel opens a details modal from the product card', function (
         ->and($modal)->toContain('px-product-size-pill')
         ->and($modal)->not->toContain('specifications')
         ->and($modal)->not->toContain('px-product-modal-specs')
+        ->and($modal)->not->toContain('px-product-modal-scroll')
         ->and($modal)->toContain("locale.value === 'ar'")
         ->and($modal)->not->toContain('action_text')
         ->and($modal)->not->toContain('action_url')
@@ -201,6 +203,72 @@ test('product details modal keeps image on the right and lists formatted on desk
         ->and($styles)->toContain('grid-template-columns: 1fr')
         ->and($styles)->toContain('"media"')
         ->and($styles)->toContain('"copy"');
+});
+
+test('product details modal animates open and close without jumping', function () {
+    $modal = file_get_contents(resource_path('js/Components/Public/ProductDetailsModal.vue'));
+    $styles = file_get_contents(resource_path('css/plastex.css'));
+
+    expect($modal)->toContain('<Transition name="px-product-modal-overlay">')
+        ->and($modal)->toContain('v-if="isOpen"')
+        ->and($modal)->toContain('@click.self="close"')
+        ->and($modal)->toContain('px-product-modal-close')
+        ->and($modal)->toContain('useDialogAccessibility')
+        ->and($styles)->toContain('.px-product-modal-overlay-enter-active')
+        ->and($styles)->toContain('.px-product-modal-overlay-enter-from')
+        ->and($styles)->toContain('.px-product-modal-overlay-enter-to')
+        ->and($styles)->toContain('.px-product-modal-overlay-leave-active')
+        ->and($styles)->toContain('.px-product-modal-overlay-leave-from')
+        ->and($styles)->toContain('.px-product-modal-overlay-leave-to')
+        ->and($styles)->toContain('opacity 450ms cubic-bezier(0.22, 1, 0.36, 1)')
+        ->and($styles)->toContain('translateY(35px) scale(0.92)')
+        ->and($styles)->toContain('translateY(0) scale(1)')
+        ->and($modal)->toContain('<Transition name="px-product-modal-copy" appear>')
+        ->and($styles)->toContain('.px-product-modal-copy-enter-active')
+        ->and($styles)->toContain('.px-product-modal-copy-enter-from')
+        ->and($styles)->toContain('.px-product-modal-copy-enter-to')
+        ->and($styles)->toContain('.px-product-modal-copy-leave-active')
+        ->and($styles)->toContain('.px-product-modal-copy-leave-from')
+        ->and($styles)->toContain('.px-product-modal-copy-leave-to')
+        ->and($styles)->toContain('translateY(12px)')
+        ->and($styles)->toContain('80ms')
+        ->and($styles)->toContain('@media (prefers-reduced-motion: reduce)');
+});
+
+test('product details modal keeps the image fixed while only the copy column scrolls', function () {
+    $modal = file_get_contents(resource_path('js/Components/Public/ProductDetailsModal.vue'));
+    $styles = file_get_contents(resource_path('css/plastex.css'));
+
+    preg_match('/\.px-product-modal \{\s*position: relative;.*?\}/s', $styles, $modalBlock);
+    preg_match('/\.px-product-modal-copy \{.*?\}/s', $styles, $copyBlock);
+    preg_match('/\.px-product-modal-media \{.*?\}/s', $styles, $mediaBlock);
+    preg_match('/\.px-product-modal-layout \{.*?\}/s', $styles, $layoutBlock);
+
+    expect($modalBlock[0] ?? '')->toContain('max-height: calc(100vh - 48px)')
+        ->and($modalBlock[0] ?? '')->toContain('overflow: hidden')
+        ->and($modalBlock[0] ?? '')->not->toContain('overflow-y: auto')
+        ->and($copyBlock[0] ?? '')->toContain('overflow-y: auto')
+        ->and($mediaBlock[0] ?? '')->toContain('position: sticky')
+        ->and($mediaBlock[0] ?? '')->toContain('overflow: hidden')
+        ->and($mediaBlock[0] ?? '')->not->toContain('overflow-y: auto')
+        ->and($layoutBlock[0] ?? '')->toContain('grid-template-areas: "copy media"')
+        ->and($layoutBlock[0] ?? '')->toContain('overflow: hidden')
+        ->and($layoutBlock[0] ?? '')->not->toContain('overflow-y: auto')
+        ->and($modal)->not->toContain('px-product-modal-scroll');
+});
+
+test('product details modal stacks into a single column on mobile', function () {
+    $styles = file_get_contents(resource_path('css/plastex.css'));
+
+    preg_match('/@media \(max-width: 767px\) \{\s*\.px-product-modal-backdrop.*?object-fit: contain;\s*\}\s*\}/s', $styles, $mobileBlock);
+
+    expect($mobileBlock[0] ?? '')->not->toBe('')
+        ->and($mobileBlock[0])->toContain('grid-template-columns: 1fr')
+        ->and($mobileBlock[0])->toContain('"media"')
+        ->and($mobileBlock[0])->toContain('"copy"')
+        ->and($mobileBlock[0])->toContain('overflow-y: auto')
+        ->and($mobileBlock[0])->toContain('object-fit: contain')
+        ->and($mobileBlock[0])->toContain('overflow-x: hidden');
 });
 
 test('products carousel opens the details modal directly from the product image click', function () {

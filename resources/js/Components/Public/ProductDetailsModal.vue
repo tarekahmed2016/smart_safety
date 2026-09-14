@@ -35,49 +35,52 @@ const close = () => emit('close')
 
 <template>
   <Teleport to="body">
-    <div
-      v-show="isOpen"
-      class="px-product-modal-backdrop"
-      role="dialog"
-      aria-modal="true"
-      :aria-hidden="isOpen ? 'false' : 'true'"
-      aria-labelledby="public-product-details-title"
-      @click.self="close"
-    >
-      <div v-if="product" class="px-product-modal">
-        <button
-          type="button"
-          class="px-product-modal-close"
-          :aria-label="t('public.home.products.closeDetails')"
-          @click="close"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M6 6l12 12M18 6L6 18" />
-          </svg>
-        </button>
+    <Transition name="px-product-modal-overlay">
+      <div
+        v-if="isOpen"
+        class="px-product-modal-backdrop"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="public-product-details-title"
+        @click.self="close"
+      >
+        <div v-if="product" class="px-product-modal">
+          <button
+            type="button"
+            class="px-product-modal-close"
+            :aria-label="t('public.home.products.closeDetails')"
+            @click="close"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
 
-        <div class="px-product-modal-scroll">
           <div class="px-product-modal-layout">
             <div class="px-product-modal-copy" :dir="contentDir">
-              <LocalizedHeading
-                id="public-product-details-title"
-                class="px-product-modal-title"
-                :text="productName"
-                tag="h2"
-              />
+              <Transition name="px-product-modal-copy" appear>
+                <div class="px-product-modal-copy-inner">
+                  <LocalizedHeading
+                    id="public-product-details-title"
+                    class="px-product-modal-title"
+                    :text="productName"
+                    tag="h2"
+                  />
 
-              <div v-if="sizes.length" class="px-product-modal-sizes">
-                <span v-for="(size, index) in sizes" :key="`${size.value}-${index}`" class="px-product-size-pill">
-                  {{ sizeLabel(size) }}
-                </span>
-              </div>
+                  <div v-if="sizes.length" class="px-product-modal-sizes">
+                    <span v-for="(size, index) in sizes" :key="`${size.value}-${index}`" class="px-product-size-pill">
+                      {{ sizeLabel(size) }}
+                    </span>
+                  </div>
 
-              <RichTextContent
-                v-if="hasDetails"
-                :content="productDetails"
-                tag="div"
-                class="px-product-modal-details"
-              />
+                  <RichTextContent
+                    v-if="hasDetails"
+                    :content="productDetails"
+                    tag="div"
+                    class="px-product-modal-details"
+                  />
+                </div>
+              </Transition>
             </div>
 
             <div class="px-product-modal-media">
@@ -91,6 +94,6 @@ const close = () => emit('close')
           </div>
         </div>
       </div>
-    </div>
+    </Transition>
   </Teleport>
 </template>

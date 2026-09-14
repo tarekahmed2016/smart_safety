@@ -2151,22 +2151,100 @@ html[dir="ltr"] .px-hero-actions .px-btn {
     align-items: center;
     justify-content: center;
     padding: 1.25rem;
+    overflow: hidden;
     background: rgba(11, 31, 58, 0.48);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     pointer-events: auto;
 }
 
-.px-product-modal-backdrop[aria-hidden="true"] {
-    display: none;
-    pointer-events: none;
+.px-product-modal-overlay-enter-active,
+.px-product-modal-overlay-leave-active {
+    transition: opacity 450ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.px-product-modal-overlay-enter-active .px-product-modal,
+.px-product-modal-overlay-leave-active .px-product-modal {
+    transition: opacity 450ms cubic-bezier(0.22, 1, 0.36, 1), transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.px-product-modal-overlay-enter-from,
+.px-product-modal-overlay-leave-to {
+    opacity: 0;
+}
+
+.px-product-modal-overlay-enter-to,
+.px-product-modal-overlay-leave-from {
+    opacity: 1;
+}
+
+.px-product-modal-overlay-enter-from .px-product-modal,
+.px-product-modal-overlay-leave-to .px-product-modal {
+    opacity: 0;
+    transform: translateY(35px) scale(0.92);
+}
+
+.px-product-modal-overlay-enter-to .px-product-modal,
+.px-product-modal-overlay-leave-from .px-product-modal {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.px-product-modal-copy-enter-active {
+    transition: opacity 400ms cubic-bezier(0.22, 1, 0.36, 1) 80ms, transform 400ms cubic-bezier(0.22, 1, 0.36, 1) 80ms;
+}
+
+.px-product-modal-copy-leave-active {
+    transition: opacity 400ms cubic-bezier(0.22, 1, 0.36, 1), transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.px-product-modal-copy-enter-from,
+.px-product-modal-copy-leave-to {
+    opacity: 0;
+    transform: translateY(12px);
+}
+
+.px-product-modal-copy-enter-to,
+.px-product-modal-copy-leave-from {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.px-product-modal-overlay-leave-active .px-product-modal-copy-inner {
+    transition: opacity 400ms cubic-bezier(0.22, 1, 0.36, 1), transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.px-product-modal-overlay-leave-to .px-product-modal-copy-inner {
+    opacity: 0;
+    transform: translateY(12px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .px-product-modal-overlay-enter-active,
+    .px-product-modal-overlay-leave-active,
+    .px-product-modal-overlay-enter-active .px-product-modal,
+    .px-product-modal-overlay-leave-active .px-product-modal,
+    .px-product-modal-copy-enter-active,
+    .px-product-modal-copy-leave-active {
+        transition: none;
+    }
+
+    .px-product-modal-overlay-enter-from .px-product-modal,
+    .px-product-modal-overlay-leave-to .px-product-modal,
+    .px-product-modal-copy-enter-from,
+    .px-product-modal-copy-leave-to {
+        transform: none;
+    }
 }
 
 .px-product-modal {
     position: relative;
+    display: flex;
+    flex-direction: column;
     width: min(72rem, 100%);
-    max-height: min(90vh, 52rem);
+    max-height: calc(100vh - 48px);
     overflow: hidden;
+    overflow-x: hidden;
     background: #fff;
     border-radius: 1.5rem;
     box-shadow: 0 24px 64px rgba(11, 31, 58, 0.22);
@@ -2201,33 +2279,41 @@ html[dir="ltr"] .px-hero-actions .px-btn {
     background: #f1f5f9;
 }
 
-.px-product-modal-scroll {
-    max-height: min(90vh, 52rem);
-    overflow-y: auto;
-    padding: 2.25rem 2.5rem 2rem;
-}
-
 .px-product-modal-layout {
     direction: ltr;
     display: grid;
     grid-template-columns: minmax(0, 1.2fr) minmax(16rem, 0.9fr);
     grid-template-areas: "copy media";
-    align-items: start;
-    gap: 1.75rem 2.25rem;
+    align-items: stretch;
+    gap: 0;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: calc(100vh - 48px);
+    overflow: hidden;
+    overflow-x: hidden;
 }
 
 .px-product-modal-copy {
     grid-area: copy;
     min-width: 0;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 2.25rem 2.5rem 2rem;
 }
 
 .px-product-modal-media {
     grid-area: media;
+    position: sticky;
+    top: 0;
+    align-self: stretch;
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 12rem;
-    padding: 0.5rem;
+    max-height: calc(100vh - 48px);
+    overflow: hidden;
+    padding: 2.25rem 2rem 2rem 0.5rem;
     background: #fff;
 }
 
@@ -2240,10 +2326,12 @@ html[dir="ltr"] .px-hero-actions .px-btn {
 }
 
 .px-product-modal-media img {
-    width: 100%;
-    max-width: 24rem;
-    max-height: 22rem;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: calc(100vh - 96px);
     object-fit: contain;
+    object-position: center;
     display: block;
 }
 
@@ -2312,21 +2400,53 @@ html[dir="ltr"] .px-hero-actions .px-btn {
 }
 
 @media (max-width: 767px) {
+    .px-product-modal-backdrop {
+        padding: 0.75rem;
+        align-items: stretch;
+    }
+
+    .px-product-modal {
+        width: 100%;
+        max-width: 100%;
+        max-height: calc(100vh - 24px);
+        overflow-x: hidden;
+    }
+
     .px-product-modal-layout {
         grid-template-columns: 1fr;
+        grid-template-rows: auto minmax(0, 1fr);
         grid-template-areas:
             "media"
             "copy";
-        gap: 1.25rem;
+        gap: 0;
+        max-height: calc(100vh - 24px);
+        overflow: hidden;
+        overflow-x: hidden;
     }
 
-    .px-product-modal-scroll {
-        padding: 2.75rem 1.25rem 1.5rem;
+    .px-product-modal-media {
+        position: relative;
+        top: auto;
+        flex-shrink: 0;
+        max-height: none;
+        min-height: 0;
+        padding: 2.75rem 1.25rem 0.75rem;
+        overflow: hidden;
+    }
+
+    .px-product-modal-copy {
+        overflow-x: hidden;
+        overflow-y: auto;
+        min-height: 0;
+        padding: 0.75rem 1.25rem 1.5rem;
     }
 
     .px-product-modal-media img {
+        width: auto;
         max-width: 100%;
+        height: auto;
         max-height: 16rem;
+        object-fit: contain;
     }
 }
 
