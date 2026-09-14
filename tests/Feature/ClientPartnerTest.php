@@ -28,6 +28,7 @@ function validClientPartnerPayload(array $overrides = []): array
         'ordering' => 0,
         'is_active' => true,
         'show_on_homepage' => true,
+        'show_type_badge' => true,
         'image' => UploadedFile::fake()->image('logo.jpg'),
     ], $overrides);
 }
@@ -118,6 +119,7 @@ test('admin can create a client', function () {
         ->and($record->website)->toBe('https://altarek.example.com')
         ->and($record->ordering)->toBe(1)
         ->and($record->is_active)->toBeTrue()
+        ->and($record->show_type_badge)->toBeTrue()
         ->and($record->attachment)->not->toBeNull();
 
     Storage::disk('public')->assertExists($record->attachment->path);
@@ -156,16 +158,56 @@ test('creating rejects invalid type', function () {
         ->assertSessionHasErrors('type');
 });
 
-test('creating requires name_ar', function () {
+test('creating allows empty arabic and english names', function () {
     $this->actingAs($this->admin)
-        ->post(route('clients-partners.store'), validClientPartnerPayload(['name_ar' => '']))
-        ->assertSessionHasErrors('name_ar');
+        ->post(route('clients-partners.store'), validClientPartnerPayload([
+            'name_ar' => '',
+            'name_en' => '',
+        ]))
+        ->assertRedirect();
+
+    $record = ClientPartner::query()->latest('id')->first();
+
+    expect($record)->not->toBeNull()
+        ->and($record->name_ar)->toBeNull()
+        ->and($record->name_en)->toBeNull()
+        ->and($record->show_type_badge)->toBeTrue();
 });
 
-test('creating requires name_en', function () {
+test('creating defaults show_type_badge to true', function () {
+    $payload = validClientPartnerPayload();
+    unset($payload['show_type_badge']);
+
     $this->actingAs($this->admin)
-        ->post(route('clients-partners.store'), validClientPartnerPayload(['name_en' => '']))
-        ->assertSessionHasErrors('name_en');
+        ->post(route('clients-partners.store'), $payload)
+        ->assertRedirect();
+
+    expect(ClientPartner::query()->latest('id')->first()->show_type_badge)->toBeTrue();
+});
+
+test('admin can hide the client partner type badge', function () {
+    $record = ClientPartner::factory()->create([
+        'name_ar' => 'اسم محفوظ',
+        'name_en' => 'Kept Name',
+        'show_type_badge' => true,
+    ]);
+
+    $this->actingAs($this->admin)
+        ->put(route('clients-partners.update', $record), [
+            'type' => ClientPartnerType::Client->value,
+            'name_ar' => 'اسم محفوظ',
+            'name_en' => 'Kept Name',
+            'website' => $record->website,
+            'ordering' => $record->ordering,
+            'is_active' => true,
+            'show_on_homepage' => true,
+            'show_type_badge' => false,
+        ])
+        ->assertRedirect();
+
+    expect($record->fresh()->show_type_badge)->toBeFalse()
+        ->and($record->fresh()->name_ar)->toBe('اسم محفوظ')
+        ->and($record->fresh()->name_en)->toBe('Kept Name');
 });
 
 test('creating rejects invalid website', function () {
@@ -598,6 +640,7 @@ test('homepage public client partner payload excludes admin-only fields', functi
             ->where('clients.0.name_ar', 'عميل عام')
             ->where('clients.0.name_en', 'Public Client')
             ->where('clients.0.website', 'https://client.test')
+            ->where('clients.0.show_type_badge', true)
             ->missing('clients.0.is_active')
             ->missing('clients.0.ordering')
             ->missing('clients.0.id')

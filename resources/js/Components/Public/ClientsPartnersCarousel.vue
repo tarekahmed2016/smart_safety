@@ -28,13 +28,19 @@ const {
   cardSelector: '.px-client-card',
 })
 
-const itemName = (item) => resolveBilingualField(item, 'name', locale.value)
+const itemName = (item) => resolveBilingualField(item, 'name', locale.value).trim()
+
+const isValidType = (item) => item?.type === 'client' || item?.type === 'partner'
+
+const showTypeBadge = (item) => (item.show_type_badge ?? true) && isValidType(item)
 
 const itemTypeLabel = (item) => (
   item.type === 'partner'
     ? t('public.home.clientsPartners.partnerBadge')
     : t('public.home.clientsPartners.clientBadge')
 )
+
+const showTextArea = (item) => Boolean(showTypeBadge(item) || itemName(item))
 </script>
 
 <template>
@@ -66,21 +72,22 @@ const itemTypeLabel = (item) => (
       <div ref="trackRef" class="px-product-carousel-track px-horizontal-carousel-track">
         <article
           v-for="(item, index) in carouselItems"
-          :key="`${itemName(item)}-${item.type}-${index}`"
+          :key="`${item.type}-${item.logo}-${index}`"
           class="px-client-card px-carousel-card"
+          :class="{ 'px-client-card--media-only': !showTextArea(item) }"
           :aria-hidden="index >= items.length ? 'true' : undefined"
         >
           <div class="px-client-media">
             <img
               v-if="item.logo"
               :src="item.logo"
-              :alt="itemName(item)"
+              :alt="itemName(item) || itemTypeLabel(item)"
             />
             <PublicMediaPlaceholder v-else icon="handshake" />
           </div>
-          <div class="px-client-body">
-            <span class="px-client-badge">{{ itemTypeLabel(item) }}</span>
-            <h3>{{ itemName(item) }}</h3>
+          <div v-if="showTextArea(item)" class="px-client-body">
+            <span v-if="showTypeBadge(item)" class="px-client-badge">{{ itemTypeLabel(item) }}</span>
+            <h3 v-if="itemName(item)">{{ itemName(item) }}</h3>
             <a
               v-if="item.website"
               :href="item.website"

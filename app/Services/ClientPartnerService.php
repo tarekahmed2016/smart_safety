@@ -23,6 +23,7 @@ class ClientPartnerService
         'ordering',
         'is_active',
         'show_on_homepage',
+        'show_type_badge',
     ];
 
     public function __construct(public ActivityLogService $activityLogService) {}

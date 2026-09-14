@@ -643,6 +643,7 @@
       "orderingPlaceholder": "أدخل ترتيب العرض",
       "activeLabel": "نشط",
       "showOnHomepageLabel": "إظهار في الصفحة الرئيسية",
+      "showTypeBadgeLabel": "إظهار نوع العميل/الشريك",
       "logoLabel": "الشعار",
       "chooseFile": "اختر ملف",
       "noFileChosen": "لم يتم اختيار ملف",

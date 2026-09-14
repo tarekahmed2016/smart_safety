@@ -71,6 +71,7 @@ const props = defineProps({
 
 const displayName = computed(() =>
   resolveBilingualField(props.clientPartner, 'name', locale.value)
+    || t('clientsPartners.form.typeClient')
 )
 
 const emit = defineEmits(['close', 'confirm'])

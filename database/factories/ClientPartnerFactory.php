@@ -26,6 +26,7 @@ class ClientPartnerFactory extends Factory
             'ordering' => fake()->numberBetween(0, 20),
             'is_active' => true,
             'show_on_homepage' => true,
+            'show_type_badge' => true,
         ];
     }
 

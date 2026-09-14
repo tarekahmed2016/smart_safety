@@ -643,6 +643,7 @@
       "orderingPlaceholder": "Enter display order",
       "activeLabel": "Active",
       "showOnHomepageLabel": "Show on homepage",
+      "showTypeBadgeLabel": "Show client/partner type",
       "logoLabel": "Logo",
       "chooseFile": "Choose File",
       "noFileChosen": "No file chosen",

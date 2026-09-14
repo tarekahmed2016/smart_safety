@@ -1059,6 +1059,11 @@ html[dir="ltr"] .px-hero-actions .px-btn {
     width: min(82vw, 17.5rem);
 }
 
+.px-product-carousel .px-client-card {
+    height: auto;
+    align-self: stretch;
+}
+
 .px-horizontal-carousel-viewport {
     cursor: grab;
     touch-action: pan-y;
@@ -1103,24 +1108,29 @@ html[dir="ltr"] .px-hero-actions .px-btn {
 
 .px-client-media {
     height: 150px;
-    flex-shrink: 0;
+    flex: 0 0 150px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    background: #fff;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
     padding: 1rem;
     box-sizing: border-box;
 }
 
 .px-client-media img {
-    width: 100%;
-    height: 100%;
+    width: auto;
+    height: auto;
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
     object-position: center;
     display: block;
+    border: 0;
+    box-shadow: none;
+    background: transparent;
 }
 
 .px-team-body {
@@ -1167,6 +1177,17 @@ html[dir="ltr"] .px-hero-actions .px-btn {
     font-size: 1.05rem;
     font-weight: 800;
     line-height: 1.35;
+}
+
+.px-client-body h3:empty {
+    display: none;
+    margin: 0;
+    padding: 0;
+    height: 0;
+}
+
+.px-client-card--media-only {
+    justify-content: center;
 }
 
 .px-client-body p {
@@ -1384,6 +1405,12 @@ html[dir="ltr"] .px-hero-actions .px-btn {
 .px-team-media .px-media-fallback,
 .px-client-media .px-media-fallback {
     min-height: 0;
+}
+
+.px-client-media .px-media-fallback {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
 }
 
 .px-service-media-fallback {

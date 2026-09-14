@@ -103,7 +103,7 @@ const columns = computed(() => [
     { key: 'is_active', label: t('clientsPartners.table.status'), sortable: false },
 ])
 
-const displayName = (record) => resolveBilingualField(record, 'name', locale.value)
+const displayName = (record) => resolveBilingualField(record, 'name', locale.value) || '—'
 
 const typeLabel = (record) => {
     if (locale.value === 'ar') {

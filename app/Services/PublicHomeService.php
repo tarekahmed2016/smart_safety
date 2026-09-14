@@ -390,10 +390,11 @@ class PublicHomeService
             ->orderBy('ordering')
             ->get()
             ->map(fn (ClientPartner $record) => [
-                'name_ar' => $record->name_ar,
-                'name_en' => $record->name_en,
+                'name_ar' => $record->name_ar ?? '',
+                'name_en' => $record->name_en ?? '',
                 'website' => $record->website,
                 'logo' => $record->attachment?->asset_path,
+                'show_type_badge' => (bool) ($record->show_type_badge ?? true),
             ])
             ->values();
     }
@@ -411,10 +412,11 @@ class PublicHomeService
             ->orderBy('ordering')
             ->get()
             ->map(fn (ClientPartner $record) => [
-                'name_ar' => $record->name_ar,
-                'name_en' => $record->name_en,
+                'name_ar' => $record->name_ar ?? '',
+                'name_en' => $record->name_en ?? '',
                 'website' => $record->website,
                 'logo' => $record->attachment?->asset_path,
+                'show_type_badge' => (bool) ($record->show_type_badge ?? true),
             ])
             ->values();
     }
@@ -432,11 +434,12 @@ class PublicHomeService
             ->get()
             ->map(fn (ClientPartner $record) => [
                 'type' => $record->type->value,
-                'name_ar' => $record->name_ar,
-                'name_en' => $record->name_en,
+                'name_ar' => $record->name_ar ?? '',
+                'name_en' => $record->name_en ?? '',
                 'website' => $record->website,
                 'logo' => $record->attachment?->asset_path,
                 'ordering' => $record->ordering,
+                'show_type_badge' => (bool) ($record->show_type_badge ?? true),
             ])
             ->values();
     }

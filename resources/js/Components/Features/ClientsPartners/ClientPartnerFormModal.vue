@@ -37,6 +37,7 @@ const form = useForm({
   ordering: '',
   is_active: true,
   show_on_homepage: true,
+  show_type_badge: true,
   image: null,
 })
 
@@ -78,6 +79,7 @@ watch(() => props.isOpen, async (isOpen) => {
     form.ordering = props.clientPartner.ordering ?? ''
     form.is_active = Boolean(props.clientPartner.is_active)
     form.show_on_homepage = Boolean(props.clientPartner.show_on_homepage ?? true)
+    form.show_type_badge = Boolean(props.clientPartner.show_type_badge ?? true)
     form.image = null
     logoPreview.value = props.clientPartner.attachment?.asset_path || null
     logoFileName.value = null
@@ -85,6 +87,7 @@ watch(() => props.isOpen, async (isOpen) => {
     form.reset()
     form.is_active = true
     form.show_on_homepage = true
+    form.show_type_badge = true
     form.type = props.nextData?.type || props.defaultType || 'client'
     form.ordering = props.nextData?.ordering ?? ''
     logoPreview.value = null
@@ -153,13 +156,19 @@ const handleClose = () => {
           <p v-if="form.errors.type" class="form-error">{{ form.errors.type }}</p>
         </div>
 
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input v-model="form.show_type_badge" type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+          <span class="text-label">{{ t('clientsPartners.form.showTypeBadgeLabel') }}</span>
+        </label>
+        <p v-if="form.errors.show_type_badge" class="form-error">{{ form.errors.show_type_badge }}</p>
+
         <div class="space-y-4 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
           <h3 class="text-label font-medium text-gray-900 dark:text-gray-100">{{ t('bilingual.arabic') }}</h3>
           <div>
             <label class="form-label text-label">
-              {{ t('clientsPartners.form.nameArLabel') }} <span class="text-red-500">*</span>
+              {{ t('clientsPartners.form.nameArLabel') }}
             </label>
-            <input v-model="form.name_ar" type="text" required class="form-input text-body" :placeholder="t('clientsPartners.form.nameArPlaceholder')" />
+            <input v-model="form.name_ar" type="text" class="form-input text-body" :placeholder="t('clientsPartners.form.nameArPlaceholder')" />
             <p v-if="form.errors.name_ar" class="form-error">{{ form.errors.name_ar }}</p>
           </div>
         </div>
@@ -168,9 +177,9 @@ const handleClose = () => {
           <h3 class="text-label font-medium text-gray-900 dark:text-gray-100">{{ t('bilingual.english') }}</h3>
           <div>
             <label class="form-label text-label">
-              {{ t('clientsPartners.form.nameEnLabel') }} <span class="text-red-500">*</span>
+              {{ t('clientsPartners.form.nameEnLabel') }}
             </label>
-            <input v-model="form.name_en" type="text" required class="form-input text-body" :placeholder="t('clientsPartners.form.nameEnPlaceholder')" />
+            <input v-model="form.name_en" type="text" class="form-input text-body" :placeholder="t('clientsPartners.form.nameEnPlaceholder')" />
             <p v-if="form.errors.name_en" class="form-error">{{ form.errors.name_en }}</p>
           </div>
         </div>
