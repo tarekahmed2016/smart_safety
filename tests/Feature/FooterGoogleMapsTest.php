@@ -182,3 +182,23 @@ JS;
         ->and($result['other'])->toBe('')
         ->and($result['empty'])->toBe('');
 });
+
+test('public footer hides the newsletter subscribe column on all locales', function () {
+    $footer = file_get_contents(resource_path('js/Components/Public/PublicFooter.vue'));
+    $styles = file_get_contents(resource_path('css/plastex.css'));
+    $ar = file_get_contents(resource_path('js/Plugins/I18n/Locales/ar.json'));
+    $en = file_get_contents(resource_path('js/Plugins/I18n/Locales/en.json'));
+
+    expect($footer)->toContain('const showFooterNewsletter = false')
+        ->and($footer)->toContain('v-if="showFooterNewsletter"')
+        ->and($footer)->toContain('id="footer-newsletter-email"')
+        ->and($footer)->toContain("route('newsletter.store')")
+        ->and($footer)->toContain('px-footer-brand')
+        ->and($footer)->toContain("t('public.home.footer.quickLinks')")
+        ->and($footer)->toContain("t('public.home.footer.contact')")
+        ->and($footer)->toMatch('/<div v-if="showFooterNewsletter">[\s\S]*id="footer-newsletter-email"[\s\S]*newsletterButton/')
+        ->and($styles)->toContain('grid-template-columns: 1.4fr 0.9fr 1fr;')
+        ->and($styles)->not->toContain('grid-template-columns: 1.3fr 0.8fr 0.9fr 1.1fr;')
+        ->and($ar)->toContain('ابق على اطلاع')
+        ->and($en)->toContain('Stay in the Loop');
+});

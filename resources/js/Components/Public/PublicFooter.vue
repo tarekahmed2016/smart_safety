@@ -46,6 +46,7 @@ const logo = computed(() => companyInfo.value.logo || companyInfo.value.attachme
 const addressText = computed(() => resolveBilingualField(companyInfo.value, 'address', locale.value))
 const year = new Date().getFullYear()
 const todayVisitors = computed(() => Number(page.props.todayVisitors ?? 0))
+const showFooterNewsletter = false
 
 const newsletterForm = useForm({
     email: '',
@@ -129,7 +130,7 @@ const submitNewsletter = () => {
                 </div>
             </div>
 
-            <div>
+            <div v-if="showFooterNewsletter">
                 <h4>{{ newsletterTitle }}</h4>
                 <p class="px-footer-newsletter-copy">{{ newsletterSubtitle }}</p>
                 <form class="px-footer-newsletter" @submit.prevent="submitNewsletter">

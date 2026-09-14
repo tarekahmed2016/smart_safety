@@ -2105,7 +2105,7 @@ html[dir="ltr"] .px-hero-actions .px-btn {
     }
 
     .px-footer-grid {
-        grid-template-columns: 1.3fr 0.8fr 0.9fr 1.1fr;
+        grid-template-columns: 1.4fr 0.9fr 1fr;
     }
 
     .px-footer-map iframe {
