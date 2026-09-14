@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { formatVisitorChartDate, visitorChartDaysForPlot } from '../../Utils/formatVisitorChartDate.js'
 
 const props = defineProps({
     days: {
@@ -9,9 +10,7 @@ const props = defineProps({
     },
 })
 
-const { t, locale } = useI18n()
-
-const isRtl = computed(() => locale.value === 'ar')
+const { t } = useI18n()
 
 const series = computed(() => [
     {
@@ -31,7 +30,7 @@ const series = computed(() => [
     },
 ])
 
-const chartDays = computed(() => (Array.isArray(props.days) ? props.days : []).slice(-7))
+const chartDays = computed(() => visitorChartDaysForPlot(props.days))
 
 const maxValue = computed(() => {
     const values = chartDays.value.flatMap((day) => [
@@ -49,25 +48,16 @@ const height = 280
 const top = 24
 const bottom = 48
 const plotHeight = height - top - bottom
-
-const horizontalPadding = computed(() => (
-    isRtl.value
-        ? { start: 20, end: 52 }
-        : { start: 52, end: 20 }
-))
-
-const plotWidth = computed(() => width - horizontalPadding.value.start - horizontalPadding.value.end)
+const paddingStart = 52
+const paddingEnd = 20
+const plotWidth = width - paddingStart - paddingEnd
 
 const xForIndex = (index, count) => {
-    const { start } = horizontalPadding.value
     if (count <= 1) {
-        return start + plotWidth.value / 2
+        return paddingStart + plotWidth / 2
     }
 
-    const ratio = index / (count - 1)
-    const aligned = isRtl.value ? 1 - ratio : ratio
-
-    return start + (aligned * plotWidth.value)
+    return paddingStart + ((index / (count - 1)) * plotWidth)
 }
 
 const yForValue = (value) => {
@@ -108,25 +98,6 @@ const polylines = computed(() => series.value.map((item) => {
         path: points.map((point) => `${point.x},${point.y}`).join(' '),
     }
 }))
-
-const yAxisX = computed(() => (
-    isRtl.value
-        ? width - horizontalPadding.value.end + 8
-        : horizontalPadding.value.start - 8
-))
-
-const formatDayLabel = (date) => {
-    if (!date) {
-        return ''
-    }
-
-    const parts = String(date).split('-')
-    if (parts.length === 3) {
-        return `${parts[2]}/${parts[1]}`
-    }
-
-    return date
-}
 </script>
 
 <template>
@@ -160,6 +131,7 @@ const formatDayLabel = (date) => {
         <div
             v-else
             class="w-full overflow-x-auto"
+            dir="ltr"
             role="img"
             :aria-label="t('dashboard.last7DaysChart')"
         >
@@ -171,8 +143,8 @@ const formatDayLabel = (date) => {
                 <line
                     v-for="line in gridLines"
                     :key="`grid-${line.y}`"
-                    :x1="horizontalPadding.start"
-                    :x2="width - horizontalPadding.end"
+                    :x1="paddingStart"
+                    :x2="width - paddingEnd"
                     :y1="line.y"
                     :y2="line.y"
                     class="stroke-gray-200 dark:stroke-gray-700"
@@ -182,9 +154,9 @@ const formatDayLabel = (date) => {
                 <text
                     v-for="line in gridLines"
                     :key="`label-${line.y}`"
-                    :x="yAxisX"
+                    :x="paddingStart - 8"
                     :y="line.y + 4"
-                    :text-anchor="isRtl ? 'start' : 'end'"
+                    text-anchor="end"
                     class="fill-gray-500 dark:fill-gray-400"
                     font-size="11"
                 >
@@ -203,8 +175,12 @@ const formatDayLabel = (date) => {
                 />
 
                 <circle
-                    v-for="point in polylines.flatMap((item) => item.points.map((entry) => ({ ...entry, color: item.color, key: item.key })))"
-                    :key="`${point.key}-${point.x}`"
+                    v-for="point in polylines.flatMap((item) => item.points.map((entry, pointIndex) => ({
+                        ...entry,
+                        color: item.color,
+                        key: `${item.key}-${pointIndex}`,
+                    })))"
+                    :key="point.key"
                     :cx="point.x"
                     :cy="point.y"
                     r="3.5"
@@ -220,7 +196,7 @@ const formatDayLabel = (date) => {
                     class="fill-gray-500 dark:fill-gray-400"
                     font-size="11"
                 >
-                    {{ formatDayLabel(day.date) }}
+                    {{ formatVisitorChartDate(day.date) }}
                 </text>
             </svg>
         </div>
