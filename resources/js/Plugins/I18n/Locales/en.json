@@ -192,6 +192,9 @@
       "addressArPlaceholder": "Enter address in Arabic",
       "addressEnLabel": "Address (English)",
       "addressEnPlaceholder": "Enter address in English",
+      "googleMapsEmbedUrlLabel": "Google Maps Embed URL",
+      "googleMapsEmbedUrlPlaceholder": "https://www.google.com/maps/embed?pb=...",
+      "googleMapsEmbedUrlHelp": "From Google Maps choose Share then Embed a map and copy the iframe URL only, not the full HTML.",
       "websiteLabel": "Website",
       "websitePlaceholder": "https://example.com",
       "facebookLabel": "Facebook",
@@ -1479,7 +1482,8 @@
         "quickLinks": "Quick links",
         "contact": "Contact",
         "copyright": "© {year} {company}. All rights reserved.",
-        "todayVisitors": "Today's visitors: {count}"
+        "todayVisitors": "Today's visitors: {count}",
+        "mapTitle": "Company location map"
       }
     }
   }

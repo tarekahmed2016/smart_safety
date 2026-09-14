@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
     'mission_en',
     'address_ar',
     'address_en',
+    'google_maps_embed_url',
     'website',
     'facebook',
     'instagram',

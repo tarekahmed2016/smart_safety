@@ -1911,6 +1911,25 @@ html[dir="ltr"] .px-hero-actions .px-btn {
     margin-bottom: 0.85rem;
 }
 
+.px-footer-map {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 1rem;
+    border-radius: var(--px-radius);
+    overflow: hidden;
+    line-height: 0;
+    background: #071428;
+}
+
+.px-footer-map iframe {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: 12.5rem;
+    border: 0;
+    overflow: hidden;
+}
+
 .px-footer-links,
 .px-footer-contact {
     display: grid;
@@ -2060,6 +2079,10 @@ html[dir="ltr"] .px-hero-actions .px-btn {
 
     .px-footer-grid {
         grid-template-columns: 1.3fr 0.8fr 0.9fr 1.1fr;
+    }
+
+    .px-footer-map iframe {
+        height: 14rem;
     }
 
     .px-gallery-grid {

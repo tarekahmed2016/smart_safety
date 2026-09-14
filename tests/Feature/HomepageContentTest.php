@@ -24,6 +24,7 @@ test('company info table contains homepage content columns', function () {
         'about_highlight_ar',
         'products_homepage_limit',
         'footer_copyright_en',
+        'google_maps_embed_url',
     ]))->toBeTrue();
 });
 

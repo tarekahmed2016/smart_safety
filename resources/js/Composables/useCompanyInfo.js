@@ -65,6 +65,7 @@ const defaultFormValues = (companyInfo) => ({
   mission_en: companyInfo.mission_en || '',
   address_ar: companyInfo.address_ar || '',
   address_en: companyInfo.address_en || '',
+  google_maps_embed_url: companyInfo.google_maps_embed_url || '',
   website: companyInfo.website || '',
   facebook: companyInfo.facebook || '',
   instagram: companyInfo.instagram || '',

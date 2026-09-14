@@ -270,6 +270,19 @@ const submit = () => updateCompanyInfo()
                 <p v-if="form.errors.address_en" class="form-error">{{ form.errors.address_en }}</p>
               </div>
             </div>
+
+            <div>
+              <label class="form-label text-label">{{ t('companyInfo.form.googleMapsEmbedUrlLabel') }}</label>
+              <input
+                v-model="form.google_maps_embed_url"
+                type="text"
+                inputmode="url"
+                class="form-input text-body"
+                :placeholder="t('companyInfo.form.googleMapsEmbedUrlPlaceholder')"
+              />
+              <p class="mt-1.5 text-sm text-muted muted-color">{{ t('companyInfo.form.googleMapsEmbedUrlHelp') }}</p>
+              <p v-if="form.errors.google_maps_embed_url" class="form-error">{{ form.errors.google_maps_embed_url }}</p>
+            </div>
           </section>
 
           <!-- F. Website & Social Media -->

@@ -8,6 +8,7 @@ use App\Services\PageService;
 use App\Services\PublicHomeService;
 use App\Services\PublicNavService;
 use App\Services\VisitorStatsService;
+use App\Support\GoogleMapsEmbedUrl;
 use App\Support\ThemeColor;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -52,6 +53,7 @@ class HandleInertiaRequests extends Middleware
 
                     $companyInfo->logo = $companyInfo->attachment?->asset_path;
                     $companyInfo->about_image = $companyInfo->aboutAttachment?->asset_path;
+                    $companyInfo->google_maps_embed_url = GoogleMapsEmbedUrl::sanitize($companyInfo->google_maps_embed_url) ?? '';
                 },
             ),
             'businessCta' => fn () => app(PublicHomeService::class)->getActiveBusinessCta(),

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Http\Requests\Concerns\SanitizesRichTextInput;
+use App\Rules\AllowedGoogleMapsEmbedUrl;
 use App\Rules\SafeHttpUrl;
 use App\Support\CompanyNameBrandTypography;
 use App\Support\RichTextSanitizer;
@@ -34,6 +35,12 @@ class CompanyInfoRequest extends FormRequest
             if ($this->has($field) && $this->input($field) === '') {
                 $this->merge([$field => null]);
             }
+        }
+
+        if ($this->has('google_maps_embed_url') && is_string($this->input('google_maps_embed_url'))) {
+            $this->merge([
+                'google_maps_embed_url' => trim($this->input('google_maps_embed_url')) ?: null,
+            ]);
         }
 
         $this->sanitizeRichTextInput();
@@ -70,6 +77,7 @@ class CompanyInfoRequest extends FormRequest
             'mission_en' => ['nullable', 'string', 'max:15000'],
             'address_ar' => ['nullable', 'string', 'max:1000'],
             'address_en' => ['nullable', 'string', 'max:1000'],
+            'google_maps_embed_url' => ['nullable', 'string', 'max:4096', new AllowedGoogleMapsEmbedUrl],
             'website' => ['nullable', new SafeHttpUrl],
             'facebook' => ['nullable', new SafeHttpUrl],
             'instagram' => ['nullable', new SafeHttpUrl],

@@ -6,6 +6,7 @@ import { resolveBilingualField } from '../../Composables/useBilingualContent.js'
 import { plainTextFromHtml } from '../../Composables/useRichText.js'
 import { formatHomepageTemplate, resolveHomepageField, resolveHomepagePlainField } from '../../Composables/useHomepageContent.js'
 import { usePublicNavLinks } from '../../Composables/usePublicNavLinks.js'
+import { sanitizeGoogleMapsEmbedUrl } from '../../Utils/googleMapsEmbedUrl.js'
 import SocialLinks from './SocialLinks.vue'
 
 const { t, locale } = useI18n()
@@ -24,6 +25,7 @@ const footerDescription = computed(() =>
     || heroDescription.value
     || t('public.home.footer.tagline')
 )
+const googleMapsEmbedUrl = computed(() => sanitizeGoogleMapsEmbedUrl(companyInfo.value.google_maps_embed_url))
 const newsletterTitle = computed(() =>
   resolveHomepageField(companyInfo.value, 'footer_newsletter_title', locale.value, t('public.home.newsletter.title'))
 )
@@ -87,7 +89,18 @@ const submitNewsletter = () => {
                     class="px-footer-logo"
                 />
                 <h3 v-else class="px-footer-name">{{ companyName }}</h3>
-                <p>{{ footerDescription }}</p>
+                <div v-if="googleMapsEmbedUrl" class="px-footer-map">
+                    <iframe
+                        :src="googleMapsEmbedUrl"
+                        width="100%"
+                        height="220"
+                        loading="lazy"
+                        allowfullscreen
+                        referrerpolicy="no-referrer-when-downgrade"
+                        :title="t('public.home.footer.mapTitle')"
+                    />
+                </div>
+                <p v-else>{{ footerDescription }}</p>
                 <SocialLinks :company-info="companyInfo" variant="footer" />
             </div>
 

@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\Project;
 use App\Models\Service;
 use App\Models\TeamMember;
+use App\Support\GoogleMapsEmbedUrl;
 use App\Support\ThemeColor;
 use Illuminate\Support\Collection;
 
@@ -100,6 +101,7 @@ class PublicHomeService
             'mission_en' => $companyInfo->mission_en ?? '',
             'address_ar' => $companyInfo->address_ar ?? '',
             'address_en' => $companyInfo->address_en ?? '',
+            'google_maps_embed_url' => GoogleMapsEmbedUrl::sanitize($companyInfo->google_maps_embed_url) ?? '',
             'website' => $companyInfo->website ?? '',
             'facebook' => $companyInfo->facebook ?? '',
             'instagram' => $companyInfo->instagram ?? '',

@@ -192,6 +192,9 @@
       "addressArPlaceholder": "أدخل العنوان بالعربية",
       "addressEnLabel": "العنوان (إنجليزي)",
       "addressEnPlaceholder": "أدخل العنوان بالإنجليزية",
+      "googleMapsEmbedUrlLabel": "رابط خريطة Google",
+      "googleMapsEmbedUrlPlaceholder": "https://www.google.com/maps/embed?pb=...",
+      "googleMapsEmbedUrlHelp": "من Google Maps اختر Share ثم Embed a map وانسخ رابط iframe فقط، وليس كود HTML كاملًا.",
       "websiteLabel": "الموقع الإلكتروني",
       "websitePlaceholder": "https://example.com",
       "facebookLabel": "فيسبوك",
@@ -1479,7 +1482,8 @@
         "quickLinks": "روابط سريعة",
         "contact": "التواصل",
         "copyright": "© {year} {company}. جميع الحقوق محفوظة.",
-        "todayVisitors": "زوار اليوم: {count}"
+        "todayVisitors": "زوار اليوم: {count}",
+        "mapTitle": "خريطة موقع الشركة"
       }
     }
   }
