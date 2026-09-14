@@ -43,6 +43,7 @@ const copyrightText = computed(() => formatHomepageTemplate(
 const logo = computed(() => companyInfo.value.logo || companyInfo.value.attachment?.asset_path || '/images/creative-industry/logo.jpeg')
 const addressText = computed(() => resolveBilingualField(companyInfo.value, 'address', locale.value))
 const year = new Date().getFullYear()
+const todayVisitors = computed(() => Number(page.props.todayVisitors ?? 0))
 
 const newsletterForm = useForm({
     email: '',
@@ -147,8 +148,9 @@ const submitNewsletter = () => {
         </div>
 
         <div class="px-footer-bottom">
-            <div class="px-container">
-                {{ copyrightText }}
+            <div class="px-container px-footer-bottom-inner">
+                <span>{{ copyrightText }}</span>
+                <span>{{ t('public.home.footer.todayVisitors', { count: todayVisitors }) }}</span>
             </div>
         </div>
     </footer>

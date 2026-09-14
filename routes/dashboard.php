@@ -6,6 +6,7 @@ use App\Http\Controllers\CompanyGoalController;
 use App\Http\Controllers\CompanyInfoController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\CustomAssetsController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HeroSlideController;
 use App\Http\Controllers\HomepagePromoBlockController;
 use App\Http\Controllers\HomepageSectionController;
@@ -20,10 +21,12 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TeamMemberController;
 use App\Http\Controllers\ThemeColorsController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VisitorStatsController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {
-    Route::inertia('/dashboard', 'Dashboard/IndexPage')->name('dashboard');
+    Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::get('/dashboard/visitor-stats', VisitorStatsController::class)->name('dashboard.visitor-stats');
 });
 
 Route::middleware(['admin'])->group(function () {

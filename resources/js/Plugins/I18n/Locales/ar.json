@@ -68,7 +68,19 @@
     "viewPublicSite": "عرض الموقع العام",
     "manageCompanyInfo": "إدارة بيانات الشركة",
     "manageServices": "إدارة الخدمات",
-    "viewContactMessages": "عرض رسائل التواصل"
+    "viewContactMessages": "عرض رسائل التواصل",
+    "visitorStatsTitle": "إحصائيات الزوار",
+    "todayUniqueVisitors": "زوار اليوم",
+    "todayVisits": "زيارات اليوم",
+    "todayPageViews": "مشاهدات اليوم",
+    "last7Days": "آخر 7 أيام",
+    "last7DaysChart": "إحصائيات آخر 7 أيام",
+    "thisMonth": "هذا الشهر",
+    "thisMonthTotal": "إجمالي هذا الشهر",
+    "chartVisitors": "الزوار",
+    "chartVisits": "الزيارات",
+    "chartPageViews": "مشاهدات الصفحات",
+    "chartEmpty": "لا توجد بيانات لعرضها بعد"
   },
   "users": {
     "pageTitle": "إدارة المستخدمين",
@@ -1452,7 +1464,8 @@
         "navigation": "التنقل",
         "quickLinks": "روابط سريعة",
         "contact": "التواصل",
-        "copyright": "© {year} {company}. جميع الحقوق محفوظة."
+        "copyright": "© {year} {company}. جميع الحقوق محفوظة.",
+        "todayVisitors": "زوار اليوم: {count}"
       }
     }
   }

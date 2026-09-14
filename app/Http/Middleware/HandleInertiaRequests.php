@@ -7,6 +7,7 @@ use App\Services\NavigationService;
 use App\Services\PageService;
 use App\Services\PublicHomeService;
 use App\Services\PublicNavService;
+use App\Services\VisitorStatsService;
 use App\Support\ThemeColor;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -57,6 +58,7 @@ class HandleInertiaRequests extends Middleware
             'menuPages' => fn () => app(PageService::class)->getPublicMenuPages(),
             'navigationLinks' => fn () => app(NavigationService::class)->getPublicLinks($request->routeIs('home')),
             'publicNavContext' => fn () => app(PublicNavService::class)->getContext(),
+            'todayVisitors' => fn () => app(VisitorStatsService::class)->todayUniqueVisitors(),
         ];
     }
 }
