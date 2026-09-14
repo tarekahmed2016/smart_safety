@@ -15,23 +15,32 @@ class ContactMessageService
      */
     private const ACTIVITY_FIELDS = ['is_read', 'request_status'];
 
-    public function __construct(public ActivityLogService $activityLogService) {}
+    public function __construct(
+        public ActivityLogService $activityLogService,
+        public ContactMessageNotificationService $notificationService,
+    ) {}
 
     /**
      * @param  array<string, mixed>  $data
      */
     public function createPublicMessage(array $data): ContactMessage
     {
-        return ContactMessage::create([
-            'name' => $data['name'],
-            'email' => $data['email'] ?? null,
-            'phone' => $data['phone'] ?? null,
-            'subject' => $data['subject'] ?? null,
-            'message' => $data['message'],
-            'is_read' => false,
-            'read_at' => null,
-            'request_status' => RequestStatus::New,
-        ]);
+        $contactMessage = DB::transaction(function () use ($data) {
+            return ContactMessage::create([
+                'name' => $data['name'],
+                'email' => $data['email'] ?? null,
+                'phone' => $data['phone'] ?? null,
+                'subject' => $data['subject'] ?? null,
+                'message' => $data['message'],
+                'is_read' => false,
+                'read_at' => null,
+                'request_status' => RequestStatus::New,
+            ]);
+        });
+
+        $this->notificationService->notify($contactMessage);
+
+        return $contactMessage;
     }
 
     public function getPaginatedContactMessages(
