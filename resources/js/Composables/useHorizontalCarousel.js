@@ -1,11 +1,13 @@
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { applyArrowMove, applyPointerMove, trackTranslateX } from '../Utils/carouselVisualMotion.js'
 
 export function useHorizontalCarousel(itemsRef, options = {}) {
   const {
     cardSelector = '.px-carousel-card',
     autoSpeed = 0.8,
     manualPauseMs = 1200,
+    followVisualMotion = false,
   } = options
 
   const { locale } = useI18n()
@@ -18,7 +20,13 @@ export function useHorizontalCarousel(itemsRef, options = {}) {
   const isDragging = ref(false)
   const reduceMotion = ref(false)
 
-  const scrollDirection = computed(() => (locale.value === 'ar' ? -1 : 1))
+  const scrollDirection = computed(() => {
+    if (followVisualMotion) {
+      return 1
+    }
+
+    return locale.value === 'ar' ? -1 : 1
+  })
 
   let frameId = null
   let manualPauseTimer = null
@@ -72,7 +80,7 @@ export function useHorizontalCarousel(itemsRef, options = {}) {
       return
     }
 
-    trackRef.value.style.transform = `translate3d(${-offset.value}px, 0, 0)`
+    trackRef.value.style.transform = `translate3d(${trackTranslateX(offset.value)}px, 0, 0)`
   }
 
   const measureCycle = () => {
@@ -126,7 +134,12 @@ export function useHorizontalCarousel(itemsRef, options = {}) {
     const card = trackRef.value?.querySelector(cardSelector)
     const stepSize = (card?.getBoundingClientRect().width ?? 260) + getGap()
 
-    offset.value += direction * stepSize * scrollDirection.value
+    if (followVisualMotion) {
+      offset.value = applyArrowMove(offset.value, direction, stepSize).offset
+    } else {
+      offset.value += direction * stepSize * scrollDirection.value
+    }
+
     normalizeOffset()
     applyTransform()
     pauseBriefly()
@@ -134,6 +147,19 @@ export function useHorizontalCarousel(itemsRef, options = {}) {
 
   const scrollPrevious = () => scrollBy(-1)
   const scrollNext = () => scrollBy(1)
+
+  const onKeydown = (event) => {
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault()
+      scrollPrevious()
+      return
+    }
+
+    if (event.key === 'ArrowRight') {
+      event.preventDefault()
+      scrollNext()
+    }
+  }
 
   const onPointerDown = (event) => {
     if (!trackRef.value?.parentElement) {
@@ -169,13 +195,20 @@ export function useHorizontalCarousel(itemsRef, options = {}) {
       isDragging.value = true
       ignoreClick.value = true
 
-      if (event.currentTarget?.setPointerCapture) {
-        event.currentTarget.setPointerCapture(event.pointerId)
+      try {
+        if (event.currentTarget?.setPointerCapture) {
+          event.currentTarget.setPointerCapture(event.pointerId)
+        }
+      } catch {
+        // Synthetic or inactive pointers cannot capture; dragging still updates offset.
       }
     }
 
-    const delta = (dragStartX - event.clientX) * scrollDirection.value
-    offset.value = dragStartOffset + delta
+    if (followVisualMotion) {
+      offset.value = applyPointerMove(dragStartOffset, dragStartX, event.clientX).offset
+    } else {
+      offset.value = dragStartOffset + (dragStartX - event.clientX) * scrollDirection.value
+    }
     normalizeOffset()
     applyTransform()
   }
@@ -189,7 +222,11 @@ export function useHorizontalCarousel(itemsRef, options = {}) {
     activePointerId = null
 
     if (isDragging.value && event.currentTarget?.hasPointerCapture?.(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId)
+      try {
+        event.currentTarget.releasePointerCapture(event.pointerId)
+      } catch {
+        // Ignore capture release errors from synthetic pointer events.
+      }
     }
 
     isDragging.value = false
@@ -258,6 +295,7 @@ export function useHorizontalCarousel(itemsRef, options = {}) {
     setHovered,
     scrollPrevious,
     scrollNext,
+    onKeydown,
     onPointerDown,
     onPointerMove,
     onPointerUp,

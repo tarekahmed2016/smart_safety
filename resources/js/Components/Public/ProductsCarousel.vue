@@ -27,9 +27,11 @@ const {
   onPointerDown,
   onPointerMove,
   onPointerUp,
+  onKeydown,
   ignoreClick,
 } = useHorizontalCarousel(toRef(props, 'products'), {
   cardSelector: '.px-product-card',
+  followVisualMotion: true,
 })
 
 const productName = (product) => resolveBilingualField(product, 'name', locale.value)
@@ -77,6 +79,7 @@ const inquireAboutProduct = (product) => {
     class="px-product-carousel px-horizontal-carousel"
     role="region"
     :aria-label="t('public.home.products.carouselLabel')"
+    @keydown="onKeydown"
   >
     <button
       type="button"

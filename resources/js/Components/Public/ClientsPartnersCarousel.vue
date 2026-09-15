@@ -24,8 +24,10 @@ const {
   onPointerDown,
   onPointerMove,
   onPointerUp,
+  onKeydown,
 } = useHorizontalCarousel(toRef(props, 'items'), {
   cardSelector: '.px-client-card',
+  followVisualMotion: true,
 })
 
 const itemName = (item) => resolveBilingualField(item, 'name', locale.value).trim()
@@ -48,6 +50,7 @@ const showTextArea = (item) => Boolean(showTypeBadge(item) || itemName(item))
     class="px-product-carousel px-horizontal-carousel"
     role="region"
     :aria-label="t('public.home.clientsPartners.carouselLabel')"
+    @keydown="onKeydown"
   >
     <button
       type="button"
