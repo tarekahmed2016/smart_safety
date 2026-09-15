@@ -61,6 +61,8 @@ class HandleInertiaRequests extends Middleware
             'navigationLinks' => fn () => app(NavigationService::class)->getPublicLinks($request->routeIs('home')),
             'publicNavContext' => fn () => app(PublicNavService::class)->getContext(),
             'todayVisitors' => fn () => app(VisitorStatsService::class)->todayUniqueVisitors(),
+            'recaptchaEnabled' => fn () => filled(config('services.recaptcha.site_key'))
+                && filled(config('services.recaptcha.secret')),
         ];
     }
 }

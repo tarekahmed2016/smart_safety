@@ -1471,7 +1471,17 @@
         "formSend": "Send Message",
         "formSending": "Sending...",
         "messageSentSuccess": "Your message has been sent successfully. We will get back to you soon.",
-        "required": "Required"
+        "required": "Required",
+        "errors": {
+          "name": "يرجى إدخال الاسم الكامل. / Please enter your full name.",
+          "email": "يرجى إدخال البريد الإلكتروني. / Please enter your email address.",
+          "emailInvalid": "يرجى إدخال بريد إلكتروني صالح. / Please enter a valid email address.",
+          "phone": "يرجى إدخال رقم الهاتف. / Please enter your phone number.",
+          "phoneInvalid": "يرجى إدخال رقم هاتف صالح. / Please enter a valid phone number.",
+          "subject": "يرجى إدخال الموضوع. / Please enter the subject.",
+          "message": "يرجى إدخال الرسالة. / Please enter your message.",
+          "recaptcha": "يرجى إكمال التحقق من reCAPTCHA. / Please complete the reCAPTCHA verification."
+        }
       },
       "floating": {
         "socialLabel": "Social media",

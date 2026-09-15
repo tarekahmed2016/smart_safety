@@ -1884,6 +1884,10 @@ html[dir="ltr"] .px-hero-actions .px-btn {
     margin-bottom: 0.35rem;
 }
 
+.px-contact-form label span[aria-hidden="true"] {
+    color: #b42318;
+}
+
 .px-contact-form input,
 .px-contact-form textarea,
 .px-footer-newsletter input {

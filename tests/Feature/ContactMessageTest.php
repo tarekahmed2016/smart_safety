@@ -22,7 +22,7 @@ function validContactPayload(array $overrides = []): array
     return array_merge([
         'name' => 'John Visitor',
         'email' => 'visitor@example.com',
-        'phone' => null,
+        'phone' => '0500000000',
         'subject' => 'General Inquiry',
         'message' => 'Hello, I would like more information.',
     ], $overrides);
@@ -38,6 +38,7 @@ test('guest can submit a valid contact message', function () {
     expect($message)->not->toBeNull()
         ->and($message->name)->toBe('John Visitor')
         ->and($message->email)->toBe('visitor@example.com')
+        ->and($message->phone)->toBe('0500000000')
         ->and($message->subject)->toBe('General Inquiry')
         ->and($message->message)->toBe('Hello, I would like more information.')
         ->and($message->is_read)->toBeFalse()
@@ -87,25 +88,72 @@ test('contact submission rejects too long fields', function () {
     ]))->assertSessionHasErrors('message');
 });
 
-test('contact submission requires email or phone', function () {
-    $this->post(route('contact.store'), validContactPayload([
-        'email' => null,
-        'phone' => null,
-    ]))->assertSessionHasErrors(['email', 'phone']);
+test('contact submission requires email', function () {
+    $this->post(route('contact.store'), validContactPayload(['email' => '']))
+        ->assertSessionHasErrors('email');
 
     expect(ContactMessage::count())->toBe(0);
 });
 
-test('contact submission accepts phone only', function () {
+test('contact submission requires phone', function () {
+    $this->post(route('contact.store'), validContactPayload(['phone' => '']))
+        ->assertSessionHasErrors('phone');
+
+    expect(ContactMessage::count())->toBe(0);
+});
+
+test('contact submission requires subject', function () {
+    $this->post(route('contact.store'), validContactPayload(['subject' => '']))
+        ->assertSessionHasErrors('subject');
+
+    expect(ContactMessage::count())->toBe(0);
+});
+
+test('contact submission rejects empty fields', function () {
+    $this->post(route('contact.store'), [
+        'name' => '',
+        'email' => '',
+        'phone' => '',
+        'subject' => '',
+        'message' => '',
+    ])->assertSessionHasErrors(['name', 'email', 'phone', 'subject', 'message']);
+
+    expect(ContactMessage::count())->toBe(0);
+});
+
+test('contact submission rejects invalid phone', function () {
+    $this->post(route('contact.store'), validContactPayload(['phone' => 'abc']))
+        ->assertSessionHasErrors('phone');
+
+    expect(ContactMessage::count())->toBe(0);
+});
+
+test('contact submission requires recaptcha when enabled', function () {
+    config([
+        'services.recaptcha.site_key' => 'test-site-key',
+        'services.recaptcha.secret' => 'test-secret',
+    ]);
+
+    $this->post(route('contact.store'), validContactPayload())
+        ->assertSessionHasErrors('g-recaptcha-response');
+
+    expect(ContactMessage::count())->toBe(0);
+
     $this->post(route('contact.store'), validContactPayload([
-        'email' => null,
-        'phone' => '+971500000000',
+        'g-recaptcha-response' => 'token',
     ]))->assertRedirect();
 
-    $message = ContactMessage::first();
+    expect(ContactMessage::count())->toBe(1);
+});
 
-    expect($message->email)->toBeNull()
-        ->and($message->phone)->toBe('+971500000000');
+test('contact validation errors are bilingual', function () {
+    $this->post(route('contact.store'), validContactPayload(['name' => '']))
+        ->assertSessionHasErrors('name');
+
+    $message = session('errors')->first('name');
+
+    expect($message)->toContain('الاسم الكامل')
+        ->and($message)->toContain('Please enter your full name.');
 });
 
 test('public cannot set is_read on submission', function () {

@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { resolveBilingualField } from '../../Composables/useBilingualContent.js'
 import {
   PUBLIC_CONTACT_OPEN_EVENT,
+  collectPublicContactFormErrors,
   scrollToPublicContact,
 } from '../../Composables/usePublicContactForm.js'
 import { formatHomepageTemplate, resolveHomepageField, resolveHomepageScalar } from '../../Composables/useHomepageContent.js'
@@ -367,6 +368,7 @@ const hasContactCtaAction = computed(() => Boolean(contactCtaLabel.value && cont
 const contactCtaBackground = computed(() => businessCta.value?.image || heroBackground.value)
 const industriesBackground = computed(() => heroBackground.value || null)
 
+const recaptchaEnabled = computed(() => Boolean(page.props.recaptchaEnabled))
 const contactForm = useForm({
   name: '',
   email: '',
@@ -385,6 +387,16 @@ watch(() => page.props.flash, (flash) => {
 
 const submitContactForm = () => {
   contactFormSuccess.value = false
+  contactForm.clearErrors()
+
+  const clientErrors = collectPublicContactFormErrors(contactForm, {
+    recaptchaEnabled: recaptchaEnabled.value,
+  })
+
+  if (Object.keys(clientErrors).length) {
+    contactForm.setError(clientErrors)
+    return
+  }
 
   contactForm.post(route('contact.store'), {
     preserveScroll: true,
@@ -888,35 +900,35 @@ onUnmounted(() => {
           </ul>
         </div>
 
-        <form id="contact-form" class="px-contact-form" @submit.prevent="submitContactForm">
+        <form id="contact-form" class="px-contact-form" novalidate @submit.prevent="submitContactForm">
           <div>
             <label for="contact-name">{{ t('public.home.contact.formName') }} <span aria-hidden="true">*</span></label>
-            <input id="contact-name" v-model="contactForm.name" type="text" required :placeholder="t('public.home.contact.formNamePlaceholder')" />
+            <input id="contact-name" v-model="contactForm.name" type="text" name="name" required aria-required="true" :placeholder="t('public.home.contact.formNamePlaceholder')" />
             <p v-if="contactForm.errors.name" class="px-form-error">{{ contactForm.errors.name }}</p>
           </div>
           <div class="px-form-row">
             <div>
-              <label for="contact-email">{{ t('public.home.contact.formEmail') }}</label>
-              <input id="contact-email" v-model="contactForm.email" type="email" :placeholder="t('public.home.contact.formEmailPlaceholder')" />
+              <label for="contact-email">{{ t('public.home.contact.formEmail') }} <span aria-hidden="true">*</span></label>
+              <input id="contact-email" v-model="contactForm.email" type="email" name="email" required aria-required="true" :placeholder="t('public.home.contact.formEmailPlaceholder')" />
               <p v-if="contactForm.errors.email" class="px-form-error">{{ contactForm.errors.email }}</p>
             </div>
             <div>
-              <label for="contact-phone">{{ t('public.home.contact.formPhone') }}</label>
-              <input id="contact-phone" v-model="contactForm.phone" type="tel" :placeholder="t('public.home.contact.formPhonePlaceholder')" />
+              <label for="contact-phone">{{ t('public.home.contact.formPhone') }} <span aria-hidden="true">*</span></label>
+              <input id="contact-phone" v-model="contactForm.phone" type="tel" name="phone" required aria-required="true" :placeholder="t('public.home.contact.formPhonePlaceholder')" />
               <p v-if="contactForm.errors.phone" class="px-form-error">{{ contactForm.errors.phone }}</p>
             </div>
           </div>
           <div>
-            <label for="contact-subject">{{ t('public.home.contact.formSubject') }}</label>
-            <input id="contact-subject" v-model="contactForm.subject" type="text" :placeholder="t('public.home.contact.formSubjectPlaceholder')" />
+            <label for="contact-subject">{{ t('public.home.contact.formSubject') }} <span aria-hidden="true">*</span></label>
+            <input id="contact-subject" v-model="contactForm.subject" type="text" name="subject" required aria-required="true" :placeholder="t('public.home.contact.formSubjectPlaceholder')" />
             <p v-if="contactForm.errors.subject" class="px-form-error">{{ contactForm.errors.subject }}</p>
           </div>
           <div>
             <label for="contact-message">{{ t('public.home.contact.formMessage') }} <span aria-hidden="true">*</span></label>
-            <textarea id="contact-message" v-model="contactForm.message" rows="5" required :placeholder="t('public.home.contact.formMessagePlaceholder')"></textarea>
+            <textarea id="contact-message" v-model="contactForm.message" name="message" rows="5" required aria-required="true" :placeholder="t('public.home.contact.formMessagePlaceholder')"></textarea>
             <p v-if="contactForm.errors.message" class="px-form-error">{{ contactForm.errors.message }}</p>
           </div>
-          <p v-if="contactForm.errors.contact_method" class="px-form-error">{{ contactForm.errors.contact_method }}</p>
+          <p v-if="contactForm.errors['g-recaptcha-response']" class="px-form-error">{{ contactForm.errors['g-recaptcha-response'] }}</p>
           <button type="submit" class="px-btn px-btn-green" :disabled="contactForm.processing">
             {{ contactForm.processing ? t('public.home.contact.formSending') : t('public.home.contact.formSend') }}
           </button>
