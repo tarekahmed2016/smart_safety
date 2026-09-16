@@ -13,7 +13,7 @@ const { navLinks, isHomePage } = usePublicNavLinks()
 const companyInfo = computed(() => page.props.companyInfo || {})
 const businessCta = computed(() => page.props.businessCta || null)
 
-const companyNameAr = computed(() => companyInfo.value.name_ar || t('public.home.defaultCompanyName'))
+const companyNameAr = computed(() => companyInfo.value.name_ar || 'الصناعة الإبداعية')
 const companyNameEn = computed(() => companyInfo.value.name_en || 'Creative Industry')
 const brandDir = computed(() => (locale.value === 'ar' ? 'rtl' : 'ltr'))
 const brandNameStyle = computed(() => companyNameBrandCssVars(companyInfo.value))
@@ -87,14 +87,15 @@ const otherLocaleCode = computed(() => (locale.value === 'ar' ? 'en' : 'ar'))
             />
             <span class="px-nav-brand-names" :style="brandNameStyle">
               <span
-                v-if="locale === 'ar'"
                 class="px-nav-brand-name-ar"
                 dir="rtl"
+                lang="ar"
                 :style="brandNameArStyle"
               >{{ companyNameAr }}</span>
               <span
                 class="px-nav-brand-name-en"
                 dir="ltr"
+                lang="en"
                 :style="brandNameEnStyle"
               >{{ companyNameEn }}</span>
             </span>

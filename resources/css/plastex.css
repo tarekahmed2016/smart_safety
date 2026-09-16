@@ -168,8 +168,9 @@
     align-items: center;
     gap: 0.55rem;
     margin-inline-end: auto;
-    flex-shrink: 0;
-    max-width: 13.5rem;
+    flex-shrink: 1;
+    min-width: 0;
+    max-width: min(18.75rem, calc(100vw - 6.75rem));
     overflow: hidden;
     text-decoration: none;
 }
@@ -177,9 +178,11 @@
 .px-nav-brand-names {
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     gap: 0.12rem;
     min-width: 0;
     overflow: hidden;
+    text-align: start;
     color: var(--px-brand-color, var(--px-navy));
 }
 
@@ -188,9 +191,12 @@
     display: block;
     min-width: 0;
     max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow: visible;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    text-align: start;
+    unicode-bidi: isolate;
+    line-height: 1.25;
 }
 
 .px-nav-brand-name-ar {
