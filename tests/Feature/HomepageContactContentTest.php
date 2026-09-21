@@ -33,10 +33,10 @@ test('contact detail icons have a uniform size scoped to the contact details lis
     $styles = file_get_contents(resource_path('css/plastex.css'));
 
     expect($home)->toContain('class="px-contact-details"')
-        ->and($home)->toContain('PlastexLineIcon name="phone"')
-        ->and($home)->toContain('PlastexLineIcon name="envelope"')
-        ->and($home)->toContain('PlastexLineIcon name="location-dot"')
-        ->and($home)->toContain('PlastexLineIcon name="whatsapp"')
+        ->and($home)->toContain('SmartSafetyIcon name="phone"')
+        ->and($home)->toContain('SmartSafetyIcon name="envelope"')
+        ->and($home)->toContain('SmartSafetyIcon name="location-dot"')
+        ->and($home)->toContain('SmartSafetyIcon name="whatsapp"')
         ->and($styles)->toContain('.px-contact-details .px-contact-icon')
         ->and($styles)->toContain('flex: 0 0 auto')
         ->and($styles)->toContain('width: 44px')

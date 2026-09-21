@@ -8,12 +8,14 @@ import {
   collectPublicContactFormErrors,
   scrollToPublicContact,
 } from '../../Composables/usePublicContactForm.js'
-import { formatHomepageTemplate, resolveHomepageField, resolveHomepageScalar } from '../../Composables/useHomepageContent.js'
+import { resolveHomepageField, resolveHomepageScalar } from '../../Composables/useHomepageContent.js'
 import { useHomepageSections } from '../../Composables/useHomepageSections.js'
 import { plainTextFromHtml } from '../../Composables/useRichText.js'
 import RichTextContent from '../../Components/Common/RichTextContent.vue'
-import PlastexLineIcon from '../../Components/Public/PlastexLineIcon.vue'
-import PublicMediaPlaceholder from '../../Components/Public/PublicMediaPlaceholder.vue'
+import SmartSafetyIcon from '../../Components/Public/SmartSafetyIcon.vue'
+import EmptyMediaPlaceholder from '../../Components/Public/EmptyMediaPlaceholder.vue'
+import SectionContainer from '../../Components/Public/SectionContainer.vue'
+import SectionHeading from '../../Components/Public/SectionHeading.vue'
 import ProductsCarousel from '../../Components/Public/ProductsCarousel.vue'
 import TeamMembersCarousel from '../../Components/Public/TeamMembersCarousel.vue'
 import ClientsPartnersCarousel from '../../Components/Public/ClientsPartnersCarousel.vue'
@@ -46,11 +48,15 @@ const companyName = computed(() =>
 
 const heroTitle = computed(() =>
   resolveBilingualField(companyInfo.value, 'hero_title', locale.value)
-    || `${t('public.home.hero.titleLine1')}\n${t('public.home.hero.titleLine2')}`
+    || companyName.value
 )
 
 const heroHighlight = computed(() =>
-  resolveHomepageField(companyInfo.value, 'hero_highlight', locale.value, t('public.home.hero.highlight'))
+  resolveHomepageField(companyInfo.value, 'hero_highlight', locale.value, '')
+)
+
+const heroEyebrow = computed(() =>
+  resolveHomepageField(companyInfo.value, 'hero_eyebrow', locale.value, '')
 )
 
 const heroPrimaryCtaLabel = computed(() =>
@@ -60,11 +66,12 @@ const heroPrimaryCtaUrl = computed(() =>
   resolveHomepageScalar(companyInfo.value, 'hero_primary_cta_url', '#contact')
 )
 const heroSecondaryCtaLabel = computed(() =>
-  resolveHomepageField(companyInfo.value, 'hero_secondary_cta_text', locale.value, t('public.home.hero.ctaProducts'))
+  resolveHomepageField(companyInfo.value, 'hero_secondary_cta_text', locale.value, '')
 )
 const heroSecondaryCtaUrl = computed(() =>
-  resolveHomepageScalar(companyInfo.value, 'hero_secondary_cta_url', '#products')
+  resolveHomepageScalar(companyInfo.value, 'hero_secondary_cta_url', '#contact')
 )
+const hasHeroSecondaryCta = computed(() => Boolean(heroSecondaryCtaLabel.value))
 
 const heroTitleLines = computed(() => {
   return heroTitle.value
@@ -90,8 +97,6 @@ const heroDescriptionHtml = computed(() =>
   resolveBilingualField(companyInfo.value, 'hero_description', locale.value)
 )
 
-const heroDescriptionFallback = computed(() => t('public.home.hero.supporting'))
-
 const heroBackground = computed(() => {
   const slideWithImage = heroSlides.value.find((slide) => slide.image)
   return slideWithImage?.image || ''
@@ -103,8 +108,7 @@ const heroMobileImage = computed(() => {
 })
 
 const aboutText = computed(() => resolveBilingualField(companyInfo.value, 'about', locale.value))
-const aboutFallback = computed(() => t('public.home.about.descriptionWithCompany', { company: companyName.value }))
-const aboutImage = computed(() => companyInfo.value.about_image || heroBackground.value || null)
+const aboutImage = computed(() => companyInfo.value.about_image || null)
 
 const aboutMoreHref = computed(() => {
   const configuredUrl = resolveHomepageScalar(companyInfo.value, 'about_cta_url')
@@ -120,10 +124,10 @@ const aboutMoreLabel = computed(() =>
 )
 
 const aboutHighlight = (section) =>
-  resolveBilingualField(section?.settings || {}, 'highlight', locale.value) || t('public.home.about.highlight')
+  resolveBilingualField(section?.settings || {}, 'highlight', locale.value)
 
 const aboutTitleParts = (section) => highlightTitleParts(
-  resolveSectionTitle(section, 'public.home.about.factoryTitle'),
+  resolveSectionTitle(section, 'public.home.about.title'),
   aboutHighlight(section),
 )
 
@@ -142,40 +146,35 @@ const highlightTitleParts = (title, highlight) => {
 }
 
 const servicesTitleParts = (section) => highlightTitleParts(
-  resolveSectionTitle(section, 'public.home.services.manufacturingTitle'),
+  resolveSectionTitle(section, 'public.home.services.title'),
   resolveBilingualField(section?.settings || {}, 'highlight', locale.value) || t('public.home.services.highlight'),
 )
 
 const servicesSubtitle = (section) =>
-  resolveBilingualField(section?.settings || {}, 'subtitle', locale.value) || t('public.home.services.subtitle')
+  resolveBilingualField(section?.settings || {}, 'subtitle', locale.value)
 
 const contactSubtitle = (section) =>
-  resolveBilingualField(section?.settings || {}, 'subtitle', locale.value) || t('public.home.contact.subtitle')
+  resolveBilingualField(section?.settings || {}, 'subtitle', locale.value)
 
 const serviceIconFor = (item, index) => {
-  const english = (item.name_en || '').toLowerCase()
-  const arabic = item.name_ar || ''
-
-  if (arabic.includes('بلاستيك') || english.includes('plastic')) {
-    return 'packing'
+  const configured = item.icon
+  if (configured) {
+    return configured
   }
 
-  if (arabic.includes('تصنيع') || english.includes('manufactur')) {
-    return 'industry'
-  }
-
-  return index === 0 ? 'industry' : 'packing'
+  const icons = ['shield', 'quality', 'settings']
+  return icons[index % icons.length]
 }
 
 const manufacturingTitle = computed(() =>
   customManufacturing.value
     ? resolveBilingualField(customManufacturing.value, 'title', locale.value)
-    : t('public.home.manufacturing.title')
+    : ''
 )
 const manufacturingDescription = computed(() =>
   customManufacturing.value
     ? resolveBilingualField(customManufacturing.value, 'description', locale.value)
-    : t('public.home.manufacturing.description')
+    : ''
 )
 const manufacturingCta = computed(() =>
   customManufacturing.value
@@ -185,6 +184,9 @@ const manufacturingCta = computed(() =>
 const manufacturingUrl = computed(() => customManufacturing.value?.cta_url || '')
 const hasManufacturingAction = computed(() => Boolean(manufacturingCta.value && manufacturingUrl.value))
 const manufacturingImage = computed(() => customManufacturing.value?.image || null)
+const hasCustomManufacturingContent = computed(() => Boolean(
+  manufacturingTitle.value || manufacturingDescription.value || manufacturingImage.value
+))
 
 const displayFeatures = computed(() => featureHighlights.value.map((item) => ({
   icon: item.icon || 'quality',
@@ -197,8 +199,7 @@ const displayServices = computed(() => services.value.map((item, index) => ({
   key: `${item.name_ar || 'service'}-${item.name_en || index}`,
   icon: serviceIconFor(item, index),
   title: resolveBilingualField(item, 'name', locale.value),
-  text: plainTextFromHtml(resolveBilingualField(item, 'description', locale.value))
-    || t('public.home.services.noDescription'),
+  text: plainTextFromHtml(resolveBilingualField(item, 'description', locale.value)),
   image: item.image || null,
 })))
 
@@ -220,6 +221,13 @@ const displayAboutHighlights = computed(() => aboutHighlights.value.map((item) =
   icon: item.icon || 'quality',
 })))
 
+const hasAboutContent = computed(() => Boolean(
+  aboutText.value
+  || displayAboutHighlights.value.length
+  || displayStats.value.length
+  || aboutImage.value
+))
+
 const displayWhyUs = computed(() => whyUsHighlights.value.map((item) => ({
   title: resolveBilingualField(item, 'title', locale.value),
   text: plainTextFromHtml(resolveBilingualField(item, 'description', locale.value)),
@@ -235,26 +243,11 @@ const whyUsTitleParts = (section) => highlightTitleParts(
 const productName = (product) => resolveBilingualField(product, 'name', locale.value)
 const productExcerpt = (product) =>
   resolveBilingualField(product, 'excerpt', locale.value)
-    || t('public.home.products.noDescription')
 
-const fallbackGoals = computed(() => [
-  t('public.home.goals.items.1'),
-  t('public.home.goals.items.2'),
-  t('public.home.goals.items.3'),
-  t('public.home.goals.items.4'),
-  t('public.home.goals.items.5'),
-  t('public.home.goals.items.6'),
-].filter(Boolean))
-
-const displayGoals = computed(() => {
-  if (companyGoals.value.length) {
-    return companyGoals.value
-      .map((goal) => resolveBilingualField(goal, 'text', locale.value).trim())
-      .filter(Boolean)
-  }
-
-  return fallbackGoals.value
-})
+const displayGoals = computed(() => companyGoals.value
+  .map((goal) => resolveBilingualField(goal, 'text', locale.value).trim())
+  .filter(Boolean)
+)
 
 const resolveSectionHeadline = (section, fallbackKey = 'public.home.goals.headline') => {
   const fromSection = resolveBilingualField(section, 'headline', locale.value)
@@ -272,19 +265,18 @@ const resolveSectionHeadline = (section, fallbackKey = 'public.home.goals.headli
 
 const resolveVisionMissionCard = (type) => {
   const heading = t(`public.home.visionMission.${type}Heading`)
-  const fallbackBody = t(`public.home.visionMission.${type}Body`)
   const cmsHtml = resolveBilingualField(companyInfo.value, type, locale.value)
   const cmsText = plainTextFromHtml(cmsHtml).replace(/\s+/g, ' ').trim()
   const headingText = heading.replace(/\s+/g, ' ').trim()
 
   if (!cmsText) {
-    return { heading, html: '', text: fallbackBody }
+    return { heading, html: '', text: '' }
   }
 
   if (cmsText.startsWith(headingText)) {
     const remainder = cmsText.slice(headingText.length).replace(/^[\s،,.:;:-]+/, '').trim()
 
-    return { heading, html: '', text: remainder || fallbackBody }
+    return { heading, html: '', text: remainder }
   }
 
   return { heading, html: cmsHtml, text: cmsText }
@@ -292,6 +284,9 @@ const resolveVisionMissionCard = (type) => {
 
 const visionCard = computed(() => resolveVisionMissionCard('vision'))
 const missionCard = computed(() => resolveVisionMissionCard('mission'))
+const hasVisionMissionContent = computed(() => Boolean(
+  visionCard.value.html || visionCard.value.text || missionCard.value.html || missionCard.value.text
+))
 
 const resolveSectionTitle = (section, fallbackKey) => {
   const fromSection = resolveBilingualField(section, 'title', locale.value)
@@ -344,18 +339,18 @@ const galleryItemsForSection = (section) => {
 
 const contactCtaTitle = computed(() =>
   businessCta.value
-    ? resolveBilingualField(businessCta.value, 'title', locale.value) || t('public.home.contactCta.title')
-    : t('public.home.contactCta.title')
+    ? resolveBilingualField(businessCta.value, 'title', locale.value)
+    : ''
 )
 const contactCtaText = computed(() =>
   businessCta.value
-    ? plainTextFromHtml(resolveBilingualField(businessCta.value, 'description', locale.value)) || t('public.home.contactCta.subtitle')
-    : t('public.home.contactCta.subtitle')
+    ? plainTextFromHtml(resolveBilingualField(businessCta.value, 'description', locale.value))
+    : ''
 )
 const contactCtaLabel = computed(() =>
   businessCta.value
     ? resolveBilingualField(businessCta.value, 'cta_text', locale.value)
-    : t('public.home.contactCta.button')
+    : ''
 )
 const whatsappUrl = computed(() => companyInfo.value.whatsapp || null)
 const contactCtaUrl = computed(() => {
@@ -365,6 +360,9 @@ const contactCtaUrl = computed(() => {
   return '#contact-form'
 })
 const hasContactCtaAction = computed(() => Boolean(contactCtaLabel.value && contactCtaUrl.value))
+const hasContactCtaContent = computed(() => Boolean(
+  contactCtaTitle.value || contactCtaText.value || hasContactCtaAction.value
+))
 const contactCtaBackground = computed(() => businessCta.value?.image || heroBackground.value)
 const industriesBackground = computed(() => heroBackground.value || null)
 
@@ -462,9 +460,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="plastex-home">
+  <div class="smart-safety-home">
   <template v-for="section in normalizedSections" :key="section.key">
-    <section v-if="section.type === 'hero'" id="home" class="px-hero">
+    <section v-if="section.type === 'hero'" id="home" class="px-hero ss-hero">
       <div class="px-hero-bg" :class="{ 'has-image': Boolean(heroBackground) }">
         <picture v-if="heroBackground" class="px-hero-picture">
           <source
@@ -482,6 +480,7 @@ onUnmounted(() => {
       <div class="px-hero-overlay"></div>
       <div class="px-hero-shell">
         <div class="px-hero-content">
+          <p v-if="heroEyebrow" class="px-hero-eyebrow">{{ heroEyebrow }}</p>
           <h1 class="px-hero-title">
             <span v-for="(line, lineIndex) in heroTitleLines" :key="lineIndex" class="px-hero-line">
               <template v-for="(part, partIndex) in line" :key="`${lineIndex}-${partIndex}`">
@@ -495,14 +494,13 @@ onUnmounted(() => {
             tag="div"
             class="px-hero-copy"
           />
-          <p v-else class="px-hero-copy">{{ heroDescriptionFallback }}</p>
-          <div class="px-hero-actions">
-            <a :href="heroPrimaryCtaUrl" class="px-btn px-btn-green">
-              <PlastexLineIcon name="send" />
+          <div v-if="heroPrimaryCtaLabel || hasHeroSecondaryCta" class="px-hero-actions">
+            <a v-if="heroPrimaryCtaLabel" :href="heroPrimaryCtaUrl" class="px-btn px-btn-green">
+              <SmartSafetyIcon name="send" />
               {{ heroPrimaryCtaLabel }}
             </a>
-            <a :href="heroSecondaryCtaUrl" class="px-btn px-btn-outline">
-              <PlastexLineIcon name="products" />
+            <a v-if="hasHeroSecondaryCta" :href="heroSecondaryCtaUrl" class="px-btn px-btn-outline">
+              <SmartSafetyIcon name="shield" />
               {{ heroSecondaryCtaLabel }}
             </a>
           </div>
@@ -519,7 +517,7 @@ onUnmounted(() => {
         <article v-for="feature in displayFeatures" :key="feature.title" class="px-feature">
           <div class="px-feature-icon" aria-hidden="true">
             <img v-if="feature.image" :src="feature.image" :alt="''" />
-            <PlastexLineIcon v-else :name="feature.icon" />
+            <SmartSafetyIcon v-else :name="feature.icon" />
           </div>
           <h2>{{ feature.title }}</h2>
           <p>{{ feature.text }}</p>
@@ -549,7 +547,7 @@ onUnmounted(() => {
           <article v-for="item in displayWhyUs" :key="item.title" class="px-why-card">
             <div class="px-why-card-icon" aria-hidden="true">
               <img v-if="item.image" :src="item.image" :alt="''" />
-              <PlastexLineIcon v-else :name="item.icon" />
+              <SmartSafetyIcon v-else :name="item.icon" />
             </div>
             <h3>{{ item.title }}</h3>
             <p>{{ item.text }}</p>
@@ -558,32 +556,29 @@ onUnmounted(() => {
       </div>
     </section>
 
-    <section v-else-if="section.type === 'products'" id="products" class="px-products">
-      <div class="px-container">
-        <div class="px-section-header">
-          <h2>{{ resolveSectionTitle(section, 'public.home.products.title') }}</h2>
-        </div>
-
-        <ProductsCarousel v-if="products.length" :products="products" @inquire="inquireAboutProduct" />
-        <p v-else class="px-empty">{{ t('public.home.products.empty') }}</p>
-
+    <section v-else-if="section.type === 'products' && products.length" id="products" class="px-products">
+      <SectionContainer>
+        <SectionHeading :title="resolveSectionTitle(section, 'public.home.products.title')" />
+        <ProductsCarousel :products="products" @inquire="inquireAboutProduct" />
         <div class="px-section-footer">
           <Link :href="route('public.products.index')" class="px-text-link px-text-link-lg">
             {{ t('public.home.products.viewAll') }}
           </Link>
         </div>
-      </div>
+      </SectionContainer>
     </section>
 
     <section
-      v-else-if="section.type === 'services'"
+      v-else-if="section.type === 'services' && displayServices.length"
       id="services"
       class="px-services"
       :aria-label="t('public.home.services.title')"
     >
-      <div class="px-container">
-        <div class="px-section-header">
-          <p class="px-about-eyebrow">{{ t('public.home.services.title') }}</p>
+      <SectionContainer>
+        <SectionHeading
+          :eyebrow="t('public.home.services.title')"
+          :lede="servicesSubtitle(section)"
+        >
           <h2>
             <span
               v-for="(part, index) in servicesTitleParts(section)"
@@ -591,10 +586,9 @@ onUnmounted(() => {
               :class="{ 'px-hero-highlight': part.highlight }"
             >{{ part.text }}</span>
           </h2>
-          <p class="px-section-lede">{{ servicesSubtitle(section) }}</p>
-        </div>
+        </SectionHeading>
 
-        <div v-if="displayServices.length" class="px-product-grid">
+        <div class="px-product-grid">
           <article v-for="service in displayServices" :key="service.key" class="px-product-card">
             <div class="px-product-media">
               <img
@@ -603,24 +597,23 @@ onUnmounted(() => {
                 :alt="service.title"
               />
               <div v-else class="px-service-media-fallback" aria-hidden="true">
-                <PlastexLineIcon :name="service.icon" />
+                <SmartSafetyIcon :name="service.icon" />
               </div>
             </div>
             <div class="px-product-body">
               <h3>{{ service.title }}</h3>
-              <p>{{ service.text }}</p>
+              <p v-if="service.text">{{ service.text }}</p>
               <a href="#contact" class="px-text-link">
                 {{ t('public.home.services.learnMore') }}
               </a>
             </div>
           </article>
         </div>
-        <p v-else class="px-empty">{{ t('public.home.services.empty') }}</p>
-      </div>
+      </SectionContainer>
     </section>
 
-    <section v-else-if="section.type === 'split'" id="custom-manufacturing" class="px-split">
-      <div class="px-split-custom">
+    <section v-else-if="section.type === 'split' && (hasCustomManufacturingContent || displayIndustries.length)" id="custom-manufacturing" class="px-split">
+      <div v-if="hasCustomManufacturingContent" class="px-split-custom">
         <div class="px-split-copy">
           <div class="px-split-visual" :class="{ 'has-image': Boolean(manufacturingImage) }">
             <img
@@ -629,30 +622,30 @@ onUnmounted(() => {
               :alt="manufacturingTitle"
               class="px-split-visual-image"
             />
-            <PublicMediaPlaceholder v-else icon="cube" />
+            <EmptyMediaPlaceholder v-else icon="shield" />
           </div>
-          <h2>{{ manufacturingTitle }}</h2>
+          <h2 v-if="manufacturingTitle">{{ manufacturingTitle }}</h2>
           <RichTextContent
             v-if="customManufacturing && resolveBilingualField(customManufacturing, 'description', locale)"
             :content="resolveBilingualField(customManufacturing, 'description', locale)"
             tag="div"
           />
-          <p v-else>{{ manufacturingDescription }}</p>
           <a v-if="hasManufacturingAction" :href="manufacturingUrl" class="px-btn px-btn-green">{{ manufacturingCta }}</a>
         </div>
       </div>
       <div
+        v-if="displayIndustries.length"
         class="px-split-industries"
         :class="{ 'has-image': Boolean(industriesBackground) }"
         :style="industriesBackground ? { backgroundImage: `url('${industriesBackground}')` } : undefined"
       >
-        <div v-if="displayIndustries.length" class="px-split-industries-inner">
+        <div class="px-split-industries-inner">
           <h2>{{ resolveSectionTitle(section.industries, 'public.home.industries.title') }}</h2>
           <ul class="px-industry-grid">
             <li v-for="industry in displayIndustries" :key="industry.title">
               <span class="px-industry-icon" aria-hidden="true">
                 <img v-if="industry.image" :src="industry.image" :alt="''" />
-                <PlastexLineIcon v-else :name="industry.icon" />
+                <SmartSafetyIcon v-else :name="industry.icon" />
               </span>
               <span>{{ industry.title }}</span>
             </li>
@@ -661,7 +654,7 @@ onUnmounted(() => {
       </div>
     </section>
 
-    <section v-else-if="section.type === 'custom_manufacturing'" id="custom-manufacturing" class="px-split">
+    <section v-else-if="section.type === 'custom_manufacturing' && hasCustomManufacturingContent" id="custom-manufacturing" class="px-split">
       <div class="px-split-custom">
         <div class="px-split-copy">
           <div class="px-split-visual" :class="{ 'has-image': Boolean(manufacturingImage) }">
@@ -671,34 +664,33 @@ onUnmounted(() => {
               :alt="manufacturingTitle"
               class="px-split-visual-image"
             />
-            <PublicMediaPlaceholder v-else icon="cube" />
+            <EmptyMediaPlaceholder v-else icon="shield" />
           </div>
-          <h2>{{ manufacturingTitle }}</h2>
+          <h2 v-if="manufacturingTitle">{{ manufacturingTitle }}</h2>
           <RichTextContent
             v-if="customManufacturing && resolveBilingualField(customManufacturing, 'description', locale)"
             :content="resolveBilingualField(customManufacturing, 'description', locale)"
             tag="div"
           />
-          <p v-else>{{ manufacturingDescription }}</p>
           <a v-if="hasManufacturingAction" :href="manufacturingUrl" class="px-btn px-btn-green">{{ manufacturingCta }}</a>
         </div>
       </div>
     </section>
 
     <section
-      v-else-if="section.type === 'industries'"
+      v-else-if="section.type === 'industries' && displayIndustries.length"
       id="industries"
       class="px-split-industries px-split-industries--standalone"
       :class="{ 'has-image': Boolean(industriesBackground) }"
       :style="industriesBackground ? { backgroundImage: `url('${industriesBackground}')` } : undefined"
     >
-      <div v-if="displayIndustries.length" class="px-split-industries-inner px-container">
+      <div class="px-split-industries-inner px-container">
         <h2>{{ resolveSectionTitle(section, 'public.home.industries.title') }}</h2>
         <ul class="px-industry-grid">
           <li v-for="industry in displayIndustries" :key="industry.title">
             <span class="px-industry-icon" aria-hidden="true">
               <img v-if="industry.image" :src="industry.image" :alt="''" />
-              <PlastexLineIcon v-else :name="industry.icon" />
+              <SmartSafetyIcon v-else :name="industry.icon" />
             </span>
             <span>{{ industry.title }}</span>
           </li>
@@ -706,17 +698,17 @@ onUnmounted(() => {
       </div>
     </section>
 
-    <section v-else-if="section.type === 'vision_mission'" id="vision-mission" class="px-vision-mission">
-      <div class="px-container">
-        <div class="px-goals-header">
-          <p class="px-goals-eyebrow">{{ resolveSectionTitle(section, 'public.home.visionMission.title') }}</p>
-          <h2 class="px-goals-headline">{{ resolveSectionHeadline(section, 'public.home.visionMission.headline') }}</h2>
-        </div>
+    <section v-else-if="section.type === 'vision_mission' && hasVisionMissionContent" id="vision-mission" class="px-vision-mission">
+      <SectionContainer>
+        <SectionHeading
+          :eyebrow="resolveSectionTitle(section, 'public.home.visionMission.title')"
+          :title="resolveSectionHeadline(section, 'public.home.visionMission.headline')"
+        />
 
         <div class="px-vm-grid">
-          <article class="px-vm-card">
+          <article v-if="visionCard.html || visionCard.text" class="px-vm-card">
             <div class="px-vm-icon" aria-hidden="true">
-              <PlastexLineIcon name="vision" />
+              <SmartSafetyIcon name="vision" />
             </div>
             <p class="px-vm-label">{{ t('public.home.visionMission.visionLabel') }}</p>
             <h3>{{ visionCard.heading }}</h3>
@@ -729,9 +721,9 @@ onUnmounted(() => {
             <p v-else class="px-vm-copy">{{ visionCard.text }}</p>
           </article>
 
-          <article class="px-vm-card">
+          <article v-if="missionCard.html || missionCard.text" class="px-vm-card">
             <div class="px-vm-icon" aria-hidden="true">
-              <PlastexLineIcon name="mission" />
+              <SmartSafetyIcon name="mission" />
             </div>
             <p class="px-vm-label">{{ t('public.home.visionMission.missionLabel') }}</p>
             <h3>{{ missionCard.heading }}</h3>
@@ -744,29 +736,27 @@ onUnmounted(() => {
             <p v-else class="px-vm-copy">{{ missionCard.text }}</p>
           </article>
         </div>
-      </div>
+      </SectionContainer>
     </section>
 
-    <section v-else-if="section.type === 'goals'" id="goals" class="px-goals">
-      <div class="px-container">
-        <div class="px-goals-header">
-          <p class="px-goals-eyebrow">{{ resolveSectionTitle(section, 'public.home.goals.title') }}</p>
-          <h2 class="px-goals-headline">{{ resolveSectionHeadline(section) }}</h2>
-        </div>
-
-        <ul v-if="displayGoals.length" class="px-goals-grid">
+    <section v-else-if="section.type === 'goals' && displayGoals.length" id="goals" class="px-goals">
+      <SectionContainer>
+        <SectionHeading
+          :eyebrow="resolveSectionTitle(section, 'public.home.goals.title')"
+          :title="resolveSectionHeadline(section)"
+        />
+        <ul class="px-goals-grid">
           <li v-for="(goal, index) in displayGoals" :key="`${goal}-${index}`" class="px-goal-card">
             <span class="px-goal-icon" aria-hidden="true">
-              <PlastexLineIcon name="flag" />
+              <SmartSafetyIcon name="flag" />
             </span>
             <p>{{ goal }}</p>
           </li>
         </ul>
-        <p v-else class="px-empty">{{ t('public.home.goals.empty') }}</p>
-      </div>
+      </SectionContainer>
     </section>
 
-    <section v-else-if="section.type === 'about'" id="about" class="px-about">
+    <section v-else-if="section.type === 'about' && hasAboutContent" id="about" class="px-about">
       <div class="px-container px-about-grid">
         <div class="px-about-copy">
           <p class="px-about-eyebrow">{{ t('public.home.about.title') }}</p>
@@ -779,12 +769,11 @@ onUnmounted(() => {
             tag="div"
             class="px-about-text"
           />
-          <p v-else class="px-about-text">{{ aboutFallback }}</p>
 
           <div v-if="displayAboutHighlights.length" class="px-about-highlights">
             <article v-for="item in displayAboutHighlights" :key="item.title" class="px-about-highlight">
               <span class="px-about-highlight-icon" aria-hidden="true">
-                <PlastexLineIcon :name="item.icon" />
+                <SmartSafetyIcon :name="item.icon" />
               </span>
               <div class="px-about-highlight-copy">
                 <strong>{{ item.title }}</strong>
@@ -808,56 +797,45 @@ onUnmounted(() => {
             :src="aboutImage"
             :alt="t('public.home.about.imageAlt', { company: companyName })"
           />
-          <PublicMediaPlaceholder v-else icon="industry" tall />
+          <EmptyMediaPlaceholder v-else icon="building" tall />
         </div>
       </div>
     </section>
 
-    <section v-else-if="section.type === 'team_members'" id="team" class="px-team">
-      <div class="px-container">
-        <div class="px-section-header">
-          <h2>{{ resolveSectionTitle(section, 'public.home.team.title') }}</h2>
-        </div>
-
-        <TeamMembersCarousel v-if="teamMembers.length" :members="teamMembers" />
-        <p v-else class="px-empty">{{ t('public.home.team.empty') }}</p>
-      </div>
+    <section v-else-if="section.type === 'team_members' && teamMembers.length" id="team" class="px-team">
+      <SectionContainer>
+        <SectionHeading :title="resolveSectionTitle(section, 'public.home.team.title')" />
+        <TeamMembersCarousel :members="teamMembers" />
+      </SectionContainer>
     </section>
 
-    <section v-else-if="section.type === 'clients_partners'" id="clients-partners" class="px-clients-partners">
-      <div class="px-container">
-        <div class="px-section-header">
-          <h2>{{ resolveSectionTitle(section, 'public.home.clientsPartners.title') }}</h2>
-        </div>
-
-        <ClientsPartnersCarousel v-if="clientsPartners.length" :items="clientsPartners" />
-        <p v-else class="px-empty">{{ t('public.home.clientsPartners.empty') }}</p>
-      </div>
+    <section v-else-if="section.type === 'clients_partners' && clientsPartners.length" id="clients-partners" class="px-clients-partners">
+      <SectionContainer>
+        <SectionHeading :title="resolveSectionTitle(section, 'public.home.clientsPartners.title')" />
+        <ClientsPartnersCarousel :items="clientsPartners" />
+      </SectionContainer>
     </section>
 
-    <section v-else-if="section.type === 'gallery'" id="gallery" class="px-gallery">
-      <div class="px-container">
-        <div class="px-section-header">
-          <h2>{{ resolveSectionTitle(section, 'public.home.gallery.title') }}</h2>
-        </div>
-        <div v-if="galleryItemsForSection(section).length" class="px-gallery-grid">
+    <section v-else-if="section.type === 'gallery' && galleryItemsForSection(section).length" id="gallery" class="px-gallery">
+      <SectionContainer>
+        <SectionHeading :title="resolveSectionTitle(section, 'public.home.gallery.title')" />
+        <div class="px-gallery-grid">
           <figure v-for="item in galleryItemsForSection(section)" :key="item.src">
             <img :src="item.src" :alt="item.alt" />
           </figure>
         </div>
-        <p v-else class="px-empty">{{ t('public.home.gallery.empty') }}</p>
-      </div>
+      </SectionContainer>
     </section>
 
-    <section v-else-if="section.type === 'contact_cta'" class="px-contact-cta">
+    <section v-else-if="section.type === 'contact_cta' && hasContactCtaContent" class="px-contact-cta">
       <div
         class="px-contact-cta-bg"
         :class="{ 'has-image': Boolean(contactCtaBackground) }"
         :style="contactCtaBackground ? { backgroundImage: `url('${contactCtaBackground}')` } : undefined"
       ></div>
       <div class="px-container px-contact-cta-inner">
-        <h2>{{ contactCtaTitle }}</h2>
-        <p>{{ contactCtaText }}</p>
+        <h2 v-if="contactCtaTitle">{{ contactCtaTitle }}</h2>
+        <p v-if="contactCtaText">{{ contactCtaText }}</p>
         <a v-if="hasContactCtaAction" :href="contactCtaUrl" class="px-btn px-btn-green">{{ contactCtaLabel }}</a>
       </div>
     </section>
@@ -867,31 +845,31 @@ onUnmounted(() => {
         <div>
           <p class="px-about-eyebrow">{{ t('public.home.contact.eyebrow') }}</p>
           <h2>{{ resolveSectionTitle(section, 'public.home.contact.title') }}</h2>
-          <p>{{ contactSubtitle(section) }}</p>
+          <p v-if="contactSubtitle(section)">{{ contactSubtitle(section) }}</p>
           <ul class="px-contact-details">
             <li v-if="companyInfo.phone">
-              <span class="px-contact-icon" aria-hidden="true"><PlastexLineIcon name="phone" /></span>
+              <span class="px-contact-icon" aria-hidden="true"><SmartSafetyIcon name="phone" /></span>
               <div>
                 <span>{{ t('public.home.contact.phone') }}</span>
                 <a :href="`tel:${companyInfo.phone}`" dir="ltr">{{ companyInfo.phone }}</a>
               </div>
             </li>
             <li v-if="companyInfo.email">
-              <span class="px-contact-icon" aria-hidden="true"><PlastexLineIcon name="envelope" /></span>
+              <span class="px-contact-icon" aria-hidden="true"><SmartSafetyIcon name="envelope" /></span>
               <div>
                 <span>{{ t('public.home.contact.email') }}</span>
                 <a :href="`mailto:${companyInfo.email}`">{{ companyInfo.email }}</a>
               </div>
             </li>
             <li v-if="resolveBilingualField(companyInfo, 'address', locale)">
-              <span class="px-contact-icon" aria-hidden="true"><PlastexLineIcon name="location-dot" /></span>
+              <span class="px-contact-icon" aria-hidden="true"><SmartSafetyIcon name="location-dot" /></span>
               <div>
                 <span>{{ t('public.home.contact.address') }}</span>
                 <p>{{ resolveBilingualField(companyInfo, 'address', locale) }}</p>
               </div>
             </li>
             <li v-if="whatsappUrl">
-              <span class="px-contact-icon" aria-hidden="true"><PlastexLineIcon name="whatsapp" /></span>
+              <span class="px-contact-icon" aria-hidden="true"><SmartSafetyIcon name="whatsapp" /></span>
               <div>
                 <span>{{ t('public.home.contact.whatsapp') }}</span>
                 <a :href="whatsappUrl" target="_blank" rel="noopener noreferrer" dir="ltr">{{ companyInfo.phone || t('public.home.contact.whatsapp') }}</a>

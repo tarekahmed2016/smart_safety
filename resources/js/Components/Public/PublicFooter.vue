@@ -18,12 +18,10 @@ const companyName = computed(() =>
     resolveBilingualField(companyInfo.value, 'name', locale.value) || t('public.home.defaultCompanyName')
 )
 const aboutText = computed(() => plainTextFromHtml(resolveBilingualField(companyInfo.value, 'about', locale.value)))
-const heroDescription = computed(() => plainTextFromHtml(resolveBilingualField(companyInfo.value, 'hero_description', locale.value)))
 const footerDescription = computed(() =>
   resolveHomepagePlainField(companyInfo.value, 'footer_description', locale.value)
     || aboutText.value
-    || heroDescription.value
-    || t('public.home.footer.tagline')
+    || ''
 )
 const googleMapsEmbedUrl = computed(() => sanitizeGoogleMapsEmbedUrl(companyInfo.value.google_maps_embed_url))
 const newsletterTitle = computed(() =>
@@ -44,6 +42,9 @@ const copyrightText = computed(() => formatHomepageTemplate(
 ))
 const logo = computed(() => companyInfo.value.logo || companyInfo.value.attachment?.asset_path || '')
 const addressText = computed(() => resolveBilingualField(companyInfo.value, 'address', locale.value))
+const hasFooterContact = computed(() => Boolean(
+  companyInfo.value.phone || companyInfo.value.email || addressText.value
+))
 const year = new Date().getFullYear()
 const todayVisitors = computed(() => Number(page.props.todayVisitors ?? 0))
 const showFooterNewsletter = false
@@ -80,7 +81,7 @@ const submitNewsletter = () => {
 </script>
 
 <template>
-    <footer class="px-footer">
+    <footer class="px-footer ss-footer">
         <div class="px-container px-footer-grid">
             <div class="px-footer-brand">
                 <img
@@ -89,7 +90,7 @@ const submitNewsletter = () => {
                     :alt="companyName"
                     class="px-footer-logo"
                 />
-                <h3 v-else class="px-footer-name">{{ companyName }}</h3>
+                <h3 class="px-footer-name">{{ companyName }}</h3>
                 <div v-if="googleMapsEmbedUrl" class="px-footer-map">
                     <iframe
                         :src="googleMapsEmbedUrl"
@@ -101,7 +102,7 @@ const submitNewsletter = () => {
                         :title="t('public.home.footer.mapTitle')"
                     />
                 </div>
-                <p v-else>{{ footerDescription }}</p>
+                <p v-else-if="footerDescription">{{ footerDescription }}</p>
                 <SocialLinks :company-info="companyInfo" variant="footer" />
             </div>
 
@@ -114,7 +115,7 @@ const submitNewsletter = () => {
                 </nav>
             </div>
 
-            <div>
+            <div v-if="hasFooterContact">
                 <h4>{{ t('public.home.footer.contact') }}</h4>
                 <div class="px-footer-contact">
                     <a v-if="companyInfo.phone" :href="`tel:${companyInfo.phone}`">
@@ -124,9 +125,6 @@ const submitNewsletter = () => {
                         {{ companyInfo.email }}
                     </a>
                     <p v-if="addressText">{{ addressText }}</p>
-                    <p v-if="!companyInfo.phone && !companyInfo.email && !addressText">
-                        {{ t('public.home.contact.notAvailable') }}
-                    </p>
                 </div>
             </div>
 

@@ -4,7 +4,7 @@ import SmartSafetyIcon from './SmartSafetyIcon.vue'
 defineProps({
   icon: {
     type: String,
-    default: 'industry',
+    default: 'shield',
   },
   tall: {
     type: Boolean,
@@ -14,7 +14,11 @@ defineProps({
 </script>
 
 <template>
-  <div class="px-media-fallback" :class="{ 'px-media-fallback-tall': tall }" aria-hidden="true">
+  <div
+    class="ss-empty-media px-media-fallback"
+    :class="{ 'ss-empty-media--tall': tall, 'px-media-fallback-tall': tall }"
+    aria-hidden="true"
+  >
     <SmartSafetyIcon :name="icon" />
   </div>
 </template>

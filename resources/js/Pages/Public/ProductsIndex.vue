@@ -23,7 +23,7 @@ const productExcerpt = (product) =>
   <section class="px-page-hero">
     <div class="px-container">
       <h1>{{ t('public.home.products.title') }}</h1>
-      <p>{{ t('public.home.products.subtitle') }}</p>
+      <p v-if="t('public.home.products.subtitle')">{{ t('public.home.products.subtitle') }}</p>
     </div>
   </section>
 

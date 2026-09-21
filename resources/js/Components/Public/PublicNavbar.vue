@@ -75,7 +75,7 @@ const otherLocaleCode = computed(() => (locale.value === 'ar' ? 'en' : 'ar'))
 </script>
 
 <template>
-  <header class="px-header" :class="{ 'px-header--scrolled': isScrolled }">
+  <header class="px-header" :class="{ 'px-header--scrolled': isScrolled, 'ss-header': true }">
     <nav class="px-nav" :aria-label="t('public.home.nav.main')">
       <div class="px-nav-inner">
         <div class="px-nav-bar">
@@ -86,7 +86,7 @@ const otherLocaleCode = computed(() => (locale.value === 'ar' ? 'en' : 'ar'))
               :alt="logoAlt"
               class="px-nav-logo"
             />
-            <span class="px-nav-brand-names" :style="brandNameStyle">
+            <span v-else class="px-nav-brand-names" :style="brandNameStyle">
               <span
                 class="px-nav-brand-name-ar"
                 dir="rtl"

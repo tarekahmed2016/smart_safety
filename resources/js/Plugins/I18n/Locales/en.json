@@ -1191,7 +1191,7 @@
     "home": {
       "defaultCompanyName": "Smart Safety",
       "brand": {
-        "tagline": "Plastic products manufacturing"
+        "tagline": ""
       },
       "nav": {
         "home": "Home",
@@ -1224,14 +1224,14 @@
       },
       "hero": {
         "eyebrow": "",
-        "titleLine1": "Plastic solutions",
-        "titleLine2": "that build a better future",
-        "highlight": "better future",
-        "supporting": "We manufacture plastic products according to customer requirements, with flexible production and consistent quality.",
+        "titleLine1": "",
+        "titleLine2": "",
+        "highlight": "",
+        "supporting": "",
         "ctaProducts": "Explore our products",
         "ctaQuote": "Request a quote",
-        "subheadlineWithCompany": "Discover how {company} manufactures plastic products according to customer requirements.",
-        "subheadlineFallback": "We manufacture plastic products according to customer requirements, with flexible production and consistent quality.",
+        "subheadlineWithCompany": "",
+        "subheadlineFallback": "",
         "ctaServices": "Explore our products",
         "ctaContact": "Request a quote",
         "sliderLabel": "Homepage hero slideshow",
@@ -1251,7 +1251,7 @@
         },
         "experience": {
           "title": "Broad experience",
-          "text": "In plastics manufacturing"
+          "text": ""
         },
         "flexible": {
           "title": "Flexible production",
@@ -1264,7 +1264,7 @@
       },
       "products": {
         "title": "Our products",
-        "subtitle": "Explore the plastic products we manufacture for our customers.",
+        "subtitle": "",
         "empty": "Products will appear here once they are published.",
         "noDescription": "Contact us to learn more about this product.",
         "details": "Product details",
@@ -1281,7 +1281,7 @@
       },
       "manufacturing": {
         "title": "Custom manufacturing",
-        "description": "We manufacture plastic products according to your requirements, from concept to production.",
+        "description": "",
         "cta": "Order your product now"
       },
       "industries": {
@@ -1298,12 +1298,12 @@
       "gallery": {
         "title": "Gallery",
         "empty": "Gallery images will appear here once media is published.",
-        "imageAlt": "Factory gallery image",
+        "imageAlt": "Gallery image",
         "slideAlt": "Gallery image {number}"
       },
       "contactCta": {
         "title": "Have a project in mind?",
-        "subtitle": "We are here to turn your industrial ideas into reality with the highest quality standards.",
+        "subtitle": "",
         "button": "Contact us"
       },
       "newsletter": {
@@ -1321,12 +1321,12 @@
       },
       "about": {
         "title": "About Us",
-        "factoryTitle": "An Omani company with distinguished talent",
-        "highlight": "distinguished",
-        "subtitle": "Learn more about our factory and how we serve our clients.",
-        "descriptionWithCompany": "{company} manufactures plastic products according to customer requirements, with a focus on quality, flexibility, and long-term partnership.",
+        "factoryTitle": "",
+        "highlight": "",
+        "subtitle": "",
+        "descriptionWithCompany": "",
         "more": "More about us",
-        "imageAlt": "{company} factory",
+        "imageAlt": "{company}",
         "visionTitle": "Our Vision",
         "missionTitle": "Our Mission",
         "empty": "Company information will appear here once it has been configured.",
@@ -1357,32 +1357,32 @@
       },
       "visionMission": {
         "title": "Vision & Mission",
-        "headline": "Towards an integrated industry",
+        "headline": "",
         "visionLabel": "Our Vision",
         "missionLabel": "Our Mission",
-        "visionHeading": "Building an integrated group of industrial companies",
-        "visionBody": "Economically successful and advanced scientifically, administratively, and industrially, serving society and contributing to sustainable development.",
-        "missionHeading": "Professional industrial solutions",
-        "missionBody": "Providing professional industrial solutions that improve performance for factories and brands, using the latest technologies and the highest quality standards."
+        "visionHeading": "Our Vision",
+        "visionBody": "",
+        "missionHeading": "Our Mission",
+        "missionBody": ""
       },
       "goals": {
         "title": "Our Goals",
         "headline": "We strive for excellence",
         "empty": "Goals will appear here once they are published.",
         "items": {
-          "1": "Building trust in Omani products and helping them compete in global markets.",
-          "2": "Accelerating the transition toward the Fourth Industrial Revolution in the Sultanate.",
-          "3": "Supporting Oman’s progress toward advanced economies and transformative manufacturing industries.",
-          "4": "Building and developing factories with modern technologies and global quality standards.",
-          "5": "Developing and designing plastic products using advanced industrial technologies.",
-          "6": "Providing industrial consulting that supports Oman’s industrial sector."
+          "1": "",
+          "2": "",
+          "3": "",
+          "4": "",
+          "5": "",
+          "6": ""
         }
       },
       "services": {
         "title": "Our Services",
-        "manufacturingTitle": "Manufacturing Services",
-        "highlight": "Manufacturing",
-        "subtitle": "We provide manufacturing and plastic industry services for brands and factories.",
+        "manufacturingTitle": "Our Services",
+        "highlight": "",
+        "subtitle": "",
         "empty": "Services will appear here once they are published.",
         "noDescription": "Contact us to learn more about this service.",
         "learnMore": "Learn More"
@@ -1443,7 +1443,7 @@
       "contact": {
         "eyebrow": "Contact Us",
         "title": "Have a project in mind?",
-        "subtitle": "We are here to turn your industrial ideas into reality with the highest quality standards.",
+        "subtitle": "",
         "phone": "Phone",
         "email": "Email",
         "address": "Address",
@@ -1488,7 +1488,7 @@
         "backToTop": "Back to top"
       },
       "footer": {
-        "tagline": "Plastic manufacturing solutions built around customer requirements.",
+        "tagline": "",
         "navigation": "Navigation",
         "quickLinks": "Quick links",
         "contact": "Contact",

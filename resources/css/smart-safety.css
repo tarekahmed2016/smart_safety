@@ -1,0 +1,271 @@
+/* =================================================================
+   SMART SAFETY PUBLIC SITE
+   Primary public styling layer. Theme colors come from --sf-* vars
+   set on the public layout from company_info.
+   ================================================================= */
+
+.smart-safety-site {
+    --px-navy: var(--sf-black, #0b1f3a);
+    --px-navy-deep: color-mix(in srgb, var(--sf-black, #0b1f3a) 88%, #000000);
+    --px-blue: var(--sf-text-nav-hover, #1b4f9c);
+    --px-blue-soft: color-mix(in srgb, var(--sf-text-nav-hover, #1b4f9c) 12%, #ffffff);
+    --px-green: var(--sf-yellow, #7ac142);
+    --px-green-hover: var(--sf-yellow-hover, #68a936);
+    --px-gray: #f4f6f9;
+    --px-white: #ffffff;
+    --px-text: var(--sf-text-heading, #0b1f3a);
+    --px-body: var(--sf-text-body, #334155);
+    --px-muted: var(--sf-text-muted, #64748b);
+    --px-radius: 1rem;
+    --px-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
+    --px-container: 75rem;
+    --ss-surface: #f5f7fa;
+    --ss-card: #ffffff;
+    --ss-border: rgba(15, 23, 42, 0.08);
+    background: var(--ss-surface);
+    color: var(--px-body);
+    font-family: 'Cairo', 'Inter', sans-serif;
+    overflow-x: clip;
+    max-width: 100%;
+}
+
+.smart-safety-site section[id] {
+    scroll-margin-top: 5.75rem;
+}
+
+.smart-safety-home {
+    background: var(--ss-surface);
+}
+
+html[dir="ltr"] .smart-safety-site > main {
+    overflow-x: clip;
+    max-width: 100%;
+}
+
+.smart-safety-site .public-custom-page {
+    background: var(--ss-card);
+    padding: 4rem 0 5rem;
+}
+
+.smart-safety-site .public-custom-page-title {
+    color: var(--px-navy);
+    font-size: clamp(1.6rem, 3vw, 2.15rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.smart-safety-site .public-container {
+    width: 100%;
+    max-width: var(--px-container);
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+}
+
+.ss-container {
+    width: 100%;
+    max-width: var(--px-container);
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+}
+
+@media (min-width: 768px) {
+    .ss-container,
+    .smart-safety-site .public-container {
+        padding-inline: 2rem;
+    }
+}
+
+.ss-section-heading {
+    margin-bottom: 1.75rem;
+}
+
+.ss-section-heading__eyebrow {
+    margin: 0 0 0.45rem;
+    color: var(--px-green);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.ss-section-heading__title {
+    margin: 0;
+    color: var(--px-text);
+    font-size: clamp(1.45rem, 2.4vw, 2rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+}
+
+.ss-section-heading__lede {
+    margin: 0.75rem 0 0;
+    max-width: 40rem;
+    color: var(--px-muted);
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+.ss-empty-media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 12rem;
+    border-radius: var(--px-radius);
+    background:
+        linear-gradient(160deg, color-mix(in srgb, var(--px-green) 12%, #ffffff) 0%, #eef2f6 100%);
+    color: var(--px-navy);
+}
+
+.ss-empty-media--tall {
+    min-height: 18rem;
+}
+
+.ss-empty-media .px-line-icon,
+.ss-empty-media svg {
+    width: 2.5rem;
+    height: 2.5rem;
+    opacity: 0.55;
+}
+
+.smart-safety-site .px-header {
+    background: rgba(255, 255, 255, 0.96);
+    border-bottom: 1px solid var(--ss-border);
+    backdrop-filter: blur(10px);
+}
+
+.smart-safety-site .px-header--scrolled {
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+.smart-safety-site .px-nav-brand-name-ar,
+.smart-safety-site .px-nav-brand-name-en,
+.smart-safety-site .px-footer-name {
+    color: var(--px-text);
+    font-weight: 800;
+}
+
+.smart-safety-site .px-hero {
+    position: relative;
+    isolation: isolate;
+    min-height: clamp(22rem, 68vh, 38rem);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.smart-safety-site .px-hero-bg:not(.has-image) {
+    background:
+        radial-gradient(1200px 420px at 80% 10%, color-mix(in srgb, var(--px-green) 28%, transparent), transparent 60%),
+        linear-gradient(135deg, var(--px-navy) 0%, color-mix(in srgb, var(--px-navy) 72%, #1e3a5f) 100%);
+}
+
+.smart-safety-site .px-hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 42rem;
+    padding-block: clamp(3.5rem, 8vw, 6rem);
+}
+
+.smart-safety-site .px-hero-eyebrow {
+    margin: 0 0 0.85rem;
+    color: color-mix(in srgb, var(--sf-text-hero, #ffffff) 82%, var(--px-green));
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.smart-safety-site .px-hero-title {
+    color: var(--sf-text-hero, #ffffff);
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+}
+
+.smart-safety-site .px-hero-copy {
+    color: color-mix(in srgb, var(--sf-text-hero, #ffffff) 88%, #cbd5e1);
+    font-size: clamp(1rem, 1.6vw, 1.125rem);
+    line-height: 1.75;
+}
+
+.smart-safety-site .px-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.smart-safety-site .px-btn {
+    border-radius: 0.75rem;
+    font-weight: 700;
+    min-height: 2.75rem;
+}
+
+.smart-safety-site .px-feature,
+.smart-safety-site .px-product-card,
+.smart-safety-site .px-why-card,
+.smart-safety-site .px-goal-card,
+.smart-safety-site .px-vm-card,
+.smart-safety-site .px-about-highlight,
+.smart-safety-site .px-contact-form {
+    background: var(--ss-card);
+    border: 1px solid var(--ss-border);
+    border-radius: var(--px-radius);
+    box-shadow: var(--px-shadow);
+}
+
+.smart-safety-site .px-section-header,
+.smart-safety-site .px-goals-header {
+    margin-bottom: 1.75rem;
+}
+
+.smart-safety-site .px-about,
+.smart-safety-site .px-services,
+.smart-safety-site .px-products,
+.smart-safety-site .px-goals,
+.smart-safety-site .px-vision-mission,
+.smart-safety-site .px-team,
+.smart-safety-site .px-clients-partners,
+.smart-safety-site .px-gallery,
+.smart-safety-site .px-contact,
+.smart-safety-site .px-why-us,
+.smart-safety-site .px-page-section {
+    padding-block: clamp(2.75rem, 6vw, 4.5rem);
+}
+
+.smart-safety-site .px-footer {
+    background: var(--px-navy);
+    color: var(--sf-text-on-dark, #ffffff);
+}
+
+.smart-safety-site .px-footer a {
+    color: color-mix(in srgb, var(--sf-text-on-dark, #ffffff) 88%, #cbd5e1);
+}
+
+.smart-safety-site .px-media-fallback,
+.smart-safety-site .px-service-media-fallback {
+    background:
+        linear-gradient(160deg, color-mix(in srgb, var(--px-green) 14%, #ffffff) 0%, #eef2f6 100%);
+}
+
+@media (max-width: 429px) {
+    .smart-safety-site .px-nav-cta {
+        display: none;
+    }
+
+    .smart-safety-site .px-hero-actions .px-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (min-width: 1024px) {
+    .smart-safety-site .px-hero {
+        min-height: 36rem;
+    }
+}
+
+@media (min-width: 1440px) {
+    .smart-safety-site {
+        --px-container: 80rem;
+    }
+}
