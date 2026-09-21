@@ -5,11 +5,11 @@ import { useI18n } from 'vue-i18n'
 import { faSignInAlt, faBars, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { resolveBilingualField } from '../../../Composables/useBilingualContent.js'
 
-const { locale } = useI18n()
+const { t, locale } = useI18n()
 const page = usePage()
 const isAuthenticated = computed(() => page.props.auth?.user)
 const companyName = computed(() =>
-    resolveBilingualField(page.props.companyInfo, 'name', locale.value) || 'Creative Industry'
+    resolveBilingualField(page.props.companyInfo, 'name', locale.value) || t('public.home.defaultCompanyName')
 )
 
 const isMenuOpen = ref(false)

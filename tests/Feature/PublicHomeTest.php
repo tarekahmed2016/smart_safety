@@ -45,8 +45,8 @@ test('homepage works when company info does not exist', function () {
     $this->get(route('home'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->where('companyInfo.name_ar', 'الصناعة الإبداعية')
-            ->where('companyInfo.name_en', 'Creative Industry')
+            ->where('companyInfo.name_ar', 'سمارت سيفتي')
+            ->where('companyInfo.name_en', 'Smart Safety')
             ->where('companyInfo.phone', '')
             ->where('companyInfo.email', '')
             ->where('companyInfo.logo', null));

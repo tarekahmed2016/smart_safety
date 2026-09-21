@@ -29,10 +29,6 @@ class CompanyGoalDefaults
                 'text_en' => 'Building and developing factories with modern technologies and global quality standards.',
             ],
             [
-                'text_ar' => 'تطوير المنتجات البلاستيكية وتصميمها باستخدام أفضل التقنيات الصناعية',
-                'text_en' => 'Developing and designing plastic products using advanced industrial technologies.',
-            ],
-            [
                 'text_ar' => 'تقديم الاستشارات الصناعية التي تسهم في تطوير المجال الصناعي في السلطنة',
                 'text_en' => 'Providing industrial consulting that supports Oman’s industrial sector.',
             ],

@@ -211,12 +211,12 @@ class CompanyInfoService
     public function emptyDefaults(): array
     {
         return [
-            'name_ar' => 'الصناعة الإبداعية',
-            'name_en' => 'Creative Industry',
-            'hero_title_ar' => "حلول بلاستيكية\nتصنع مستقبل أفضل",
-            'hero_title_en' => "Plastic solutions\nthat build a better future",
-            'hero_description_ar' => 'نختص في تصنيع المنتجات البلاستيكية وفق متطلبات العملاء، بمعايير جودة عالية وإنتاج مرن يلبي احتياجات القطاعات المختلفة.',
-            'hero_description_en' => 'We specialize in manufacturing plastic products according to customer requirements, with high quality standards and flexible production for diverse sectors.',
+            'name_ar' => 'سمارت سيفتي',
+            'name_en' => 'Smart Safety',
+            'hero_title_ar' => '',
+            'hero_title_en' => '',
+            'hero_description_ar' => '',
+            'hero_description_en' => '',
             'about_ar' => HomepageAboutContentDefaults::companyFields()['about_ar'],
             'about_en' => HomepageAboutContentDefaults::companyFields()['about_en'],
             ...HomepageContentDefaults::companyInfoFields(),

@@ -44,7 +44,7 @@ test('creative industry content seeder imports cms records without changing hero
         ->and(Product::count())->toBe(8)
         ->and(ClientPartner::where('type', ClientPartnerType::Client)->count())->toBe(7)
         ->and(Page::where('slug', 'goals')->exists())->toBeTrue()
-        ->and(CompanyGoal::count())->toBe(6)
+        ->and(CompanyGoal::count())->toBe(5)
         ->and(Page::where('slug', 'why-us')->exists())->toBeTrue()
         ->and(HomepagePromoBlock::where('type', HomepagePromoType::Stat)->count())->toBe(2)
         ->and(HomepagePromoBlock::where('type', HomepagePromoType::AboutHighlight)->count())->toBe(4)

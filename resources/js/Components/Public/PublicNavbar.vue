@@ -13,14 +13,14 @@ const { navLinks, isHomePage } = usePublicNavLinks()
 const companyInfo = computed(() => page.props.companyInfo || {})
 const businessCta = computed(() => page.props.businessCta || null)
 
-const companyNameAr = computed(() => companyInfo.value.name_ar || 'الصناعة الإبداعية')
-const companyNameEn = computed(() => companyInfo.value.name_en || 'Creative Industry')
+const companyNameAr = computed(() => companyInfo.value.name_ar || 'سمارت سيفتي')
+const companyNameEn = computed(() => companyInfo.value.name_en || 'Smart Safety')
 const brandDir = computed(() => (locale.value === 'ar' ? 'rtl' : 'ltr'))
 const brandNameStyle = computed(() => companyNameBrandCssVars(companyInfo.value))
 const brandNameArStyle = computed(() => companyNameBrandArFontStyle(companyInfo.value))
 const brandNameEnStyle = computed(() => companyNameBrandEnFontStyle(companyInfo.value))
 const logoAlt = computed(() => companyNameAr.value || companyNameEn.value)
-const logo = computed(() => companyInfo.value.logo || companyInfo.value.attachment?.asset_path || '/images/creative-industry/logo.jpeg')
+const logo = computed(() => companyInfo.value.logo || companyInfo.value.attachment?.asset_path || '')
 
 const quoteLabel = computed(() => {
   const text = businessCta.value ? resolveBilingualField(businessCta.value, 'cta_text', locale.value) : ''
@@ -81,6 +81,7 @@ const otherLocaleCode = computed(() => (locale.value === 'ar' ? 'en' : 'ar'))
         <div class="px-nav-bar">
           <a :href="homeHref" class="px-nav-brand" :dir="brandDir" @click="closeMenu">
             <img
+              v-if="logo"
               :src="logo"
               :alt="logoAlt"
               class="px-nav-logo"

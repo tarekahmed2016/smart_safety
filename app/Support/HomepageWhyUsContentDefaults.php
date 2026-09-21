@@ -12,10 +12,10 @@ class HomepageWhyUsContentDefaults
         return [
             'title_ar' => 'لماذا نحن',
             'title_en' => 'Why Us',
-            'headline_ar' => 'ما يميز الصناعة الإبداعية',
-            'headline_en' => 'What sets Creative Industry apart',
-            'highlight_ar' => 'الصناعة الإبداعية',
-            'highlight_en' => 'Creative Industry',
+            'headline_ar' => 'ما يميز سمارت سيفتي',
+            'headline_en' => 'What sets Smart Safety apart',
+            'highlight_ar' => 'سمارت سيفتي',
+            'highlight_en' => 'Smart Safety',
         ];
     }
 

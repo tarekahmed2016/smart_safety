@@ -42,8 +42,8 @@ test('admin can view company info with empty defaults', function () {
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('CompanyInfo/CompanyInfoPage', false)
-            ->where('companyInfo.name_ar', 'الصناعة الإبداعية')
-            ->where('companyInfo.name_en', 'Creative Industry')
+            ->where('companyInfo.name_ar', 'سمارت سيفتي')
+            ->where('companyInfo.name_en', 'Smart Safety')
             ->where('companyInfo.email', ''));
 });
 

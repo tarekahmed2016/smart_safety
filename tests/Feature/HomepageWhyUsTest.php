@@ -46,7 +46,7 @@ test('homepage includes original why us cards from cms', function () {
             ->where('homepageSections', fn ($sections) => collect($sections)->contains(
                 fn ($section) => $section['key'] === 'why_us'
                     && $section['title_ar'] === 'لماذا نحن'
-                    && ($section['settings']['headline_ar'] ?? null) === 'ما يميز الصناعة الإبداعية'
+                    && ($section['settings']['headline_ar'] ?? null) === 'ما يميز سمارت سيفتي'
             ))
             ->has('whyUsHighlights', 3)
             ->where('whyUsHighlights.0.title_ar', 'كوادر عمانية متخصصة')

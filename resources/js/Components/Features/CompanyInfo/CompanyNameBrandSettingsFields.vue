@@ -30,11 +30,11 @@ const previewCompanyInfo = computed(() => ({
 }))
 
 const previewNameAr = computed(() => props.form.name_ar || t('public.home.defaultCompanyName'))
-const previewNameEn = computed(() => props.form.name_en || 'Creative Industry')
+const previewNameEn = computed(() => props.form.name_en || t('public.home.defaultCompanyName'))
 const previewStyle = computed(() => companyNameBrandCssVars(previewCompanyInfo.value))
 const previewArFontStyle = computed(() => companyNameBrandArFontStyle(previewCompanyInfo.value))
 const previewEnFontStyle = computed(() => companyNameBrandEnFontStyle(previewCompanyInfo.value))
-const previewLogo = computed(() => props.logoPreview || '/images/creative-industry/logo.jpeg')
+const previewLogo = computed(() => props.logoPreview || '')
 </script>
 
 <template>
@@ -139,7 +139,7 @@ const previewLogo = computed(() => props.logoPreview || '/images/creative-indust
           <p class="mb-2 text-xs text-muted muted-color">{{ t('companyInfo.form.companyNameBrandPreviewLtr') }}</p>
           <div class="rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 px-4 py-3">
             <div class="px-nav-brand" dir="ltr">
-              <img :src="previewLogo" alt="" class="px-nav-logo" />
+              <img v-if="previewLogo" :src="previewLogo" alt="" class="px-nav-logo" />
               <span class="px-nav-brand-names" :style="previewStyle">
                 <span class="px-nav-brand-name-ar" dir="rtl" :style="previewArFontStyle">{{ previewNameAr }}</span>
                 <span class="px-nav-brand-name-en" dir="ltr" :style="previewEnFontStyle">{{ previewNameEn }}</span>
@@ -151,7 +151,7 @@ const previewLogo = computed(() => props.logoPreview || '/images/creative-indust
           <p class="mb-2 text-xs text-muted muted-color">{{ t('companyInfo.form.companyNameBrandPreviewRtl') }}</p>
           <div class="rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 px-4 py-3">
             <div class="px-nav-brand" dir="rtl">
-              <img :src="previewLogo" alt="" class="px-nav-logo" />
+              <img v-if="previewLogo" :src="previewLogo" alt="" class="px-nav-logo" />
               <span class="px-nav-brand-names" :style="previewStyle">
                 <span class="px-nav-brand-name-ar" dir="rtl" :style="previewArFontStyle">{{ previewNameAr }}</span>
                 <span class="px-nav-brand-name-en" dir="ltr" :style="previewEnFontStyle">{{ previewNameEn }}</span>

@@ -10,12 +10,12 @@ class HomepageServicesContentDefaults
     public static function section(): array
     {
         return [
-            'title_ar' => 'خدمات التصنيع',
-            'title_en' => 'Manufacturing Services',
-            'highlight_ar' => 'التصنيع',
-            'highlight_en' => 'Manufacturing',
-            'subtitle_ar' => 'نقدّم خدمات التصنيع والصناعة البلاستيكية للعلامات التجارية والمصانع.',
-            'subtitle_en' => 'We provide manufacturing and plastic industry services for brands and factories.',
+            'title_ar' => 'خدماتنا',
+            'title_en' => 'Our Services',
+            'highlight_ar' => 'خدماتنا',
+            'highlight_en' => 'Services',
+            'subtitle_ar' => '',
+            'subtitle_en' => '',
         ];
     }
 

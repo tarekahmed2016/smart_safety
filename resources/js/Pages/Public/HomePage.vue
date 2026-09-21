@@ -94,6 +94,7 @@ const heroDescriptionFallback = computed(() => t('public.home.hero.supporting'))
 
 const heroBackground = computed(() => {
   const slideWithImage = heroSlides.value.find((slide) => slide.image)
+  // Pending Smart Safety artwork: keep the existing file as a temporary render fallback only.
   return slideWithImage?.image || '/images/plastex/hero.jpg'
 })
 

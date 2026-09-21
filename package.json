@@ -1,5 +1,6 @@
 {
     "$schema": "https://www.schemastore.org/package.json",
+    "name": "smart_safety",
     "private": true,
     "type": "module",
     "scripts": {

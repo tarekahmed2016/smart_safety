@@ -9,7 +9,7 @@ const { t, locale } = useI18n()
 const page = usePage()
 
 const companyName = computed(() =>
-    resolveBilingualField(page.props.companyInfo, 'name', locale.value) || 'Creative Industry'
+    resolveBilingualField(page.props.companyInfo, 'name', locale.value) || t('public.home.defaultCompanyName')
 )
 
 const form = useForm({

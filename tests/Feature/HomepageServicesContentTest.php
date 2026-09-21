@@ -45,7 +45,7 @@ test('homepage services section uses original manufacturing copy', function () {
                 );
 
                 return is_array($servicesSection)
-                    && ($servicesSection['title_ar'] ?? null) === 'خدمات التصنيع';
+                    && ($servicesSection['title_ar'] ?? null) === 'خدماتنا';
             })
             ->has('services', 2)
             ->where('services.0.name_ar', 'التصنيع')

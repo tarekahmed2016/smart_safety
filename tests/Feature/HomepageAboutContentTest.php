@@ -31,6 +31,8 @@ test('homepage exposes original about copy stats and highlight cards from cms', 
         'name_ar' => 'الصناعة الإبداعية',
         'name_en' => 'Creative Industry',
         ...HomepageAboutContentDefaults::companyFields(),
+        'about_ar' => 'كادر مميز من مهندسين عمانيين ذوي خبرة أكثر من عشر سنوات.',
+        'about_en' => 'A distinguished team of Omani engineers with more than ten years of experience.',
         'products_homepage_limit' => 8,
     ]);
 

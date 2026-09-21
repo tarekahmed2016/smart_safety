@@ -8,7 +8,7 @@ import FrontLayout from './Layouts/FrontLayout.vue'
 import PublicLayout from './Layouts/PublicLayout.vue'
 
 createInertiaApp({
-    title: (title) => `${title ? `${title}` : 'Creative Industry'}`,
+    title: (title) => `${title ? `${title}` : 'Smart Safety'}`,
     resolve: (name) => {
         const pages = import.meta.glob('./Pages/**/*.vue', { eager: true })
         const page = pages[`./Pages/${name}.vue`]

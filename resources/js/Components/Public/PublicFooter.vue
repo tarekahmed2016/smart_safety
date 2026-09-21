@@ -42,7 +42,7 @@ const copyrightText = computed(() => formatHomepageTemplate(
   resolveHomepageField(companyInfo.value, 'footer_copyright', locale.value, t('public.home.footer.copyright')),
   { year, company: companyName.value },
 ))
-const logo = computed(() => companyInfo.value.logo || companyInfo.value.attachment?.asset_path || '/images/creative-industry/logo.jpeg')
+const logo = computed(() => companyInfo.value.logo || companyInfo.value.attachment?.asset_path || '')
 const addressText = computed(() => resolveBilingualField(companyInfo.value, 'address', locale.value))
 const year = new Date().getFullYear()
 const todayVisitors = computed(() => Number(page.props.todayVisitors ?? 0))
