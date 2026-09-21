@@ -94,8 +94,7 @@ const heroDescriptionFallback = computed(() => t('public.home.hero.supporting'))
 
 const heroBackground = computed(() => {
   const slideWithImage = heroSlides.value.find((slide) => slide.image)
-  // Pending Smart Safety artwork: keep the existing file as a temporary render fallback only.
-  return slideWithImage?.image || '/images/plastex/hero.jpg'
+  return slideWithImage?.image || ''
 })
 
 const heroMobileImage = computed(() => {
@@ -466,8 +465,8 @@ onUnmounted(() => {
   <div class="plastex-home">
   <template v-for="section in normalizedSections" :key="section.key">
     <section v-if="section.type === 'hero'" id="home" class="px-hero">
-      <div class="px-hero-bg has-image">
-        <picture class="px-hero-picture">
+      <div class="px-hero-bg" :class="{ 'has-image': Boolean(heroBackground) }">
+        <picture v-if="heroBackground" class="px-hero-picture">
           <source
             v-if="heroMobileImage"
             media="(max-width: 767px)"
