@@ -24,7 +24,7 @@ const pageContent = computed(() =>
 
 <template>
   <section class="public-custom-page">
-    <div class="public-container py-12 md:py-16">
+    <div class="public-container px-container py-12 md:py-16">
       <header class="mb-8 md:mb-10">
         <h1 class="public-custom-page-title">{{ pageTitle }}</h1>
       </header>

@@ -6,6 +6,7 @@ import { Link, usePage } from '@inertiajs/vue3'
 import { useI18n } from 'vue-i18n'
 import { resolveBilingualField } from '../../Composables/useBilingualContent.js'
 import LocalizedHeading from '../../Components/Public/LocalizedHeading.vue'
+import EmptyMediaPlaceholder from '../../Components/Public/EmptyMediaPlaceholder.vue'
 
 defineOptions({ layout: PublicLayout })
 
@@ -37,7 +38,7 @@ const productDescription = computed(() => resolveBilingualField(product.value, '
           :src="product.image"
           :alt="productName"
         />
-        <div v-else class="px-media-fallback px-media-fallback-tall" aria-hidden="true"></div>
+        <EmptyMediaPlaceholder v-else icon="shield" tall />
       </div>
       <div class="px-product-detail-copy" :dir="locale === 'ar' ? 'rtl' : 'ltr'">
         <RichTextContent

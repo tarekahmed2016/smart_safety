@@ -143,6 +143,7 @@ const otherLocaleCode = computed(() => (locale.value === 'ar' ? 'en' : 'ar'))
             :class="{ open: isMenuOpen }"
             :aria-label="t('public.home.nav.toggleMenu')"
             :aria-expanded="isMenuOpen"
+            aria-controls="public-mobile-nav"
             @click="toggleMenu"
           >
             <span></span>
@@ -152,7 +153,7 @@ const otherLocaleCode = computed(() => (locale.value === 'ar' ? 'en' : 'ar'))
         </div>
       </div>
 
-      <div v-if="isMenuOpen" class="px-mobile-nav">
+      <div v-if="isMenuOpen" id="public-mobile-nav" class="px-mobile-nav">
         <a
           v-for="link in navLinks"
           :key="`mobile-${link.key}`"

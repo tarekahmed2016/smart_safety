@@ -189,10 +189,10 @@ const hasCustomManufacturingContent = computed(() => Boolean(
 ))
 
 const displayFeatures = computed(() => featureHighlights.value.map((item) => ({
-  icon: item.icon || 'quality',
+  icon: item.icon || 'shield',
   title: resolveBilingualField(item, 'title', locale.value),
   text: plainTextFromHtml(resolveBilingualField(item, 'description', locale.value)),
-  image: item.image || null,
+  image: item.image || item.badge_image || null,
 })))
 
 const displayServices = computed(() => services.value.map((item, index) => ({
@@ -235,10 +235,16 @@ const displayWhyUs = computed(() => whyUsHighlights.value.map((item) => ({
   image: item.image || null,
 })))
 
-const whyUsTitleParts = (section) => highlightTitleParts(
-  resolveSectionHeadline(section, 'public.home.whyUs.headline'),
-  resolveBilingualField(section?.settings || {}, 'highlight', locale.value) || t('public.home.whyUs.highlight'),
+const cmsSectionTitle = (section) => resolveBilingualField(section || {}, 'title', locale.value)
+const cmsSectionHeadline = (section) =>
+  resolveBilingualField(section || {}, 'headline', locale.value)
+  || resolveBilingualField(section?.settings || {}, 'headline', locale.value)
+
+const hasWhyUsSection = (section) => Boolean(
+  displayWhyUs.value.length || cmsSectionTitle(section) || cmsSectionHeadline(section)
 )
+
+const hasAboutBody = computed(() => Boolean(aboutText.value || aboutImage.value))
 
 const productName = (product) => resolveBilingualField(product, 'name', locale.value)
 const productExcerpt = (product) =>
@@ -462,23 +468,9 @@ onUnmounted(() => {
 <template>
   <div class="smart-safety-home">
   <template v-for="section in normalizedSections" :key="section.key">
-    <section v-if="section.type === 'hero'" id="home" class="px-hero ss-hero">
-      <div class="px-hero-bg" :class="{ 'has-image': Boolean(heroBackground) }">
-        <picture v-if="heroBackground" class="px-hero-picture">
-          <source
-            v-if="heroMobileImage"
-            media="(max-width: 767px)"
-            :srcset="heroMobileImage"
-          />
-          <img
-            :src="heroBackground"
-            :alt="companyName"
-            class="px-hero-picture-image"
-          />
-        </picture>
-      </div>
-      <div class="px-hero-overlay"></div>
-      <div class="px-hero-shell">
+    <section v-if="section.type === 'hero'" id="home" class="px-hero ss-hero" :class="{ 'ss-hero--media': Boolean(heroBackground) }">
+      <div class="ss-hero-pattern" aria-hidden="true"></div>
+      <div class="ss-hero-grid px-container">
         <div class="px-hero-content">
           <p v-if="heroEyebrow" class="px-hero-eyebrow">{{ heroEyebrow }}</p>
           <h1 class="px-hero-title">
@@ -505,6 +497,23 @@ onUnmounted(() => {
             </a>
           </div>
         </div>
+        <div class="ss-hero-media" :aria-hidden="!heroBackground">
+          <picture v-if="heroBackground" class="px-hero-picture">
+            <source
+              v-if="heroMobileImage"
+              media="(max-width: 767px)"
+              :srcset="heroMobileImage"
+            />
+            <img
+              :src="heroBackground"
+              :alt="companyName"
+              class="px-hero-picture-image"
+            />
+          </picture>
+          <div v-else class="ss-hero-media-mark">
+            <SmartSafetyIcon name="shield" />
+          </div>
+        </div>
       </div>
     </section>
 
@@ -513,50 +522,45 @@ onUnmounted(() => {
       class="px-features"
       :aria-label="t('public.home.features.regionLabel')"
     >
-      <div class="px-container px-features-grid">
-        <article v-for="feature in displayFeatures" :key="feature.title" class="px-feature">
-          <div class="px-feature-icon" aria-hidden="true">
-            <img v-if="feature.image" :src="feature.image" :alt="''" />
-            <SmartSafetyIcon v-else :name="feature.icon" />
-          </div>
-          <h2>{{ feature.title }}</h2>
-          <p>{{ feature.text }}</p>
-        </article>
-      </div>
+      <SectionContainer>
+        <div class="px-features-grid ss-feature-grid">
+          <article v-for="feature in displayFeatures" :key="feature.title" class="px-feature ss-feature-card">
+            <div class="px-feature-icon" aria-hidden="true">
+              <img v-if="feature.image" :src="feature.image" :alt="''" />
+              <SmartSafetyIcon v-else :name="feature.icon" />
+            </div>
+            <h3>{{ feature.title }}</h3>
+            <p v-if="feature.text">{{ feature.text }}</p>
+          </article>
+        </div>
+      </SectionContainer>
     </section>
 
     <section
-      v-else-if="section.type === 'why_us' && displayWhyUs.length"
+      v-else-if="section.type === 'why_us' && hasWhyUsSection(section)"
       id="why-us"
       class="px-why-us"
-      :aria-label="t('public.home.whyUs.title')"
+      :aria-label="cmsSectionTitle(section) || t('public.home.whyUs.title')"
     >
-      <div class="px-container">
-        <div class="px-section-header">
-          <p class="px-about-eyebrow">{{ resolveSectionTitle(section, 'public.home.whyUs.title') }}</p>
-          <h2>
-            <span
-              v-for="(part, index) in whyUsTitleParts(section)"
-              :key="`${part.text}-${index}`"
-              :class="{ 'px-hero-highlight': part.highlight }"
-            >{{ part.text }}</span>
-          </h2>
-        </div>
-
-        <div class="px-why-us-grid">
+      <SectionContainer>
+        <SectionHeading
+          :eyebrow="cmsSectionTitle(section)"
+          :title="cmsSectionHeadline(section) || (displayWhyUs.length ? resolveSectionHeadline(section, 'public.home.whyUs.headline') : '')"
+        />
+        <div v-if="displayWhyUs.length" class="px-why-us-grid">
           <article v-for="item in displayWhyUs" :key="item.title" class="px-why-card">
             <div class="px-why-card-icon" aria-hidden="true">
               <img v-if="item.image" :src="item.image" :alt="''" />
               <SmartSafetyIcon v-else :name="item.icon" />
             </div>
             <h3>{{ item.title }}</h3>
-            <p>{{ item.text }}</p>
+            <p v-if="item.text">{{ item.text }}</p>
           </article>
         </div>
-      </div>
+      </SectionContainer>
     </section>
 
-    <section v-else-if="section.type === 'products' && products.length" id="products" class="px-products">
+    <section v-else-if="section.type === 'products' && products.length" id="products" class="px-products ss-showcase">
       <SectionContainer>
         <SectionHeading :title="resolveSectionTitle(section, 'public.home.products.title')" />
         <ProductsCarousel :products="products" @inquire="inquireAboutProduct" />
@@ -706,7 +710,7 @@ onUnmounted(() => {
         />
 
         <div class="px-vm-grid">
-          <article v-if="visionCard.html || visionCard.text" class="px-vm-card">
+          <article v-if="visionCard.html || visionCard.text" class="px-vm-card px-vm-card--vision">
             <div class="px-vm-icon" aria-hidden="true">
               <SmartSafetyIcon name="vision" />
             </div>
@@ -721,7 +725,7 @@ onUnmounted(() => {
             <p v-else class="px-vm-copy">{{ visionCard.text }}</p>
           </article>
 
-          <article v-if="missionCard.html || missionCard.text" class="px-vm-card">
+          <article v-if="missionCard.html || missionCard.text" class="px-vm-card px-vm-card--mission">
             <div class="px-vm-icon" aria-hidden="true">
               <SmartSafetyIcon name="mission" />
             </div>
@@ -748,7 +752,7 @@ onUnmounted(() => {
         <ul class="px-goals-grid">
           <li v-for="(goal, index) in displayGoals" :key="`${goal}-${index}`" class="px-goal-card">
             <span class="px-goal-icon" aria-hidden="true">
-              <SmartSafetyIcon name="flag" />
+              <SmartSafetyIcon name="check" />
             </span>
             <p>{{ goal }}</p>
           </li>
@@ -789,15 +793,13 @@ onUnmounted(() => {
             </article>
           </div>
 
-          <a :href="aboutMoreHref" class="px-btn px-btn-blue">{{ aboutMoreLabel }}</a>
+          <a v-if="hasAboutBody" :href="aboutMoreHref" class="px-btn px-btn-blue">{{ aboutMoreLabel }}</a>
         </div>
-        <div class="px-about-media">
+        <div v-if="aboutImage" class="px-about-media">
           <img
-            v-if="aboutImage"
             :src="aboutImage"
             :alt="t('public.home.about.imageAlt', { company: companyName })"
           />
-          <EmptyMediaPlaceholder v-else icon="building" tall />
         </div>
       </div>
     </section>
@@ -846,7 +848,10 @@ onUnmounted(() => {
           <p class="px-about-eyebrow">{{ t('public.home.contact.eyebrow') }}</p>
           <h2>{{ resolveSectionTitle(section, 'public.home.contact.title') }}</h2>
           <p v-if="contactSubtitle(section)">{{ contactSubtitle(section) }}</p>
-          <ul class="px-contact-details">
+          <ul
+            v-if="companyInfo.phone || companyInfo.email || resolveBilingualField(companyInfo, 'address', locale) || whatsappUrl"
+            class="px-contact-details"
+          >
             <li v-if="companyInfo.phone">
               <span class="px-contact-icon" aria-hidden="true"><SmartSafetyIcon name="phone" /></span>
               <div>
@@ -881,36 +886,36 @@ onUnmounted(() => {
         <form id="contact-form" class="px-contact-form" novalidate @submit.prevent="submitContactForm">
           <div>
             <label for="contact-name">{{ t('public.home.contact.formName') }} <span aria-hidden="true">*</span></label>
-            <input id="contact-name" v-model="contactForm.name" type="text" name="name" required aria-required="true" :placeholder="t('public.home.contact.formNamePlaceholder')" />
-            <p v-if="contactForm.errors.name" class="px-form-error">{{ contactForm.errors.name }}</p>
+            <input id="contact-name" v-model="contactForm.name" type="text" name="name" required aria-required="true" :aria-invalid="Boolean(contactForm.errors.name)" :placeholder="t('public.home.contact.formNamePlaceholder')" />
+            <p v-if="contactForm.errors.name" class="px-form-error" role="alert">{{ contactForm.errors.name }}</p>
           </div>
           <div class="px-form-row">
             <div>
               <label for="contact-email">{{ t('public.home.contact.formEmail') }} <span aria-hidden="true">*</span></label>
-              <input id="contact-email" v-model="contactForm.email" type="email" name="email" required aria-required="true" :placeholder="t('public.home.contact.formEmailPlaceholder')" />
-              <p v-if="contactForm.errors.email" class="px-form-error">{{ contactForm.errors.email }}</p>
+              <input id="contact-email" v-model="contactForm.email" type="email" name="email" required aria-required="true" :aria-invalid="Boolean(contactForm.errors.email)" :placeholder="t('public.home.contact.formEmailPlaceholder')" />
+              <p v-if="contactForm.errors.email" class="px-form-error" role="alert">{{ contactForm.errors.email }}</p>
             </div>
             <div>
               <label for="contact-phone">{{ t('public.home.contact.formPhone') }} <span aria-hidden="true">*</span></label>
-              <input id="contact-phone" v-model="contactForm.phone" type="tel" name="phone" required aria-required="true" :placeholder="t('public.home.contact.formPhonePlaceholder')" />
-              <p v-if="contactForm.errors.phone" class="px-form-error">{{ contactForm.errors.phone }}</p>
+              <input id="contact-phone" v-model="contactForm.phone" type="tel" name="phone" required aria-required="true" :aria-invalid="Boolean(contactForm.errors.phone)" :placeholder="t('public.home.contact.formPhonePlaceholder')" />
+              <p v-if="contactForm.errors.phone" class="px-form-error" role="alert">{{ contactForm.errors.phone }}</p>
             </div>
           </div>
           <div>
             <label for="contact-subject">{{ t('public.home.contact.formSubject') }} <span aria-hidden="true">*</span></label>
-            <input id="contact-subject" v-model="contactForm.subject" type="text" name="subject" required aria-required="true" :placeholder="t('public.home.contact.formSubjectPlaceholder')" />
-            <p v-if="contactForm.errors.subject" class="px-form-error">{{ contactForm.errors.subject }}</p>
+            <input id="contact-subject" v-model="contactForm.subject" type="text" name="subject" required aria-required="true" :aria-invalid="Boolean(contactForm.errors.subject)" :placeholder="t('public.home.contact.formSubjectPlaceholder')" />
+            <p v-if="contactForm.errors.subject" class="px-form-error" role="alert">{{ contactForm.errors.subject }}</p>
           </div>
           <div>
             <label for="contact-message">{{ t('public.home.contact.formMessage') }} <span aria-hidden="true">*</span></label>
-            <textarea id="contact-message" v-model="contactForm.message" name="message" rows="5" required aria-required="true" :placeholder="t('public.home.contact.formMessagePlaceholder')"></textarea>
-            <p v-if="contactForm.errors.message" class="px-form-error">{{ contactForm.errors.message }}</p>
+            <textarea id="contact-message" v-model="contactForm.message" name="message" rows="5" required aria-required="true" :aria-invalid="Boolean(contactForm.errors.message)" :placeholder="t('public.home.contact.formMessagePlaceholder')"></textarea>
+            <p v-if="contactForm.errors.message" class="px-form-error" role="alert">{{ contactForm.errors.message }}</p>
           </div>
-          <p v-if="contactForm.errors['g-recaptcha-response']" class="px-form-error">{{ contactForm.errors['g-recaptcha-response'] }}</p>
+          <p v-if="contactForm.errors['g-recaptcha-response']" class="px-form-error" role="alert">{{ contactForm.errors['g-recaptcha-response'] }}</p>
           <button type="submit" class="px-btn px-btn-green" :disabled="contactForm.processing">
             {{ contactForm.processing ? t('public.home.contact.formSending') : t('public.home.contact.formSend') }}
           </button>
-          <p v-if="contactFormSuccess" class="px-form-success">{{ t('public.home.contact.messageSentSuccess') }}</p>
+          <p v-if="contactFormSuccess" class="px-form-success" role="status">{{ t('public.home.contact.messageSentSuccess') }}</p>
         </form>
       </div>
     </section>

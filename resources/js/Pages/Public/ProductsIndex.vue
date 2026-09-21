@@ -16,7 +16,6 @@ const products = computed(() => page.props.products || [])
 const productName = (product) => resolveBilingualField(product, 'name', locale.value)
 const productExcerpt = (product) =>
   resolveBilingualField(product, 'excerpt', locale.value)
-    || t('public.home.products.noDescription')
 </script>
 
 <template>
@@ -37,11 +36,11 @@ const productExcerpt = (product) =>
               :src="product.image"
               :alt="productName(product)"
             />
-            <PublicMediaPlaceholder v-else icon="cube" />
+            <PublicMediaPlaceholder v-else icon="shield" />
           </div>
           <div class="px-product-body" :dir="locale === 'ar' ? 'rtl' : 'ltr'">
             <LocalizedHeading :text="productName(product)" tag="h2" />
-            <p>{{ productExcerpt(product) }}</p>
+            <p v-if="productExcerpt(product)">{{ productExcerpt(product) }}</p>
             <Link :href="route('public.products.show', { slug: product.slug })" class="px-text-link">
               {{ t('public.home.products.details') }}
             </Link>
